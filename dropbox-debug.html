@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Dropbox 连接诊断工具</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0fdf4 100%);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .diagnostic-card {
+            background: white;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .status-ok { color: #059669; font-weight: bold; }
+        .status-warning { color: #d97706; font-weight: bold; }
+        .status-error { color: #dc2626; font-weight: bold; }
+        
+        .info-box {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid;
+        }
+        
+        .info-box.success { background: #f0fdf4; border-color: #22c55e; }
+        .info-box.warning { background: #fefce8; border-color: #eab308; }
+        .info-box.error { background: #fef2f2; border-color: #ef4444; }
+        .info-box.info { background: #eff6ff; border-color: #3b82f6; }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            background: #22c55e;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn:hover { background: #16a34a; }
+        .btn.secondary { background: #6b7280; }
+        .btn.danger { background: #dc2626; }
+        
+        code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 13px;
+        }
+        
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 13px;
+        }
+        
+        .copy-btn {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            margin-left: 10px;
+        }
+        
+        .oauth-test {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #22c55e;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔧 Dropbox 连接诊断工具</h1>
+        <p>专门诊断 Dropbox OAuth 连接问题</p>
+    </div>
+
+    <div class="diagnostic-card">
+        <h2>🌐 当前环境检测</h2>
+        <div id="environmentInfo">
+            <div class="test-result info-box info">
+                <strong>当前URL:</strong> <span id="currentUrl">检测中...</span><br>
+                <strong>预期重定向URI:</strong> <span id="redirectUri">检测中...</span><br>
+                <strong>环境类型:</strong> <span id="envType">检测中...</span><br>
+                <strong>网络稳定性:</strong> <span id="stability">检测中...</span>
+            </div>
+        </div>
+        
+        <button class="btn" onclick="runEnvironmentCheck()">🔄 重新检测环境</button>
+    </div>
+
+    <div class="diagnostic-card">
+        <h2>🔍 Dropbox 配置验证</h2>
+        
+        <div class="info-box warning">
+            <strong>⚠️ 当前问题:</strong> 系统显示"无法添加dropbox"<br>
+            这通常是重定向URI配置问题，让我们逐步排查。
+        </div>
+        
+        <h3>📋 配置检查清单</h3>
+        <div id="configChecklist">
+            <div class="test-result">
+                <input type="checkbox" id="check1"> 
+                <label for="check1">✓ 已在 Dropbox 控制台添加重定向URI: <code>https://jianchaoci.github.io/deci_data_collection/</code></label>
+            </div>
+            <div class="test-result">
+                <input type="checkbox" id="check2"> 
+                <label for="check2">✓ Dropbox 应用使用的 APP Key 是: <code>j38wp0xvibd9bjq</code></label>
+            </div>
+            <div class="test-result">
+                <input type="checkbox" id="check3"> 
+                <label for="check3">✓ 重定向URI 末尾包含斜杠 <code>/</code></label>
+            </div>
+            <div class="test-result">
+                <input type="checkbox" id="check4"> 
+                <label for="check4">✓ 应用权限包含 <code>files.content.write</code></label>
+            </div>
+        </div>
+    </div>
+
+    <div class="diagnostic-card">
+        <h2>🧪 实时连接测试</h2>
+        
+        <div class="oauth-test">
+            <h3>🔗 OAuth 流程测试</h3>
+            <p>点击下面的按钮测试 Dropbox OAuth 连接：</p>
+            
+            <button class="btn" onclick="testDropboxAuth()" id="authTestBtn">🚀 测试 Dropbox 连接</button>
+            <button class="btn secondary" onclick="clearTokens()">🗑️ 清除已保存的令牌</button>
+            
+            <div id="authTestResult"></div>
+        </div>
+        
+        <div class="oauth-test">
+            <h3>🌐 网络连通性测试</h3>
+            <button class="btn" onclick="testNetworkConnectivity()">🔌 测试网络连接</button>
+            <div id="networkTestResult"></div>
+        </div>
+    </div>
+
+    <div class="diagnostic-card">
+        <h2>🛠️ 常见问题解决方案</h2>
+        
+        <div class="info-box error">
+            <strong>❌ 问题1: "Invalid redirect_uri"</strong><br>
+            <strong>原因:</strong> Dropbox 中配置的重定向URI与实际访问的URL不完全匹配<br>
+            <strong>解决:</strong> 确保配置的是 <code>https://jianchaoci.github.io/deci_data_collection/</code>（注意末尾斜杠）
+        </div>
+        
+        <div class="info-box error">
+            <strong>❌ 问题2: "Invalid client_id"</strong><br>
+            <strong>原因:</strong> APP Key 不正确或应用不存在<br>
+            <strong>解决:</strong> 验证 APP Key 是否为 <code>j38wp0xvibd9bjq</code>
+        </div>
+        
+        <div class="info-box error">
+            <strong>❌ 问题3: 网络连接问题</strong><br>
+            <strong>原因:</strong> 无法访问 Dropbox API<br>
+            <strong>解决:</strong> 检查网络连接和防火墙设置
+        </div>
+        
+        <div class="info-box warning">
+            <strong>⚠️ 问题4: 权限不足</strong><br>
+            <strong>原因:</strong> Dropbox 应用权限设置不正确<br>
+            <strong>解决:</strong> 确保应用具有文件写入权限
+        </div>
+    </div>
+
+    <div class="diagnostic-card">
+        <h2>🔧 手动配置指导</h2>
+        
+        <div class="info-box info">
+            <strong>🎯 精确配置步骤:</strong>
+        </div>
+        
+        <ol>
+            <li><strong>访问 Dropbox 控制台:</strong> 
+                <a href="https://www.dropbox.com/developers/apps" target="_blank" class="btn secondary">打开控制台</a>
+            </li>
+            <li><strong>找到您的应用:</strong> 查找使用 APP Key <code>j38wp0xvibd9bjq</code> 的应用</li>
+            <li><strong>进入设置:</strong> 点击应用名称进入设置页面</li>
+            <li><strong>配置重定向URI:</strong> 在 "OAuth 2" 部分找到 "Redirect URIs"</li>
+            <li><strong>添加URL:</strong> 
+                <div class="test-result info-box success">
+                    <code>https://jianchaoci.github.io/deci_data_collection/</code>
+                    <button class="copy-btn" onclick="copyToClipboard('https://jianchaoci.github.io/deci_data_collection/')">复制</button>
+                </div>
+            </li>
+            <li><strong>保存配置:</strong> 点击 "Add" 然后保存</li>
+        </ol>
+        
+        <div class="info-box warning">
+            <strong>🔍 验证配置:</strong> 配置完成后，等待 2-3 分钟让更改生效，然后重新测试连接。
+        </div>
+    </div>
+
+    <div class="diagnostic-card">
+        <h2>📊 诊断报告</h2>
+        <button class="btn" onclick="generateReport()">📋 生成完整诊断报告</button>
+        <div id="diagnosticReport"></div>
+    </div>
+
+    <script>
+        const DROPBOX_APP_KEY = 'j38wp0xvibd9bjq';
+        const EXPECTED_REDIRECT_URI = 'https://jianchaoci.github.io/deci_data_collection/';
+        
+        // 页面加载时自动运行环境检测
+        window.addEventListener('load', runEnvironmentCheck);
+        
+        function runEnvironmentCheck() {
+            const currentUrl = window.location.href;
+            const currentOrigin = window.location.origin;
+            
+            document.getElementById('currentUrl').textContent = currentUrl;
+            
+            // 检测重定向URI
+            let predictedRedirectUri;
+            let envType;
+            let stability;
+            
+            if (currentUrl.includes('github.io')) {
+                predictedRedirectUri = EXPECTED_REDIRECT_URI;
+                envType = 'GitHub Pages';
+                stability = '✅ 高稳定性';
+            } else if (currentUrl.includes('localhost') || currentUrl.includes('127.0.0.1')) {
+                predictedRedirectUri = currentOrigin + '/';
+                envType = '本地开发服务器';
+                stability = '✅ 高稳定性';
+            } else if (currentUrl.match(/\d+\.\d+\.\d+\.\d+/)) {
+                predictedRedirectUri = currentOrigin + '/';
+                envType = '动态IP访问';
+                stability = '❌ 低稳定性';
+            } else {
+                predictedRedirectUri = currentOrigin + window.location.pathname.replace(/\/[^\/]*$/, '/');
+                envType = '其他网络环境';
+                stability = '⚠️ 未知稳定性';
+            }
+            
+            document.getElementById('redirectUri').textContent = predictedRedirectUri;
+            document.getElementById('envType').textContent = envType;
+            document.getElementById('stability').textContent = stability;
+            
+            // 检查是否匹配预期的重定向URI
+            if (predictedRedirectUri === EXPECTED_REDIRECT_URI) {
+                document.getElementById('environmentInfo').className = 'test-result info-box success';
+            } else {
+                document.getElementById('environmentInfo').className = 'test-result info-box warning';
+            }
+        }
+        
+        async function testDropboxAuth() {
+            const resultDiv = document.getElementById('authTestResult');
+            const btn = document.getElementById('authTestBtn');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> 测试中...';
+            
+            resultDiv.innerHTML = '<div class="info-box info">🔄 正在测试 Dropbox OAuth 流程...</div>';
+            
+            try {
+                // 测试1: 检查是否可以访问 Dropbox API
+                const apiTest = await fetch('https://api.dropboxapi.com/2/check/user', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer invalid_token',
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                let networkStatus = '';
+                if (apiTest.status === 401) {
+                    networkStatus = '<div class="test-result info-box success">✅ 网络连接正常，可以访问 Dropbox API</div>';
+                } else {
+                    networkStatus = '<div class="test-result info-box warning">⚠️ Dropbox API 响应异常</div>';
+                }
+                
+                // 测试2: 构造 OAuth URL 并检查参数
+                const currentUrl = window.location.href;
+                let redirectUri;
+                if (currentUrl.includes('github.io')) {
+                    redirectUri = EXPECTED_REDIRECT_URI;
+                } else {
+                    redirectUri = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
+                }
+                
+                const codeVerifier = generateRandomString(128);
+                const codeChallenge = await generateCodeChallenge(codeVerifier);
+                
+                const authUrl = `https://www.dropbox.com/oauth2/authorize?` +
+                    `client_id=${encodeURIComponent(DROPBOX_APP_KEY)}&` +
+                    `response_type=code&` +
+                    `code_challenge=${encodeURIComponent(codeChallenge)}&` +
+                    `code_challenge_method=S256&` +
+                    `redirect_uri=${encodeURIComponent(redirectUri)}`;
+                
+                const urlStatus = `
+                    <div class="test-result info-box info">
+                        <strong>🔗 构造的授权URL:</strong><br>
+                        <small style="word-break: break-all;">${authUrl}</small><br><br>
+                        <strong>📋 关键参数:</strong><br>
+                        • APP Key: <code>${DROPBOX_APP_KEY}</code><br>
+                        • 重定向URI: <code>${redirectUri}</code><br>
+                        • 挑战方法: <code>S256</code>
+                    </div>
+                `;
+                
+                // 测试3: 检查重定向URI匹配
+                let uriMatchStatus = '';
+                if (redirectUri === EXPECTED_REDIRECT_URI) {
+                    uriMatchStatus = '<div class="test-result info-box success">✅ 重定向URI 匹配 GitHub Pages 部署</div>';
+                } else {
+                    uriMatchStatus = `<div class="test-result info-box warning">⚠️ 重定向URI 不匹配<br>当前: <code>${redirectUri}</code><br>期望: <code>${EXPECTED_REDIRECT_URI}</code></div>`;
+                }
+                
+                // 提供实际测试按钮
+                const testButton = `
+                    <div class="test-result info-box info">
+                        <strong>🚀 实际测试 OAuth 流程:</strong><br>
+                        <a href="${authUrl}" target="_blank" class="btn">点击测试 Dropbox 授权</a><br>
+                        <small>这将打开 Dropbox 授权页面。如果出现错误，说明配置有问题。</small>
+                    </div>
+                `;
+                
+                resultDiv.innerHTML = networkStatus + urlStatus + uriMatchStatus + testButton;
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="test-result info-box error">❌ 测试失败: ${error.message}</div>`;
+            }
+            
+            btn.disabled = false;
+            btn.innerHTML = '🚀 测试 Dropbox 连接';
+        }
+        
+        async function testNetworkConnectivity() {
+            const resultDiv = document.getElementById('networkTestResult');
+            resultDiv.innerHTML = '<div class="info-box info"><span class="loading"></span> 测试网络连接...</div>';
+            
+            const tests = [
+                { name: 'Dropbox API', url: 'https://api.dropboxapi.com/2/check/user' },
+                { name: 'Dropbox 授权服务', url: 'https://www.dropbox.com/oauth2/authorize' },
+                { name: 'Dropbox 内容API', url: 'https://content.dropboxapi.com' }
+            ];
+            
+            let results = '';
+            
+            for (const test of tests) {
+                try {
+                    const response = await fetch(test.url, { 
+                        method: 'HEAD',
+                        mode: 'no-cors' 
+                    });
+                    results += `<div class="test-result info-box success">✅ ${test.name} - 连接正常</div>`;
+                } catch (error) {
+                    results += `<div class="test-result info-box error">❌ ${test.name} - 连接失败</div>`;
+                }
+            }
+            
+            resultDiv.innerHTML = results;
+        }
+        
+        function clearTokens() {
+            localStorage.removeItem('dropbox_access_token');
+            localStorage.removeItem('dropbox_code_verifier');
+            alert('已清除所有保存的 Dropbox 令牌');
+        }
+        
+        function generateReport() {
+            const reportDiv = document.getElementById('diagnosticReport');
+            
+            const currentUrl = window.location.href;
+            const userAgent = navigator.userAgent;
+            const timestamp = new Date().toISOString();
+            
+            const report = `
+                <div class="info-box info">
+                    <strong>🔍 诊断报告</strong><br>
+                    生成时间: ${timestamp}<br><br>
+                    
+                    <strong>环境信息:</strong><br>
+                    • 当前URL: ${currentUrl}<br>
+                    • 浏览器: ${userAgent}<br>
+                    • 预期重定向URI: ${EXPECTED_REDIRECT_URI}<br>
+                    • APP Key: ${DROPBOX_APP_KEY}<br><br>
+                    
+                    <strong>建议解决方案:</strong><br>
+                    1. 确认在 Dropbox 控制台中已添加: <code>${EXPECTED_REDIRECT_URI}</code><br>
+                    2. 检查 APP Key 是否正确: <code>${DROPBOX_APP_KEY}</code><br>
+                    3. 等待 2-3 分钟让配置生效<br>
+                    4. 清除浏览器缓存并重新测试<br><br>
+                    
+                    <strong>如果问题持续:</strong><br>
+                    • 检查 Dropbox 应用是否处于活跃状态<br>
+                    • 验证应用权限设置<br>
+                    • 尝试使用本地服务器测试 (localhost:8000)
+                </div>
+            `;
+            
+            reportDiv.innerHTML = report;
+        }
+        
+        // 工具函数
+        function generateRandomString(length) {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+        
+        async function generateCodeChallenge(verifier) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(verifier);
+            const hash = await crypto.subtle.digest('SHA-256', data);
+            const bytes = new Uint8Array(hash);
+            let binary = '';
+            for (let i = 0; i < bytes.byteLength; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        }
+        
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const button = event.target;
+                const originalText = button.textContent;
+                button.textContent = '已复制!';
+                button.style.background = '#059669';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#6b7280';
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
