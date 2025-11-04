@@ -1,24 +1,5 @@
 <!doctype html>
-<!--
-🌱 得希表型采集系统 v2.0
-📋 完整独立的数据采集应用
-� 直接集成Dropbox API
-📱 支持所有设备的响应式设计
 
-使用方法：
-1. 直接在浏览器中打开此文件
-2. 或部署到任何web服务器
-3. 首次使用时按提示配置Dropbox权限
-
-系统特点：
-- 直观的滑块式数据输入界面
-- 自动同步到Dropbox云端存储
-- 按日期组织的文件夹结构
-- 现代化响应式设计
-- 交互式日历查看历史数据
-
-开发：deci_ui_2025
--->
 <html lang="zh-CN">
 	<head>
 		<meta charset="utf-8">
@@ -41,7 +22,7 @@
 				max-width: 1400px;
 				margin: 0 auto;
 				display: grid;
-				grid-template-columns: 400px 1fr;
+				grid-template-columns: 350px 1fr;
 				gap: 20px;
 				height: calc(100vh - 30px);
 			}
@@ -54,6 +35,8 @@
 				box-shadow: 0 8px 32px rgba(34, 197, 94, 0.1);
 				border: 1px solid rgba(34, 197, 94, 0.1);
 				overflow-y: auto;
+				display: flex;
+				flex-direction: column;
 			}
 			
 			.calendar-header {
@@ -98,7 +81,8 @@
 				display: grid;
 				grid-template-columns: repeat(7, 1fr);
 				gap: 2px;
-				margin-bottom: 20px;
+				margin-bottom: 15px;
+				flex-shrink: 0;
 			}
 			
 			.calendar-day-header {
@@ -162,31 +146,36 @@
 			
 			.stats-summary {
 				background: linear-gradient(135deg, #f0fdf4, #dcfce7);
-				padding: 15px;
-				border-radius: 12px;
+				padding: 12px;
+				border-radius: 10px;
 				border: 1px solid #bbf7d0;
+				margin-bottom: 10px;
+				flex-shrink: 0;
 			}
 			
 			.stats-title {
 				font-weight: 600;
 				color: #15803d;
-				margin-bottom: 10px;
+				margin-bottom: 8px;
+				font-size: 14px;
 			}
 			
 			.stats-item {
 				display: flex;
 				justify-content: space-between;
-				margin-bottom: 5px;
-				font-size: 14px;
+				margin-bottom: 4px;
+				font-size: 13px;
 			}
 			
 			/* Day Details Section */
 			.day-details {
 				background: linear-gradient(135deg, #ecfdf5, #d1fae5);
-				padding: 15px;
-				border-radius: 12px;
+				padding: 12px;
+				border-radius: 10px;
 				border: 1px solid #a7f3d0;
-				margin-top: 15px;
+				flex: 1;
+				overflow-y: auto;
+				min-height: 0;
 			}
 			
 			.selected-date {
@@ -219,7 +208,7 @@
 			}
 			
 			.day-results {
-				max-height: 200px;
+				max-height: 150px;
 				overflow-y: auto;
 			}
 			
@@ -256,15 +245,19 @@
 			.right-panel {
 				background: rgba(255, 255, 255, 0.9);
 				border-radius: 20px;
-				padding: 25px;
+				padding: 0;
 				box-shadow: 0 8px 32px rgba(34, 197, 94, 0.1);
 				border: 1px solid rgba(34, 197, 94, 0.1);
-				overflow-y: auto;
+				display: flex;
+				flex-direction: column;
+				overflow: hidden;
+				height: 100%;
 			}
 			
 			.page-header {
 				text-align: center;
-				margin-bottom: 25px;
+				margin-bottom: 20px;
+				flex-shrink: 0;
 			}
 			
 			.page-title {
@@ -272,136 +265,175 @@
 				-webkit-background-clip: text;
 				-webkit-text-fill-color: transparent;
 				background-clip: text;
-				font-size: clamp(1.8rem, 4vw, 2.2rem);
+				font-size: clamp(1.5rem, 3vw, 1.8rem);
 				font-weight: 700;
 				margin-bottom: 8px;
 			}
 			
 			.page-subtitle {
 				color: #15803d;
-				font-size: 14px;
+				font-size: 13px;
 				background: linear-gradient(135deg, #f0fdf4, #dcfce7);
-				padding: 10px 20px;
-				border-radius: 25px;
+				padding: 8px 16px;
+				border-radius: 20px;
 				border: 1px solid #bbf7d0;
 				display: inline-block;
 			}
 			
-			.collection-form {
-				display: grid;
-				grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-				gap: 20px;
-				margin-top: 25px;
-			}
-			
-			.form-section {
-				background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-				border-radius: 15px;
-				padding: 20px;
-				border: 1px solid #e2e8f0;
-			}
-			
-			.section-title {
-				font-size: 16px;
-				font-weight: 600;
-				color: #15803d;
-				margin-bottom: 15px;
-				padding-bottom: 8px;
-				border-bottom: 2px solid #bbf7d0;
-			}
-			
-			.field-group {
-				margin-bottom: 18px;
-			}
-			
-			.field-label {
-				font-size: 13px;
-				font-weight: 600;
-				color: #374151;
-				margin-bottom: 8px;
-				display: block;
-			}
-			
-			.slider-container {
+			/* 滚动指标选择器样式 */
+			.indicators-scroll-container {
+				flex: 1;
 				display: flex;
 				flex-direction: column;
-				gap: 8px;
-			}
-			
-			.slider-wrapper {
-				display: flex;
-				align-items: center;
-				gap: 12px;
-			}
-			
-			input[type=range] {
-				flex: 1;
-				height: 8px;
-				border-radius: 4px;
-				background: linear-gradient(to right, #e5e7eb, #d1d5db);
-				outline: none;
-				transition: all 0.3s ease;
-			}
-			
-			input[type=range]::-webkit-slider-thumb {
-				appearance: none;
-				width: 22px;
-				height: 22px;
-				border-radius: 50%;
-				background: linear-gradient(135deg, #22c55e, #16a34a);
-				cursor: pointer;
-				box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
-				border: 2px solid white;
-			}
-			
-			input[type=range]::-moz-range-thumb {
-				width: 22px;
-				height: 22px;
-				border-radius: 50%;
-				background: linear-gradient(135deg, #22c55e, #16a34a);
-				cursor: pointer;
-				border: 2px solid white;
-				box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
-			}
-			
-			.slider-value {
-				font-size: 13px;
-				font-weight: 600;
-				color: white;
-				background: linear-gradient(135deg, #22c55e, #16a34a);
-				padding: 4px 10px;
+				background: rgba(248, 250, 252, 0.8);
 				border-radius: 15px;
-				min-width: 60px;
-				text-align: center;
-				box-shadow: 0 2px 6px rgba(34, 197, 94, 0.2);
+				border: 1px solid rgba(34, 197, 94, 0.1);
+				margin-bottom: 15px;
+				overflow: hidden;
 			}
 			
-			.unit {
-				font-size: 11px;
-				color: #6b7280;
-				margin-left: 4px;
+			.scroll-header {
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				color: white;
+				text-align: center;
+				padding: 20px;
+				border-radius: 12px 12px 0 0;
+				box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+				position: sticky;
+				top: 0;
+				z-index: 100;
+			}
+			
+			.page-title {
+				font-size: 28px;
+				font-weight: 700;
+				margin: 0 0 8px 0;
+				text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+			}
+			
+			.page-subtitle {
+				font-size: 14px;
+				opacity: 0.9;
+				margin: 0 0 20px 0;
+				text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
 			}
 			
 			.action-buttons {
 				display: flex;
-				gap: 15px;
+				gap: 10px;
 				justify-content: center;
-				margin: 25px 0;
-				flex-wrap: wrap;
+				margin: 15px 0;
+			}
+			
+			.status-bar {
+				background: rgba(255,255,255,0.1);
+				border-radius: 6px;
+				padding: 8px 16px;
+				margin: 10px auto 0;
+				max-width: 300px;
+				font-size: 14px;
+			}
+			
+			.status-text {
+				color: white;
+				font-weight: 500;
+			}
+			
+			.scroll-hint {
+				font-size: 0.8rem;
+				color: #059669;
+			}
+			
+			.indicators-scroll-wrapper {
+				flex: 1;
+				overflow-y: auto;
+				padding: 8px;
+				max-height: 450px;
+			}
+			
+			.indicator-item {
+				background: white;
+				border: 1px solid #e5e7eb;
+				border-radius: 8px;
+				padding: 12px;
+				margin-bottom: 6px;
+				transition: all 0.2s ease;
+			}
+			
+			.indicator-item:hover {
+				border-color: #22c55e;
+				box-shadow: 0 2px 8px rgba(34, 197, 94, 0.1);
+			}
+			
+			.indicator-header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				margin-bottom: 8px;
+			}
+			
+			.indicator-name {
+				font-weight: 600;
+				color: #374151;
+				font-size: 0.9rem;
+			}
+			
+			.indicator-value-display {
+				display: flex;
+				align-items: center;
+				gap: 5px;
+				font-size: 0.85rem;
+				color: #059669;
+				font-weight: 600;
+			}
+			
+			.indicator-controls {
+				display: block;
+				margin-top: 8px;
+			}
+			
+			.control-range {
+				width: 100%;
+				height: 6px;
+				border-radius: 3px;
+				background: linear-gradient(to right, #dcfce7, #22c55e);
+				outline: none;
+				-webkit-appearance: none;
+				appearance: none;
+			}
+			
+			.control-range::-webkit-slider-thumb {
+				appearance: none;
+				width: 16px;
+				height: 16px;
+				border-radius: 50%;
+				background: #22c55e;
+				cursor: pointer;
+				box-shadow: 0 2px 4px rgba(34, 197, 94, 0.3);
+			}
+			
+			.control-range::-moz-range-thumb {
+				width: 16px;
+				height: 16px;
+				border-radius: 50%;
+				background: #22c55e;
+				cursor: pointer;
+				border: none;
+				box-shadow: 0 2px 4px rgba(34, 197, 94, 0.3);
 			}
 			
 			.btn {
-				padding: 12px 24px;
+				padding: 10px 20px;
 				border: none;
-				border-radius: 25px;
+				border-radius: 20px;
 				font-weight: 600;
-				font-size: 14px;
+				font-size: 13px;
 				cursor: pointer;
 				transition: all 0.3s ease;
 				display: flex;
 				align-items: center;
-				gap: 8px;
-				min-width: 140px;
+				gap: 6px;
+				min-width: 120px;
 				justify-content: center;
 			}
 			
@@ -428,20 +460,6 @@
 				transform: translateY(-2px);
 			}
 			
-			.status-bar {
-				background: linear-gradient(135deg, #f0fdf4, #dcfce7);
-				padding: 12px 20px;
-				border-radius: 25px;
-				text-align: center;
-				border: 1px solid #bbf7d0;
-				margin-top: 20px;
-			}
-			
-			.status-text {
-				font-weight: 600;
-				color: #15803d;
-			}
-			
 			/* Responsive Design */
 			@media (max-width: 1024px) {
 				.main-container {
@@ -465,11 +483,6 @@
 				}
 				
 				.main-container {
-					gap: 15px;
-				}
-				
-				.collection-form {
-					grid-template-columns: 1fr;
 					gap: 15px;
 				}
 				
@@ -526,272 +539,53 @@
 			
 			<!-- Right Panel - Data Collection Form -->
 			<div class="right-panel">
-				<div class="page-header">
-					<h1 class="page-title">🌱 得希表型采集系统</h1>
-					<div class="page-subtitle">✨ 现代化数据收集 | 智能历史追踪 | 云端同步 ✨</div>
+				<!-- 滚动指标选择器 -->
+				<div class="indicators-scroll-container">
+					<div class="scroll-header">
+						<h1 class="page-title">🌱 得希表型采集系统</h1>
+						<div class="page-subtitle">✨ 现代化数据收集 | 智能历史追踪 | 云端同步 ✨</div>
+						
+						<div class="action-buttons">
+							<button type="button" class="btn btn-primary" id="submitBtn">📥 导出 CSV</button>
+							<button type="button" class="btn btn-secondary" id="dropboxBtn">☁️ 同步到云端</button>
+							<button type="button" class="btn btn-primary" id="authBtn" style="display:none;">🔗 连接 Dropbox</button>
+						</div>
+						
+						<div class="status-bar">
+							<div class="status-text">状态：<span id="status">系统就绪</span></div>
+						</div>
+					</div>
+					
+					<div class="indicators-scroll-wrapper" id="indicatorsScroll">
+						<!-- 指标项将通过JavaScript动态生成 -->
+					</div>
 				</div>
 				
-				<form class="collection-form" id="dataForm">
-					<!-- Growth Measurements Section -->
-					<div class="form-section">
-						<div class="section-title">🌱 生长指标</div>
-						
-						<div class="field-group">
-							<label class="field-label">生长量 (cm)</label>
-							<div class="slider-container">
-								<div class="slider-wrapper">
-									<input type="range" name="growth_cm" min="0" max="200" step="0.1" value="50" oninput="updateSliderValue(this)">
-									<span class="slider-value">50</span><span class="unit">cm</span>
-								</div>
-							</div>
-						</div>
-
-						<div class="field-group">
-							<label class="field-label">茎粗 (mm)</label>
-							<div class="slider-container">
-								<div class="slider-wrapper">
-									<input type="range" name="stem_mm" min="0" max="50" step="0.1" value="10" oninput="updateSliderValue(this)">
-									<span class="slider-value">10</span><span class="unit">mm</span>
-								</div>
-							</div>
-						</div>
-						
-						<div class="field-group">
-							<label class="field-label">叶片数 (个)</label>
-							<div class="slider-container">
-								<div class="slider-wrapper">
-									<input type="range" name="leaf_count" min="0" max="100" step="1" value="20" oninput="updateSliderValue(this)">
-									<span class="slider-value">20</span><span class="unit">个</span>
-								</div>
-							</div>
-						</div>
-
-						<div class="field-group">
-							<label class="field-label">叶长 (cm)</label>
-							<div class="slider-container">
-								<div class="slider-wrapper">
-									<input type="range" name="leaf_length_cm" min="0" max="50" step="0.1" value="15" oninput="updateSliderValue(this)">
-									<span class="slider-value">15</span><span class="unit">cm</span>
-								</div>
-							</div>
-						</div>
-
-						<div class="field-group">
-							<label class="field-label">叶宽 (cm)</label>
-							<div class="slider-container">
-								<div class="slider-wrapper">
-									<input type="range" name="leaf_width_cm" min="0" max="30" step="0.1" value="8" oninput="updateSliderValue(this)">
-									<span class="slider-value">8</span><span class="unit">cm</span>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<!-- Flowering Section -->
-					<div class="form-section">
-						<div class="section-title">🌸 开花指标</div>
-						
-						<div class="field-group">
-							<label class="field-label">潜力开花数 (串)</label>
-							<div class="slider-container">
-								<div class="slider-wrapper">
-									<input type="range" name="potential_flower_count" min="0" max="20" step="1" value="5" oninput="updateSliderValue(this)">
-									<span class="slider-value">5</span><span class="unit">串</span>
-								</div>
-							</div>
-						</div>
-
-						<div class="field-group">
-							<label class="field-label">当前开花序数 (串)</label>
-							<div class="slider-container">
-								<div class="slider-wrapper">
-									<input type="range" name="current_flower_order" min="0" max="15" step="1" value="3" oninput="updateSliderValue(this)">
-									<span class="slider-value">3</span><span class="unit">串</span>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<!-- Fruit Production Section -->
-					<div class="form-section">
-						<div class="section-title">🍅 结果指标</div>
-						
-						<div class="field-group">
-							<label class="field-label">单头累计坐果穗数 (个)</label>
-							<div class="slider-container">
-								<div class="slider-wrapper">
-									<input type="range" name="accum_ear_count" min="0" max="50" step="1" value="10" oninput="updateSliderValue(this)">
-									<span class="slider-value">10</span><span class="unit">个</span>
-								</div>
-							</div>
-						</div>
-
-						<div class="field-group">
-							<label class="field-label">单头累计坐果粒数 (个)</label>
-							<div class="slider-container">
-								<div class="slider-wrapper">
-									<input type="range" name="accum_grain_count" min="0" max="500" step="1" value="100" oninput="updateSliderValue(this)">
-									<span class="slider-value">100</span><span class="unit">个</span>
-								</div>
-							</div>
-						</div>
-
-						<div class="field-group">
-							<label class="field-label">单位产量 (kg/㎡)</label>
-							<div class="slider-container">
-								<div class="slider-wrapper">
-									<input type="range" name="yield_kg_m2" min="0" max="100" step="0.1" value="25" oninput="updateSliderValue(this)">
-									<span class="slider-value">25</span><span class="unit">kg/㎡</span>
-								</div>
-							</div>
-						</div>
-
-						<div class="field-group">
-							<label class="field-label">单粒果重 (g)</label>
-							<div class="slider-container">
-								<div class="slider-wrapper">
-									<input type="range" name="single_grain_g" min="0" max="50" step="0.1" value="15" oninput="updateSliderValue(this)">
-									<span class="slider-value">15</span><span class="unit">g</span>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<!-- Harvest Section -->
-					<div class="form-section">
-						<div class="section-title">📦 采收指标</div>
-						
-						<div class="field-group">
-							<label class="field-label">单头总采收果穗数 (个)</label>
-							<div class="slider-container">
-								<div class="slider-wrapper">
-									<input type="range" name="total_harvest_ear_count" min="0" max="30" step="1" value="8" oninput="updateSliderValue(this)">
-									<span class="slider-value">8</span><span class="unit">个</span>
-								</div>
-							</div>
-						</div>
-
-						<div class="field-group">
-							<label class="field-label">单头总采收果粒数 (g)</label>
-							<div class="slider-container">
-								<div class="slider-wrapper">
-									<input type="range" name="total_harvest_grain_g" min="0" max="2000" step="1" value="500" oninput="updateSliderValue(this)">
-									<span class="slider-value">500</span><span class="unit">g</span>
-								</div>
-							</div>
-						</div>
-
-						<div class="field-group">
-							<label class="field-label">单穗重 (g)</label>
-							<div class="slider-container">
-								<div class="slider-wrapper">
-									<input type="range" name="ear_weight_g" min="0" max="200" step="0.1" value="60" oninput="updateSliderValue(this)">
-									<span class="slider-value">60</span><span class="unit">g</span>
-								</div>
-							</div>
-						</div>
-
-						<div class="field-group">
-							<label class="field-label">单头产量 (g)</label>
-							<div class="slider-container">
-								<div class="slider-wrapper">
-									<input type="range" name="single_head_yield_g" min="0" max="1000" step="1" value="300" oninput="updateSliderValue(this)">
-									<span class="slider-value">300</span><span class="unit">g</span>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<!-- Quality Section -->
-					<div class="form-section">
-						<div class="section-title">⭐ 品质指标</div>
-						
-						<div class="field-group">
-							<label class="field-label">可溶性固形物 (°Brix)</label>
-							<div class="slider-container">
-								<div class="slider-wrapper">
-									<input type="range" name="brix" min="0" max="30" step="0.1" value="8" oninput="updateSliderValue(this)">
-									<span class="slider-value">8</span><span class="unit">°Brix</span>
-								</div>
-							</div>
-						</div>
-
-						<div class="field-group">
-							<label class="field-label">酸度</label>
-							<div class="slider-container">
-								<div class="slider-wrapper">
-									<input type="range" name="acidity" min="0" max="2" step="0.01" value="0.5" oninput="updateSliderValue(this)">
-									<span class="slider-value">0.5</span>
-								</div>
-							</div>
-						</div>
-
-						<div class="field-group">
-							<label class="field-label">裂果率 (%)</label>
-							<div class="slider-container">
-								<div class="slider-wrapper">
-									<input type="range" name="cracking_rate" min="0" max="50" step="0.1" value="5" oninput="updateSliderValue(this)">
-									<span class="slider-value">5</span><span class="unit">%</span>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<!-- Irrigation Section -->
-					<div class="form-section">
-						<div class="section-title">💧 灌溉指标</div>
-						
-						<div class="field-group">
-							<label class="field-label">灌溉量 (ml)</label>
-							<div class="slider-container">
-								<div class="slider-wrapper">
-									<input type="range" name="irrigation_ml" min="0" max="5000" step="10" value="1000" oninput="updateSliderValue(this)">
-									<span class="slider-value">1000</span><span class="unit">ml</span>
-								</div>
-							</div>
-						</div>
-
-						<div class="field-group">
-							<label class="field-label">回液量 (ml)</label>
-							<div class="slider-container">
-								<div class="slider-wrapper">
-									<input type="range" name="reflux_ml" min="0" max="3000" step="10" value="500" oninput="updateSliderValue(this)">
-									<span class="slider-value">500</span><span class="unit">ml</span>
-								</div>
-							</div>
-						</div>
-
-						<div class="field-group">
-							<label class="field-label">回液EC (mS/cm)</label>
-							<div class="slider-container">
-								<div class="slider-wrapper">
-									<input type="range" name="reflux_ec" min="0" max="10" step="0.1" value="2.5" oninput="updateSliderValue(this)">
-									<span class="slider-value">2.5</span><span class="unit">mS/cm</span>
-								</div>
-							</div>
-						</div>
-
-						<div class="field-group">
-							<label class="field-label">回液PH</label>
-							<div class="slider-container">
-								<div class="slider-wrapper">
-									<input type="range" name="reflux_ph" min="0" max="14" step="0.1" value="6.5" oninput="updateSliderValue(this)">
-									<span class="slider-value">6.5</span><span class="unit">pH</span>
-								</div>
-							</div>
-						</div>
-					</div>
+				<!-- 隐藏的数据表单 -->
+				<form id="dataForm" style="display: none;">
+					<input type="hidden" name="growth_cm" value="100">
+					<input type="hidden" name="stem_mm" value="25">
+					<input type="hidden" name="leaf_count" value="50">
+					<input type="hidden" name="leaf_length_cm" value="25">
+					<input type="hidden" name="leaf_width_cm" value="15">
+					<input type="hidden" name="potential_flower_count" value="10">
+					<input type="hidden" name="current_flower_order" value="7">
+					<input type="hidden" name="accum_ear_count" value="25">
+					<input type="hidden" name="accum_grain_count" value="250">
+					<input type="hidden" name="yield_kg_m2" value="50">
+					<input type="hidden" name="single_grain_g" value="25">
+					<input type="hidden" name="total_harvest_ear_count" value="15">
+					<input type="hidden" name="total_harvest_grain_g" value="1000">
+					<input type="hidden" name="ear_weight_g" value="100">
+					<input type="hidden" name="single_head_yield_g" value="500">
+					<input type="hidden" name="brix" value="15">
+					<input type="hidden" name="acidity" value="1">
+					<input type="hidden" name="cracking_rate" value="25">
+					<input type="hidden" name="irrigation_ml" value="2500">
+					<input type="hidden" name="reflux_ml" value="1500">
+					<input type="hidden" name="reflux_ec" value="5">
+					<input type="hidden" name="reflux_ph" value="7">
 				</form>
-				
-				<div class="action-buttons">
-					<button type="button" class="btn btn-primary" id="submitBtn">📥 导出 CSV</button>
-					<button type="button" class="btn btn-secondary" id="dropboxBtn">☁️ 同步到云端</button>
-					<button type="button" class="btn btn-primary" id="authBtn" style="display:none;">🔗 连接 Dropbox</button>
-				</div>
-				
-				<div class="status-bar">
-					<div class="status-text">状态：<span id="status">系统就绪</span></div>
-				</div>
 				
 				<!-- Debug Info Section -->
 				<div id="debugInfo" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin: 10px 0; font-family: monospace; font-size: 12px; display: none;">
@@ -805,6 +599,100 @@
 		<div class="result" id="csvPreview" style="white-space:pre-wrap;display:none"></div>
 
 		<script>
+			// 指标数据定义
+			const indicators = [
+				{name: '生长量', unit: 'cm', min: 0, max: 200, step: 0.1, value: 100, field: 'growth_cm'},
+				{name: '茎粗', unit: 'mm', min: 0, max: 50, step: 0.1, value: 25, field: 'stem_mm'},
+				{name: '叶片数', unit: '个', min: 0, max: 100, step: 1, value: 50, field: 'leaf_count'},
+				{name: '叶长', unit: 'cm', min: 0, max: 50, step: 0.1, value: 25, field: 'leaf_length_cm'},
+				{name: '叶宽', unit: 'cm', min: 0, max: 30, step: 0.1, value: 15, field: 'leaf_width_cm'},
+				{name: '潜力开花数', unit: '串', min: 0, max: 20, step: 1, value: 10, field: 'potential_flower_count'},
+				{name: '当前开花序数', unit: '串', min: 0, max: 15, step: 1, value: 7, field: 'current_flower_order'},
+				{name: '单头累计坐果穗数', unit: '个', min: 0, max: 50, step: 1, value: 25, field: 'accum_ear_count'},
+				{name: '单头累计坐果粒数', unit: '个', min: 0, max: 500, step: 1, value: 250, field: 'accum_grain_count'},
+				{name: '单位产量', unit: 'kg/㎡', min: 0, max: 100, step: 0.1, value: 50, field: 'yield_kg_m2'},
+				{name: '单粒果重', unit: 'g', min: 0, max: 50, step: 0.1, value: 25, field: 'single_grain_g'},
+				{name: '单头总采收果穗数', unit: '个', min: 0, max: 30, step: 1, value: 15, field: 'total_harvest_ear_count'},
+				{name: '单头总采收果粒数', unit: 'g', min: 0, max: 2000, step: 1, value: 1000, field: 'total_harvest_grain_g'},
+				{name: '单穗重', unit: 'g', min: 0, max: 200, step: 0.1, value: 100, field: 'ear_weight_g'},
+				{name: '单头产量', unit: 'g', min: 0, max: 1000, step: 1, value: 500, field: 'single_head_yield_g'},
+				{name: '可溶性固形物', unit: '°Brix', min: 0, max: 30, step: 0.1, value: 15, field: 'brix'},
+				{name: '酸度', unit: '', min: 0, max: 2, step: 0.01, value: 1, field: 'acidity'},
+				{name: '裂果率', unit: '%', min: 0, max: 50, step: 0.1, value: 25, field: 'cracking_rate'},
+				{name: '灌溉量', unit: 'ml', min: 0, max: 5000, step: 10, value: 2500, field: 'irrigation_ml'},
+				{name: '回液量', unit: 'ml', min: 0, max: 3000, step: 10, value: 1500, field: 'reflux_ml'},
+				{name: '回液EC', unit: 'mS/cm', min: 0, max: 10, step: 0.1, value: 5, field: 'reflux_ec'},
+				{name: '回液PH', unit: 'pH', min: 0, max: 14, step: 0.1, value: 7, field: 'reflux_ph'}
+			];
+			
+			let currentIndicatorIndex = 0;
+			
+			// 初始化滚动指标选择器
+			function initIndicatorsScroll() {
+				const scrollWrapper = document.getElementById('indicatorsScroll');
+				
+				// 生成指标列表
+				indicators.forEach((indicator, index) => {
+					const item = document.createElement('div');
+					item.className = 'indicator-item';
+					
+					const percentage = ((indicator.value - indicator.min) / (indicator.max - indicator.min)) * 100;
+					
+					item.innerHTML = `
+						<div class="indicator-header">
+							<div class="indicator-name">${indicator.name}</div>
+							<div class="indicator-value-display">
+								<span class="value">${indicator.value}</span>
+								<span class="unit">${indicator.unit}</span>
+							</div>
+						</div>
+						<div class="indicator-controls">
+							<input type="range" class="control-range" value="${indicator.value}" 
+								   min="${indicator.min}" max="${indicator.max}" step="${indicator.step}">
+						</div>
+					`;
+					
+					// 控制输入事件
+					const rangeInput = item.querySelector('.control-range');
+					
+					rangeInput.addEventListener('input', (e) => {
+						const value = parseFloat(e.target.value);
+						updateIndicatorValue(index, value);
+					});
+					
+					scrollWrapper.appendChild(item);
+				});
+			}
+			
+			// 更新指标值
+			function updateIndicatorValue(index, value) {
+				if (index < 0 || index >= indicators.length) return;
+				
+				const indicator = indicators[index];
+				
+				// 确保值在范围内
+				value = Math.max(indicator.min, Math.min(indicator.max, value));
+				indicator.value = value;
+				
+				// 更新显示值
+				const indicatorItems = document.querySelectorAll('.indicator-item');
+				if (indicatorItems[index]) {
+					const valueSpan = indicatorItems[index].querySelector('.value');
+					if (valueSpan) valueSpan.textContent = value;
+				}
+				
+				// 更新隐藏表单中的对应字段
+				const hiddenInput = document.querySelector(`input[name="${indicator.field}"]`);
+				if (hiddenInput) {
+					hiddenInput.value = value;
+				}
+			}
+			
+			// 页面加载完成后初始化
+			document.addEventListener('DOMContentLoaded', function() {
+				initIndicatorsScroll();
+			});
+
 			const form = document.getElementById('dataForm');
 			const submitBtn = document.getElementById('submitBtn');
 			const dropboxBtn = document.getElementById('dropboxBtn');
@@ -818,30 +706,17 @@
 			
 			// Registered URLs for this app (add your URLs here)
 			const REGISTERED_URLS = [
-				// Local development
-				'http://localhost:8000',
+				// Local development (from project directory)
 				'http://localhost:8000/',
 				'http://localhost:8000/index.html',
-				'http://localhost:3000',
-				'http://localhost:3000/',
-				'http://localhost:3000/index.html',
-				'http://127.0.0.1:8000',
-				'http://127.0.0.1:8000/',
-				'http://127.0.0.1:8000/index.html',
-				'http://127.0.0.1:3000',
-				'http://127.0.0.1:3000/',
-				'http://127.0.0.1:3000/index.html',
+								
+				// Local development (from parent directory)
+				'http://localhost:8000/deci_data_collection/',
+				'http://localhost:8000/deci_data_collection/index.html',
 				
 				// GitHub Pages deployment
-				'https://jianchaoci.github.io/deci_data_collection',
 				'https://jianchaoci.github.io/deci_data_collection/',
-				'https://jianchaoci.github.io/deci_data_collection/index.html',
-				
-				// OneDrive hosting (add your OneDrive URLs here)
-				// Example: 'https://onedrive.live.com/embed?resid=xxxxx&authkey=xxxxx&em=2',
-				// You can add multiple OneDrive URLs for different folders/versions
-				
-				// Add more registered URLs as needed
+				'https://jianchaoci.github.io/deci_data_collection/index.html'
 			];
 			
 			let accessToken = localStorage.getItem('dropbox_access_token');
@@ -951,7 +826,16 @@
 			// Update slider value display
 			function updateSliderValue(slider) {
 				const valueSpan = slider.parentElement.querySelector('.slider-value');
-				valueSpan.textContent = slider.value;
+				if (valueSpan) {
+					valueSpan.textContent = slider.value;
+				}
+				
+				// 同步更新滚动指标系统中的对应值
+				const fieldName = slider.name;
+				const indicatorIndex = indicators.findIndex(ind => ind.field === fieldName);
+				if (indicatorIndex !== -1) {
+					updateIndicatorValue(indicatorIndex, parseFloat(slider.value));
+				}
 			}
 
 			// Check if current URL is registered and show specific redirect URI guidance
