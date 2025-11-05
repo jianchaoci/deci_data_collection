@@ -4,7 +4,8 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>🌱 得希表型采集系统 - 现代化云端同步</title>
+		<title>🌱 得希表型采集系统</title>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 		<style>
 			/* Light Green Theme Design */
 			* { box-sizing: border-box; }
@@ -12,19 +13,146 @@
 			body {
 				font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 				margin: 0;
-				padding: 15px;
+				padding: 0;
 				background: linear-gradient(135deg, #e8f5e8 0%, #f0fdf4 50%, #dcfce7 100%);
 				min-height: 100vh;
 				color: #1f2937;
+				display: flex;
+				flex-direction: column;
 			}
 			
+			.page-header {
+				background: linear-gradient(135deg, #e8f5e8 0%, #f0fdf4 50%, #dcfce7 100%);
+				color: #1f2937;
+				text-align: center;
+				padding: 30px 20px;
+				box-shadow: 0 4px 20px rgba(34, 197, 94, 0.2);
+			}
+			
+			.page-title {
+				font-size: 42px;
+				font-weight: 700;
+				margin: 0 0 10px 0;
+				text-shadow: none;
+			}
+			
+			.page-subtitle {
+				font-size: 16px;
+				opacity: 0.8;
+				margin: 0 0 25px 0;
+				text-shadow: none;
+			}
+			
+			.action-buttons {
+				display: flex;
+				gap: 15px;
+				justify-content: center;
+				margin: 20px 0;
+				flex-wrap: wrap;
+			}
+			
+			.status-bar {
+				background: rgba(34, 197, 94, 0.15);
+				border-radius: 8px;
+				padding: 10px 20px;
+				margin: 15px auto 0;
+				max-width: 400px;
+				font-size: 16px;
+				word-break: break-word;
+			}
+			
+			.status-text {
+				color: #1f2937;
+				font-weight: 500;
+				overflow-wrap: break-word;
+			}
+
+			/* 图表容器样式 */
+			.chart-container {
+				width: 90%;
+				max-width: 1400px;
+				margin: 0 auto 20px;
+				background: rgba(255, 255, 255, 0.9);
+				border-radius: 20px;
+				padding: 20px;
+				box-shadow: 0 8px 32px rgba(102, 126, 234, 0.1);
+				border: 1px solid rgba(102, 126, 234, 0.1);
+				overflow-x: auto;
+			}
+			
+			.chart-content {
+				min-width: 300px;
+			}
+
+			.chart-header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				margin-bottom: 20px;
+				flex-wrap: wrap;
+				gap: 15px;
+			}
+
+			.chart-header h3 {
+				margin: 0;
+				color: #374151;
+				font-size: 1.4rem;
+			}
+
+			.chart-controls {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				flex-wrap: wrap;
+			}
+
+			.indicator-select {
+				padding: 8px 12px;
+				border: 1px solid #d1d5db;
+				border-radius: 6px;
+				font-size: 14px;
+				background: white;
+				min-width: 150px;
+				max-width: 100%;
+			}
+
+			.chart-content {
+				position: relative;
+				background: white;
+				border-radius: 12px;
+				padding: 20px;
+				min-height: 400px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+
+			.chart-loading, .no-data-message {
+				text-align: center;
+				color: #6b7280;
+				font-size: 16px;
+			}
+
+			.loading-spinner {
+				font-size: 24px;
+				margin-bottom: 10px;
+			}
+
+			#trendChart {
+				max-width: 100%;
+				height: auto;
+				display: none;
+			}
+
 			.main-container {
+				width: 90%;
 				max-width: 1400px;
 				margin: 0 auto;
 				display: grid;
-				grid-template-columns: 350px 1fr;
+				grid-template-columns: 400px 1fr;
 				gap: 20px;
-				height: calc(100vh - 30px);
+				padding: 20px;
+				align-items: start;
 			}
 			
 			/* Left Panel - Calendar */
@@ -37,18 +165,19 @@
 				overflow-y: auto;
 				display: flex;
 				flex-direction: column;
+				height: 600px;
 			}
 			
 			.calendar-header {
 				text-align: center;
-				margin-bottom: 20px;
+				margin-bottom: 10px;
 			}
 			
 			.calendar-title {
-				font-size: 1.5rem;
+				font-size: 1.2rem;
 				font-weight: 700;
 				color: #15803d;
-				margin-bottom: 10px;
+				margin-bottom: 5px;
 			}
 			
 			.calendar-nav {
@@ -80,8 +209,8 @@
 			.calendar-grid {
 				display: grid;
 				grid-template-columns: repeat(7, 1fr);
-				gap: 2px;
-				margin-bottom: 15px;
+				gap: 3px;
+				margin-bottom: 10px;
 				flex-shrink: 0;
 			}
 			
@@ -89,8 +218,8 @@
 				text-align: center;
 				font-weight: 600;
 				color: #15803d;
-				padding: 8px 4px;
-				font-size: 12px;
+				padding: 4px 2px;
+				font-size: 11px;
 			}
 			
 			.calendar-day {
@@ -100,11 +229,13 @@
 				align-items: center;
 				justify-content: center;
 				border: 1px solid #e5e7eb;
-				border-radius: 6px;
+				border-radius: 4px;
 				cursor: pointer;
 				transition: all 0.3s ease;
 				background: white;
 				position: relative;
+				font-size: 13px;
+				padding: 2px;
 			}
 			
 			.calendar-day:hover {
@@ -144,91 +275,7 @@
 				font-weight: bold;
 			}
 			
-			.stats-summary {
-				background: linear-gradient(135deg, #f0fdf4, #dcfce7);
-				padding: 12px;
-				border-radius: 10px;
-				border: 1px solid #bbf7d0;
-				margin-bottom: 10px;
-				flex-shrink: 0;
-			}
-			
-			.stats-title {
-				font-weight: 600;
-				color: #15803d;
-				margin-bottom: 8px;
-				font-size: 14px;
-			}
-			
-			.stats-item {
-				display: flex;
-				justify-content: space-between;
-				margin-bottom: 4px;
-				font-size: 13px;
-			}
-			
-			/* Day Details Section */
-			.day-details {
-				background: linear-gradient(135deg, #ecfdf5, #d1fae5);
-				padding: 12px;
-				border-radius: 10px;
-				border: 1px solid #a7f3d0;
-				flex: 1;
-				overflow-y: auto;
-				min-height: 0;
-			}
-			
-			.selected-date {
-				font-size: 16px;
-				font-weight: 600;
-				color: #065f46;
-				margin-bottom: 12px;
-				text-align: center;
-				padding: 8px;
-				background: white;
-				border-radius: 8px;
-				border: 1px solid #6ee7b7;
-			}
-			
-			.loading {
-				text-align: center;
-				padding: 20px;
-				color: #059669;
-			}
-			
-			.loading-spinner {
-				font-size: 24px;
-				margin-bottom: 8px;
-				animation: spin 1s linear infinite;
-			}
-			
-			@keyframes spin {
-				from { transform: rotate(0deg); }
-				to { transform: rotate(360deg); }
-			}
-			
-			.day-results {
-				max-height: 150px;
-				overflow-y: auto;
-			}
-			
-			.file-item {
-				background: white;
-				padding: 8px 12px;
-				margin: 5px 0;
-				border-radius: 6px;
-				border: 1px solid #d1fae5;
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-				font-size: 13px;
-			}
-			
-			.file-name {
-				color: #374151;
-				font-weight: 500;
-			}
-			
+
 			.file-time {
 				color: #6b7280;
 				font-size: 11px;
@@ -251,7 +298,7 @@
 				display: flex;
 				flex-direction: column;
 				overflow: hidden;
-				height: 100%;
+				height: 600px;
 			}
 			
 			.page-header {
@@ -282,61 +329,35 @@
 			
 			/* 滚动指标选择器样式 */
 			.indicators-scroll-container {
-				flex: 1;
 				display: flex;
 				flex-direction: column;
 				background: rgba(248, 250, 252, 0.8);
 				border-radius: 15px;
 				border: 1px solid rgba(34, 197, 94, 0.1);
-				margin-bottom: 15px;
+				height: 100%;
+				min-height: 300px;
 				overflow: hidden;
 			}
 			
 			.scroll-header {
-				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-				color: white;
+				background: white;
+				padding: 15px;
+				border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 				text-align: center;
-				padding: 20px;
 				border-radius: 12px 12px 0 0;
-				box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-				position: sticky;
-				top: 0;
-				z-index: 100;
 			}
 			
-			.page-title {
-				font-size: 28px;
-				font-weight: 700;
-				margin: 0 0 8px 0;
-				text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+			.scroll-header h3 {
+				margin: 0 0 5px 0;
+				color: #374151;
+				font-size: 1.2rem;
+				font-weight: bold;
 			}
 			
-			.page-subtitle {
-				font-size: 14px;
-				opacity: 0.9;
-				margin: 0 0 20px 0;
-				text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-			}
-			
-			.action-buttons {
-				display: flex;
-				gap: 10px;
-				justify-content: center;
-				margin: 15px 0;
-			}
-			
-			.status-bar {
-				background: rgba(255,255,255,0.1);
-				border-radius: 6px;
-				padding: 8px 16px;
-				margin: 10px auto 0;
-				max-width: 300px;
-				font-size: 14px;
-			}
-			
-			.status-text {
-				color: white;
-				font-weight: 500;
+			.scroll-hint {
+				font-size: 0.85rem;
+				color: #6b7280;
+				margin: 0;
 			}
 			
 			.scroll-hint {
@@ -347,8 +368,10 @@
 			.indicators-scroll-wrapper {
 				flex: 1;
 				overflow-y: auto;
+				overflow-x: hidden;
 				padding: 8px;
-				max-height: 450px;
+				-webkit-overflow-scrolling: touch; /* iOS平滑滚动 */
+				min-height: 200px;
 			}
 			
 			.indicator-item {
@@ -356,8 +379,9 @@
 				border: 1px solid #e5e7eb;
 				border-radius: 8px;
 				padding: 12px;
-				margin-bottom: 6px;
+				margin-bottom: 8px;
 				transition: all 0.2s ease;
+				box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 			}
 			
 			.indicator-item:hover {
@@ -464,35 +488,175 @@
 			@media (max-width: 1024px) {
 				.main-container {
 					grid-template-columns: 1fr;
-					grid-template-rows: auto 1fr;
-					height: auto;
+					gap: 15px;
 				}
 				
 				.left-panel {
-					order: 2;
+					order: 1;
+					height: auto;
+					max-height: 500px;
 				}
 				
 				.right-panel {
-					order: 1;
+					order: 2;
+					height: auto;
+					min-height: 400px;
 				}
 			}
 			
 			@media (max-width: 768px) {
 				body {
-					padding: 10px;
+					padding: 5px;
+				}
+				
+				.page-header {
+					padding: 20px 10px;
+				}
+				
+				.page-title {
+					font-size: 1.8rem;
+					word-break: keep-all;
+				}
+				
+				.page-subtitle {
+					font-size: 11px;
+					padding: 6px 12px;
+				}
+				
+				.action-buttons {
+					gap: 8px;
+					flex-wrap: wrap;
+				}
+				
+				.btn {
+					font-size: 12px;
+					padding: 8px 12px;
+					white-space: nowrap;
+					flex: 1 1 auto;
+					min-width: 120px;
+				}
+				
+				.status-bar {
+					max-width: 90%;
+					font-size: 14px;
+					padding: 8px 15px;
 				}
 				
 				.main-container {
-					gap: 15px;
+					width: 100%;
+					padding: 5px;
+					gap: 10px;
+				}
+				
+				.chart-container {
+					width: 95%;
+					padding: 15px 10px;
+					margin: 0 auto 15px;
 				}
 				
 				.left-panel, .right-panel {
-					padding: 15px;
+					padding: 12px;
+					height: auto;
+					border-radius: 12px;
+				}
+				
+				.left-panel {
+					min-height: 300px;
+					max-height: 400px;
+				}
+				
+				.right-panel {
+					min-height: 350px;
+				}
+				
+				.calendar-day {
+					font-size: 11px;
+				}
+				
+				.indicator-item {
+					padding: 8px;
+				}
+				
+				.indicator-name {
+					font-size: 12px;
+				}
+				
+				.control-range {
+					height: 6px;
+				}
+				
+				.chart-header {
+					flex-direction: column;
+					gap: 8px;
+					align-items: stretch;
+				}
+				
+				.chart-controls {
+					flex-wrap: wrap;
+					justify-content: center;
+				}
+				
+				.chart-controls label,
+				.chart-controls select,
+				.chart-controls button {
+					font-size: 12px;
+				}
+				
+				.indicator-select {
+					max-width: 150px;
+				}
+			}
+			
+			@media (max-width: 480px) {
+				.page-title {
+					font-size: 1.5rem;
+				}
+				
+				.btn {
+					font-size: 11px;
+					padding: 6px 10px;
+				}
+				
+				.chart-container {
+					width: 98%;
+					padding: 12px 8px;
+				}
+				
+				.calendar-grid {
+					gap: 2px;
+				}
+				
+				.calendar-day {
+					font-size: 10px;
+					padding: 1px;
+				}
+				
+				.indicator-name {
+					font-size: 11px;
+				}
+				
+				.indicator-value-display {
+					font-size: 11px;
 				}
 			}
 		</style>
 	</head>
 	<body>
+		<!-- 页面顶部标题 -->
+		<div class="page-header">
+			<h1 class="page-title">🌱 得希表型采集系统</h1>
+			<p class="page-subtitle">使用本系统记录和管理植物表型数据，助力精准农业研究与分析。</p>			
+			<div class="action-buttons">
+				<button type="button" class="btn btn-primary" id="submitBtn">📥 导出 CSV</button>
+				<button type="button" class="btn btn-secondary" id="dropboxBtn">☁️ 同步到云端</button>
+				<button type="button" class="btn btn-primary" id="authBtn" style="display:none;">🔗 连接 Dropbox</button>
+			</div>
+			
+			<div class="status-bar">
+				<div class="status-text">状态：<span id="status">系统就绪</span></div>
+			</div>
+		</div>
+		
 		<div class="main-container">
 			<!-- Left Panel - Calendar and Statistics -->
 			<div class="left-panel">
@@ -508,33 +672,6 @@
 				<div class="calendar-grid" id="calendarGrid">
 					<!-- Calendar will be generated by JavaScript -->
 				</div>
-				
-				<div class="stats-summary">
-					<div class="stats-title">📊 本月统计</div>
-					<div class="stats-item">
-						<span>总采集次数:</span>
-						<span id="totalCollections">0</span>
-					</div>
-					<div class="stats-item">
-						<span>采集天数:</span>
-						<span id="collectionDays">0</span>
-					</div>
-					<div class="stats-item">
-						<span>本月最多:</span>
-						<span id="maxPerDay">0次/天</span>
-					</div>
-				</div>
-				
-				<!-- Selected Day Details -->
-				<div class="day-details" id="dayDetails" style="display: none;">
-					<div class="stats-title">📅 选中日期详情</div>
-					<div id="selectedDate" class="selected-date"></div>
-					<div class="loading" id="dayLoading" style="display: none;">
-						<div class="loading-spinner">⏳</div>
-						<div>正在查询文件...</div>
-					</div>
-					<div id="dayResults" class="day-results"></div>
-				</div>
 			</div>
 			
 			<!-- Right Panel - Data Collection Form -->
@@ -542,18 +679,8 @@
 				<!-- 滚动指标选择器 -->
 				<div class="indicators-scroll-container">
 					<div class="scroll-header">
-						<h1 class="page-title">🌱 得希表型采集系统</h1>
-						<div class="page-subtitle">✨ 现代化数据收集 | 智能历史追踪 | 云端同步 ✨</div>
-						
-						<div class="action-buttons">
-							<button type="button" class="btn btn-primary" id="submitBtn">📥 导出 CSV</button>
-							<button type="button" class="btn btn-secondary" id="dropboxBtn">☁️ 同步到云端</button>
-							<button type="button" class="btn btn-primary" id="authBtn" style="display:none;">🔗 连接 Dropbox</button>
-						</div>
-						
-						<div class="status-bar">
-							<div class="status-text">状态：<span id="status">系统就绪</span></div>
-						</div>
+						<h3>📊 指标采集</h3>
+						<div class="scroll-hint">滑动调整各项指标数值</div>
 					</div>
 					
 					<div class="indicators-scroll-wrapper" id="indicatorsScroll">
@@ -596,6 +723,32 @@
 			</div>
 		</div>
 
+		<!-- 图表分析区域 -->
+		<div class="chart-container">
+			<div class="chart-header">
+				<h3>📈 趋势分析</h3>
+				<div class="chart-controls">
+					<button id="prevMonth" class="btn btn-secondary">← 上月</button>
+					<span id="chartMonthDisplay" style="margin: 0 15px; font-weight: 600; color: #374151;">2025年11月</span>
+					<button id="nextMonth" class="btn btn-secondary">下月 →</button>
+					<label for="indicatorSelect" style="margin-left: 20px;">选择指标：</label>
+					<select id="indicatorSelect" class="indicator-select">
+					</select>
+					<button id="refreshChart" class="btn btn-secondary">刷新图表</button>
+				</div>
+			</div>
+			<div class="chart-content">
+				<canvas id="trendChart" width="800" height="400"></canvas>
+				<div id="chartLoading" class="chart-loading" style="display: none;">
+					<div class="loading-spinner">⏳</div>
+					<div>正在加载数据...</div>
+				</div>
+				<div id="noDataMessage" class="no-data-message" style="display: none;">
+					📊 请选择指标查看过去30天的变化趋势
+				</div>
+			</div>
+		</div>
+
 		<div class="result" id="csvPreview" style="white-space:pre-wrap;display:none"></div>
 
 		<script>
@@ -626,6 +779,533 @@
 			];
 			
 			let currentIndicatorIndex = 0;
+			let trendChart = null;
+			let currentChartDate = new Date(); // 当前图表显示的月份
+			let chartDataCache = {}; // 数据缓存：{year-month-field: {dates: [], values: []}}
+
+			// 初始化图表功能
+			async function initChart() {
+				// 填充指标选择下拉框
+				const indicatorSelect = document.getElementById('indicatorSelect');
+				indicators.forEach((indicator, index) => {
+					const option = document.createElement('option');
+					option.value = indicator.field;
+					option.textContent = `${indicator.name} (${indicator.unit})`;
+					indicatorSelect.appendChild(option);
+				});
+
+				// 绑定事件
+				indicatorSelect.addEventListener('change', handleIndicatorChange);
+				document.getElementById('refreshChart').addEventListener('click', refreshChart);
+				document.getElementById('prevMonth').addEventListener('click', () => changeChartMonth(-1));
+				document.getElementById('nextMonth').addEventListener('click', () => changeChartMonth(1));
+
+				// 更新月份显示
+				updateChartMonthDisplay();
+
+				// 预加载当月所有指标数据
+				await preloadCurrentMonthData();
+
+				// 默认选择并加载生长量数据（从缓存中读取）
+				indicatorSelect.value = 'growth_cm';
+				loadTrendData('growth_cm');
+			}
+
+			// 更新月份显示
+			function updateChartMonthDisplay() {
+				const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+				const display = `${currentChartDate.getFullYear()}年${monthNames[currentChartDate.getMonth()]}`;
+				document.getElementById('chartMonthDisplay').textContent = display;
+			}
+
+			// 切换图表显示的月份
+			async function changeChartMonth(direction) {
+				currentChartDate.setMonth(currentChartDate.getMonth() + direction);
+				updateChartMonthDisplay();
+				
+				// 预加载新月份的数据
+				await preloadCurrentMonthData();
+				
+				// 重新加载当前选择的指标（从缓存中读取）
+				const selectedField = document.getElementById('indicatorSelect').value;
+				if (selectedField) {
+					loadTrendData(selectedField);
+				}
+			}
+
+			// 处理指标选择变化
+			function handleIndicatorChange() {
+				const selectedField = document.getElementById('indicatorSelect').value;
+				if (selectedField) {
+					loadTrendData(selectedField);
+				} else {
+					showNoDataMessage();
+				}
+			}
+
+			// 刷新图表（清除缓存重新加载）
+			async function refreshChart() {
+				const selectedField = document.getElementById('indicatorSelect').value;
+				if (selectedField) {
+					// 显示重新加载提示
+					showReloadingMessage();
+					
+					// 清除当前月份所有指标的缓存
+					const year = currentChartDate.getFullYear();
+					const month = currentChartDate.getMonth();
+					indicators.forEach(indicator => {
+						const cacheKey = `${year}-${month}-${indicator.field}`;
+						delete chartDataCache[cacheKey];
+					});
+					
+					// 重新预加载数据
+					await preloadCurrentMonthData();
+					
+					// 重新显示当前指标
+					loadTrendData(selectedField);
+				}
+			}
+
+			// 加载趋势数据（支持缓存）
+			async function loadTrendData(field) {
+				const year = currentChartDate.getFullYear();
+				const month = currentChartDate.getMonth();
+				const cacheKey = `${year}-${month}-${field}`;
+				
+				// 检查缓存
+				if (chartDataCache[cacheKey]) {
+					console.log('使用缓存数据:', cacheKey);
+					const cachedData = chartDataCache[cacheKey];
+					createTrendChart(cachedData.dates, cachedData.values, field);
+					return;
+				}
+				
+				showLoading(true);
+				
+				try {
+					// 生成当月的所有日期（1号到最后一天）
+					const dates = [];
+					const values = [];
+					const daysInMonth = new Date(year, month + 1, 0).getDate();
+					
+					for (let day = 1; day <= daysInMonth; day++) {
+						const date = new Date(year, month, day);
+						const dateStr = formatDateShort(date); // 短格式：11-01
+						dates.push(dateStr);
+						
+						// 尝试从Dropbox读取该日期的数据
+						const dayData = await getDataForDate(field, date);
+						values.push(dayData);
+					}
+					
+					// 缓存数据
+					chartDataCache[cacheKey] = {
+						dates: dates,
+						values: values
+					};
+					
+					// 创建图表
+					createTrendChart(dates, values, field);
+					
+				} catch (error) {
+					console.error('加载趋势数据失败:', error);
+					showNoDataMessage();
+				} finally {
+					showLoading(false);
+				}
+			}
+
+			// 预加载当月所有指标的数据
+			async function preloadCurrentMonthData() {
+				if (!accessToken) return;
+				
+				const year = currentChartDate.getFullYear();
+				const month = currentChartDate.getMonth();
+				const daysInMonth = new Date(year, month + 1, 0).getDate();
+				
+				console.log('开始预加载当月数据...');
+				
+				// 为每个指标创建数据结构
+				const allFieldsData = {};
+				indicators.forEach(indicator => {
+					allFieldsData[indicator.field] = {
+						dates: [],
+						values: []
+					};
+				});
+				
+				// 遍历当月每一天
+				for (let day = 1; day <= daysInMonth; day++) {
+					const date = new Date(year, month, day);
+					const dateStr = formatDateShort(date);
+					const folderName = `${year}_${String(month + 1).padStart(2, '0')}_${String(day).padStart(2, '0')}`;
+					const folderPath = `/Plant_Data_Collection/${folderName}`;
+					
+					try {
+						// 列出该日期文件夹中的文件
+						const response = await fetch('https://api.dropboxapi.com/2/files/list_folder', {
+							method: 'POST',
+							headers: {
+								'Authorization': 'Bearer ' + accessToken,
+								'Content-Type': 'application/json'
+							},
+							body: JSON.stringify({
+								path: folderPath,
+								recursive: false
+							})
+						});
+						
+						if (response.ok) {
+							const data = await response.json();
+							const csvFiles = data.entries.filter(file => 
+								file['.tag'] === 'file' && file.name.endsWith('.csv')
+							).sort((a, b) => b.name.localeCompare(a.name));
+							
+							if (csvFiles.length > 0) {
+								const latestFile = csvFiles[0];
+								
+								// 下载文件内容
+								const downloadResponse = await fetch('https://content.dropboxapi.com/2/files/download', {
+									method: 'POST',
+									headers: {
+										'Authorization': 'Bearer ' + accessToken,
+										'Dropbox-API-Arg': JSON.stringify({
+											path: latestFile.path_lower
+										})
+									}
+								});
+								
+								if (downloadResponse.ok) {
+									const csvText = await downloadResponse.text();
+									
+									// 为所有指标解析数据
+									indicators.forEach(indicator => {
+										const fieldValue = parseCSVData(csvText, indicator.field);
+										allFieldsData[indicator.field].dates.push(dateStr);
+										allFieldsData[indicator.field].values.push(fieldValue);
+									});
+									
+									continue; // 成功读取，继续下一天
+								}
+							}
+						}
+					} catch (error) {
+						console.log(`预加载 ${folderName} 失败:`, error);
+					}
+					
+					// 如果没有数据，为所有指标添加null值
+					indicators.forEach(indicator => {
+						allFieldsData[indicator.field].dates.push(dateStr);
+						allFieldsData[indicator.field].values.push(null);
+					});
+				}
+				
+				// 将所有数据缓存
+				indicators.forEach(indicator => {
+					const cacheKey = `${year}-${month}-${indicator.field}`;
+					chartDataCache[cacheKey] = allFieldsData[indicator.field];
+				});
+				
+				console.log('当月数据预加载完成！');
+			}
+
+			// 获取指定日期的数据（获取最新的CSV文件）
+			async function getDataForDate(field, date) {
+				if (!accessToken) {
+					return null;
+				}
+				
+				const year = date.getFullYear();
+				const month = String(date.getMonth() + 1).padStart(2, '0');
+				const day = String(date.getDate()).padStart(2, '0');
+				const folderName = `${year}_${month}_${day}`;
+				const folderPath = `/Plant_Data_Collection/${folderName}`;
+				
+				try {
+					// 列出该日期文件夹中的文件
+					const response = await fetch('https://api.dropboxapi.com/2/files/list_folder', {
+						method: 'POST',
+						headers: {
+							'Authorization': 'Bearer ' + accessToken,
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({
+							path: folderPath,
+							recursive: false
+						})
+					});
+					
+					if (response.ok) {
+						const data = await response.json();
+						const csvFiles = data.entries.filter(file => 
+							file['.tag'] === 'file' && file.name.endsWith('.csv')
+						).sort((a, b) => b.name.localeCompare(a.name)); // 按文件名倒序，获取最新的
+						
+						if (csvFiles.length > 0) {
+							// 只使用最新的一个CSV文件（理论上每天只有一个）
+							const latestFile = csvFiles[0];
+							
+							// 下载文件内容
+							const downloadResponse = await fetch('https://content.dropboxapi.com/2/files/download', {
+								method: 'POST',
+								headers: {
+									'Authorization': 'Bearer ' + accessToken,
+									'Dropbox-API-Arg': JSON.stringify({
+										path: latestFile.path_lower
+									})
+								}
+							});
+							
+							if (downloadResponse.ok) {
+								const csvText = await downloadResponse.text();
+								const fieldValue = parseCSVData(csvText, field);
+								return fieldValue;
+							}
+						}
+					}
+				} catch (error) {
+					console.log(`无法读取 ${folderName} 的数据:`, error);
+				}
+				
+				// 如果无法读取实际数据，返回null（图表中显示为断点）
+				return null;
+			}
+
+			// 解析CSV数据中的指定字段
+			function parseCSVData(csvText, field) {
+				const lines = csvText.trim().split('\n');
+				if (lines.length < 2) return null;
+				
+				const headers = lines[0].split(',');
+				const values = lines[1].split(',');
+				
+				const fieldIndex = headers.findIndex(header => header.trim() === field);
+				if (fieldIndex === -1) return null;
+				
+				const value = parseFloat(values[fieldIndex]);
+				return isNaN(value) ? null : value;
+			}
+
+			// 创建趋势图表
+			function createTrendChart(dates, values, field) {
+				const ctx = document.getElementById('trendChart').getContext('2d');
+				
+				// 销毁现有图表
+				if (trendChart) {
+					trendChart.destroy();
+				}
+				
+				// 找到指标信息
+				const indicator = indicators.find(ind => ind.field === field);
+				const indicatorName = indicator ? `${indicator.name} (${indicator.unit})` : field;
+				
+				// 将null值转换为0，保持所有日期
+				const chartData = dates.map((date, index) => ({
+					x: date,
+					y: values[index] !== null ? values[index] : 0
+				}));
+				
+				trendChart = new Chart(ctx, {
+					type: 'line',
+					data: {
+						datasets: [{
+							label: indicatorName,
+							data: chartData,
+							borderColor: '#667eea',
+							backgroundColor: 'rgba(102, 126, 234, 0.1)',
+							borderWidth: 2,
+							fill: true,
+							tension: 0.2,
+							pointBackgroundColor: '#667eea',
+							pointBorderColor: '#ffffff',
+							pointBorderWidth: 2,
+							pointRadius: 4,
+							pointHoverRadius: 6
+						}]
+					},
+					options: {
+						responsive: true,
+						maintainAspectRatio: false,
+						scales: {
+							x: {
+								type: 'category',
+								title: {
+									display: true,
+									text: '日期'
+								},
+								ticks: {
+									autoSkip: false,
+									maxRotation: 0,
+									minRotation: 0
+								}
+							},
+							y: {
+								title: {
+									display: true,
+									text: indicatorName
+								},
+								beginAtZero: true,
+								ticks: {
+									stepSize: 1
+								}
+							}
+						},
+						plugins: {
+							title: {
+								display: false
+							},
+							legend: {
+								display: false
+							}
+						},
+						interaction: {
+							intersect: false,
+							mode: 'index'
+						}
+					}
+				});
+				
+				// 显示图表
+				document.getElementById('trendChart').style.display = 'block';
+				document.getElementById('noDataMessage').style.display = 'none';
+			}
+
+			// 显示加载状态
+			function showLoading(show) {
+				const loadingEl = document.getElementById('chartLoading');
+				const loadingTextEl = loadingEl.querySelector('div:last-child');
+				loadingTextEl.textContent = '正在加载数据...';
+				
+				loadingEl.style.display = show ? 'block' : 'none';
+				document.getElementById('trendChart').style.display = show ? 'none' : 'block';
+				document.getElementById('noDataMessage').style.display = 'none';
+			}
+
+			// 显示重新加载提示
+			function showReloadingMessage() {
+				const loadingEl = document.getElementById('chartLoading');
+				const loadingTextEl = loadingEl.querySelector('div:last-child');
+				loadingTextEl.textContent = '正在重新加载数据...';
+				
+				loadingEl.style.display = 'block';
+				document.getElementById('trendChart').style.display = 'none';
+				document.getElementById('noDataMessage').style.display = 'none';
+			}
+
+			// 显示无数据消息
+			function showNoDataMessage() {
+				document.getElementById('chartLoading').style.display = 'none';
+				document.getElementById('trendChart').style.display = 'none';
+				document.getElementById('noDataMessage').style.display = 'block';
+				
+				if (trendChart) {
+					trendChart.destroy();
+					trendChart = null;
+				}
+			}
+
+			// 初始化空图表（显示网格）
+			function initEmptyChart() {
+				const ctx = document.getElementById('trendChart').getContext('2d');
+				
+				// 销毁现有图表
+				if (trendChart) {
+					trendChart.destroy();
+				}
+				
+				// 生成1-31的日期标签
+				const labels = Array.from({length: 31}, (_, i) => String(i + 1));
+				
+				// 创建空数据（全部为0）
+				const emptyData = Array(31).fill(0);
+				
+				trendChart = new Chart(ctx, {
+					type: 'line',
+					data: {
+						labels: labels,
+						datasets: [{
+							label: '请选择指标',
+							data: emptyData,
+							borderColor: '#e5e7eb',
+							backgroundColor: 'rgba(229, 231, 235, 0.1)',
+							borderWidth: 2,
+							fill: true,
+							tension: 0.2,
+							pointBackgroundColor: '#e5e7eb',
+							pointBorderColor: '#ffffff',
+							pointBorderWidth: 2,
+							pointRadius: 0,
+							pointHoverRadius: 0
+						}]
+					},
+					options: {
+						responsive: true,
+						maintainAspectRatio: false,
+						scales: {
+							x: {
+								type: 'category',
+								title: {
+									display: true,
+									text: '日期'
+								},
+								ticks: {
+									autoSkip: false,
+									maxRotation: 0,
+									minRotation: 0
+								},
+								grid: {
+									display: true,
+									color: 'rgba(0, 0, 0, 0.05)'
+								}
+							},
+							y: {
+								title: {
+									display: true,
+									text: '数值'
+								},
+								beginAtZero: true,
+								ticks: {
+									stepSize: 1
+								},
+								grid: {
+									display: true,
+									color: 'rgba(0, 0, 0, 0.05)'
+								}
+							}
+						},
+						plugins: {
+							title: {
+								display: true,
+								text: '趋势分析 - 请选择指标查看数据',
+								font: {
+									size: 16,
+									weight: 'bold'
+								}
+							},
+							legend: {
+								display: false
+							}
+						}
+					}
+				});
+				
+				// 显示图表
+				document.getElementById('trendChart').style.display = 'block';
+				document.getElementById('noDataMessage').style.display = 'none';
+				document.getElementById('chartLoading').style.display = 'none';
+			}
+
+			// 格式化日期
+			function formatDate(date) {
+				return date.getFullYear() + '-' + 
+					   String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+					   String(date.getDate()).padStart(2, '0');
+			}
+			
+			// 格式化日期为短格式（只显示日期数字：1-31）
+			function formatDateShort(date) {
+				return String(date.getDate());
+			}
 			
 			// 初始化滚动指标选择器
 			function initIndicatorsScroll() {
@@ -691,6 +1371,7 @@
 			// 页面加载完成后初始化
 			document.addEventListener('DOMContentLoaded', function() {
 				initIndicatorsScroll();
+				initChart();
 			});
 
 			const form = document.getElementById('dataForm');
@@ -723,100 +1404,17 @@
 
 			// Debug function to show current configuration
 			function showDebugInfo() {
-				const currentURL = window.location.href;
-				const currentOrigin = window.location.origin;
-				const currentPath = window.location.pathname;
-				
-				// Generate predicted redirect URI
-				let predictedRedirectUri;
-				let uriStability = 'unknown';
-				let recommendations = [];
-				
-				if (window.location.protocol === 'file:') {
-					predictedRedirectUri = 'http://localhost:8000/';
-					uriStability = 'stable';
-					recommendations.push('✅ 推荐：本地服务器访问，不受网络变化影响');
-				} else if (currentOrigin.includes('localhost') || currentOrigin.includes('127.0.0.1')) {
-					// Local server access
-					const currentFullPath = window.location.origin + window.location.pathname;
-					if (currentFullPath.endsWith('/index.html')) {
-						predictedRedirectUri = currentFullPath;
-					} else if (currentFullPath.endsWith('/')) {
-						predictedRedirectUri = currentFullPath;
-					} else {
-						predictedRedirectUri = currentFullPath + '/';
-					}
-					uriStability = 'stable';
-					recommendations.push('✅ 本地访问：不受网络/位置变化影响');
-					recommendations.push('📱 移动使用：可在任何网络环境下使用');
-				} else if (currentOrigin.includes('github.io') || currentOrigin.includes('netlify') || currentOrigin.includes('vercel')) {
-					// Static hosting services
-					const currentFullPath = window.location.origin + window.location.pathname;
-					if (currentFullPath.endsWith('/index.html')) {
-						predictedRedirectUri = currentFullPath;
-					} else if (currentFullPath.endsWith('/')) {
-						predictedRedirectUri = currentFullPath;
-					} else {
-						predictedRedirectUri = currentFullPath + '/';
-					}
-					uriStability = 'stable';
-					recommendations.push('✅ 静态托管：不受网络/位置变化影响');
-					recommendations.push('🌍 全球访问：任何人都可以使用相同URL');
-				} else {
-					// Other hosting (potentially dynamic IP)
-					const currentFullPath = window.location.origin + window.location.pathname;
-					if (currentFullPath.endsWith('/index.html')) {
-						predictedRedirectUri = currentFullPath;
-					} else if (currentFullPath.endsWith('/')) {
-						predictedRedirectUri = currentFullPath;
-					} else {
-						predictedRedirectUri = currentFullPath + '/';
-					}
-					
-					if (currentOrigin.match(/\d+\.\d+\.\d+\.\d+/)) {
-						uriStability = 'unstable';
-						recommendations.push('⚠️ 动态IP：可能因网络变化而失效');
-						recommendations.push('💡 建议：使用域名或本地服务器');
-					} else {
-						uriStability = 'likely-stable';
-						recommendations.push('✅ 域名访问：应该稳定');
-					}
-				}
-				
 				const debugContent = document.getElementById('debugContent');
 				debugContent.innerHTML = `
-					<div style="margin: 5px 0;"><strong>当前页面URL:</strong> ${currentURL}</div>
-					<div style="margin: 5px 0;"><strong>Origin:</strong> ${currentOrigin}</div>
-					<div style="margin: 5px 0;"><strong>Path:</strong> ${currentPath}</div>
-					<div style="margin: 5px 0;"><strong>预测重定向URI:</strong> <span style="color: #059669">${predictedRedirectUri}</span></div>
 					<div style="margin: 5px 0;"><strong>APP Key:</strong> ${DROPBOX_APP_KEY}</div>
 					<div style="margin: 5px 0;"><strong>Access Token:</strong> ${accessToken ? '✅ 已存储' : '❌ 未获取'}</div>
 					
-					<div style="margin: 15px 0; padding: 10px; background: ${uriStability === 'stable' ? '#dcfce7' : uriStability === 'unstable' ? '#fecaca' : '#fef3c7'}; border-radius: 4px; border-left: 4px solid ${uriStability === 'stable' ? '#059669' : uriStability === 'unstable' ? '#dc2626' : '#f59e0b'};">
-						<strong>🌐 网络环境分析 (${uriStability === 'stable' ? '稳定' : uriStability === 'unstable' ? '不稳定' : '可能稳定'}):</strong><br>
-						${recommendations.map(rec => `• ${rec}`).join('<br>')}
-					</div>
-					
-					<div style="margin: 10px 0; padding: 10px; background: #fef3c7; border-radius: 4px; border-left: 4px solid #f59e0b;">
-						<strong>⚠️ 需要在Dropbox应用中配置的重定向URI:</strong><br>
-						<code style="background: #1f2937; color: #e5e7eb; padding: 4px 8px; border-radius: 3px; display: inline-block; margin: 5px 0;">${predictedRedirectUri}</code><br>
-						<small style="color: #92400e;">请确保此URI已添加到你的Dropbox应用的"OAuth 2 重定向URI"设置中</small>
-					</div>
-					
 					<div style="margin: 10px 0; padding: 10px; background: #eff6ff; border-radius: 4px; border-left: 4px solid #3b82f6;">
-						<strong>📋 不同使用场景的建议:</strong><br>
-						<strong>🏠 固定位置使用:</strong> 当前配置即可<br>
-						<strong>🚀 移动办公:</strong> 推荐使用 localhost:8000 (本地服务器)<br>
-						<strong>👥 团队共享:</strong> 部署到固定域名 (如 GitHub Pages)<br>
-						<strong>🔒 企业内网:</strong> 配置内网域名或多个IP地址
-					</div>
-					
-					<div style="margin: 10px 0; padding: 10px; background: #eff6ff; border-radius: 4px; border-left: 4px solid #3b82f6;">
-						<strong>📋 配置步骤:</strong><br>
+						<strong>📋 如果授权失败，请检查:</strong><br>
 						1. 访问 <a href="https://www.dropbox.com/developers/apps" target="_blank">Dropbox开发者控制台</a><br>
-						2. 选择你的应用 → 设置 → OAuth 2<br>
-						3. 在"重定向URI"中添加上面的URI<br>
-						4. 保存并刷新此页面
+						2. 确认应用的 App Key 是否正确<br>
+						3. 确认已在 OAuth 2 设置中添加重定向URI<br>
+						4. 重试授权流程
 					</div>
 				`;
 				
@@ -951,7 +1549,7 @@
 						dayElement.classList.add('has-data');
 						const countBadge = document.createElement('div');
 						countBadge.className = 'data-count';
-						countBadge.textContent = collectionData[dayKey];
+						countBadge.textContent = '✓';  // 显示对勾符号而不是数字
 						dayElement.appendChild(countBadge);
 					}
 					
@@ -963,32 +1561,11 @@
 					calendarGrid.appendChild(dayElement);
 				}
 				
-				updateMonthStats(year, month);
 			}
 
 			function changeMonth(direction) {
 				currentDate.setMonth(currentDate.getMonth() + direction);
 				generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
-			}
-
-			function updateMonthStats(year, month) {
-				const monthKey = `${year}-${String(month + 1).padStart(2, '0')}`;
-				let totalCollections = 0;
-				let collectionDays = 0;
-				let maxPerDay = 0;
-				
-				Object.keys(collectionData).forEach(dateKey => {
-					if (dateKey.startsWith(monthKey)) {
-						const count = collectionData[dateKey];
-						totalCollections += count;
-						collectionDays++;
-						maxPerDay = Math.max(maxPerDay, count);
-					}
-				});
-				
-				document.getElementById('totalCollections').textContent = totalCollections;
-				document.getElementById('collectionDays').textContent = collectionDays;
-				document.getElementById('maxPerDay').textContent = maxPerDay + '次/天';
 			}
 
 			// Load collection history from Dropbox
@@ -1023,7 +1600,7 @@
 								if (dateParts.length === 3) {
 									const dateKey = `${dateParts[0]}-${dateParts[1]}-${dateParts[2]}`;
 									
-									// Count CSV files in this folder
+									// Count CSV files in this folder (should only be 1)
 									const folderResponse = await fetch('https://api.dropboxapi.com/2/files/list_folder', {
 										method: 'POST',
 										headers: {
@@ -1042,8 +1619,9 @@
 											file['.tag'] === 'file' && file.name.endsWith('.csv')
 										).length;
 										
+										// 如果有CSV文件，标记为1（每天只保留1个）
 										if (csvCount > 0) {
-											collectionData[dateKey] = csvCount;
+											collectionData[dateKey] = 1;
 										}
 									}
 								}
@@ -1076,13 +1654,8 @@
 				generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
 			}
 
-			// Select a specific day and show details
+			// Select a specific day (simplified - no details shown)
 			async function selectDay(year, month, day, dateKey) {
-				if (!accessToken) {
-					alert('请先连接Dropbox以查看详细信息');
-					return;
-				}
-
 				// Remove previous selection
 				document.querySelectorAll('.calendar-day').forEach(el => {
 					el.classList.remove('selected');
@@ -1090,86 +1663,9 @@
 
 				// Highlight selected day
 				event.target.classList.add('selected');
-
-				// Show day details panel
-				const dayDetails = document.getElementById('dayDetails');
-				const selectedDate = document.getElementById('selectedDate');
-				const dayLoading = document.getElementById('dayLoading');
-				const dayResults = document.getElementById('dayResults');
-
-				dayDetails.style.display = 'block';
-				selectedDate.textContent = `${year}年${month + 1}月${day}日`;
-				dayLoading.style.display = 'block';
-				dayResults.innerHTML = '';
-
-				try {
-					// Convert date to folder format YYYY_MM_DD
-					const folderName = `${year}_${String(month + 1).padStart(2, '0')}_${String(day).padStart(2, '0')}`;
-					const folderPath = `/Plant_Data_Collection/${folderName}`;
-
-					// Query files in the specific day folder
-					const response = await fetch('https://api.dropboxapi.com/2/files/list_folder', {
-						method: 'POST',
-						headers: {
-							'Authorization': 'Bearer ' + accessToken,
-							'Content-Type': 'application/json'
-						},
-						body: JSON.stringify({
-							path: folderPath,
-							recursive: false
-						})
-					});
-
-					dayLoading.style.display = 'none';
-
-					if (response.ok) {
-						const data = await response.json();
-						const csvFiles = data.entries.filter(file => 
-							file['.tag'] === 'file' && file.name.endsWith('.csv')
-						);
-
-						if (csvFiles.length > 0) {
-							dayResults.innerHTML = `
-								<div style="margin-bottom: 10px; font-weight: 600; color: #059669;">
-									📁 找到 ${csvFiles.length} 个采集文件
-								</div>
-							`;
-
-							csvFiles.forEach(file => {
-								const fileTime = extractTimeFromFilename(file.name);
-								const fileItem = document.createElement('div');
-								fileItem.className = 'file-item';
-								fileItem.innerHTML = `
-									<div class="file-name">📄 ${file.name}</div>
-									<div class="file-time">${fileTime}</div>
-								`;
-								dayResults.appendChild(fileItem);
-							});
-						} else {
-							dayResults.innerHTML = '<div class="no-data">📭 该日期没有采集数据</div>';
-						}
-					} else if (response.status === 409) {
-						// Folder doesn't exist
-						dayResults.innerHTML = '<div class="no-data">📭 该日期没有采集数据</div>';
-					} else {
-						dayResults.innerHTML = '<div class="no-data">❌ 查询失败，请稍后重试</div>';
-					}
-				} catch (error) {
-					dayLoading.style.display = 'none';
-					dayResults.innerHTML = '<div class="no-data">❌ 网络错误，请检查连接</div>';
-					console.error('Error querying day files:', error);
-				}
 			}
 
-			// Extract time from filename like "data_2025_11_04_14_30_25.csv"
-			function extractTimeFromFilename(filename) {
-				const match = filename.match(/data_\d{4}_\d{2}_\d{2}_(\d{2})_(\d{2})_(\d{2})\.csv/);
-				if (match) {
-					const [, hour, minute, second] = match;
-					return `${hour}:${minute}:${second}`;
-				}
-				return '未知时间';
-			}
+
 
 			function buildCSV(formData){
 				const headers = [
@@ -1240,42 +1736,8 @@
 					}
 				}
 
-				// Check if this exact redirect URI is registered
-				// Note: We can't actually verify if it's registered in Dropbox, only remind user
+				// Use the predicted redirect URI
 				console.log('Will use redirect URI:', predictedRedirectUri);
-				
-				// Analyze network environment stability
-				let networkStability = 'stable';
-				let environmentWarning = '';
-				
-				if (predictedRedirectUri.includes('localhost') || predictedRedirectUri.includes('127.0.0.1')) {
-					networkStability = 'stable';
-					environmentWarning = '✅ 本地服务器模式 - 不受网络变化影响';
-				} else if (predictedRedirectUri.match(/\d+\.\d+\.\d+\.\d+/)) {
-					networkStability = 'unstable';
-					environmentWarning = '⚠️ 动态IP模式 - 可能因网络变化而失效\n建议使用 localhost:8000 访问';
-				} else if (predictedRedirectUri.includes('github.io') || predictedRedirectUri.includes('netlify') || predictedRedirectUri.includes('vercel')) {
-					networkStability = 'stable';
-					environmentWarning = '✅ 静态托管模式 - 全球稳定访问';
-				} else {
-					networkStability = 'likely-stable';
-					environmentWarning = '✅ 域名访问 - 应该稳定';
-				}
-				
-				// Show enhanced confirmation with network analysis
-				const confirmMessage = `🔗 准备连接到Dropbox\n\n将使用的重定向URI: ${predictedRedirectUri}\n\n网络环境分析: ${environmentWarning}\n\n请确认此URI已在你的Dropbox应用中配置。\n\n如果未配置，会出现"Invalid redirect_uri"错误。\n\n是否继续连接？`;
-				
-				if (!confirm(confirmMessage)) {
-					// User chose to cancel and configure first
-					const configMessage = `📋 配置与网络环境指南：\n\n当前检测URI: ${predictedRedirectUri}\n\n如果经常更换网络环境，建议：\n• 使用 localhost:8000 (稳定)\n• 或查看网络环境配置指南\n\n点击确定查看详细指南`;
-					
-					if (confirm(configMessage)) {
-						showDebugInfo();
-					}
-					
-					statusEl.innerHTML = `🔧 请先配置重定向URI: <code style="background: #f1f5f9; padding: 2px 6px; border-radius: 3px;">${predictedRedirectUri}</code> <a href="network-guide.html" target="_blank" style="color: #059669; margin-left: 10px;">📖 网络环境指南</a>`;
-					return;
-				}
 
 				// Generate PKCE parameters
 				const codeVerifier = generateRandomString(128);
@@ -1299,10 +1761,6 @@
 				console.log('Using redirect URI:', redirectUri);
 				console.log('Full auth URL:', authUrl);
 				
-				// Show helpful info to user
-				const helpMessage = `准备连接到Dropbox...\n\n重定向URI: ${redirectUri}\n\n如果遇到"Invalid redirect_uri"错误：\n1. 打开诊断工具检查配置\n2. 或访问Dropbox开发者控制台添加此URI`;
-				console.log(helpMessage);
-				
 				statusEl.textContent = '正在重定向到 Dropbox 授权页面...';
 				
 				window.location.href = authUrl;
@@ -1322,8 +1780,7 @@
 				console.log('Error parameter:', error);
 
 				if (error) {
-					statusEl.innerHTML = `❌ Dropbox 授权失败: ${error} <a href="javascript:showDebugInfo()" style="color: #dc2626; text-decoration: none; margin-left: 10px;">🔍 查看配置详情</a>`;
-					showDebugInfo(); // 自动显示调试信息
+					statusEl.textContent = `❌ Dropbox 授权失败: ${error}`;
 					return;
 				}
 
@@ -1377,12 +1834,10 @@
 							loadCollectionHistory();
 						} else {
 							const errorData = await response.json();
-							statusEl.innerHTML = `❌ 获取访问令牌失败: ${errorData.error_description || errorData.error} <a href="javascript:showDebugInfo()" style="color: #dc2626; text-decoration: none; margin-left: 10px;">🔍 查看配置详情</a>`;
-							showDebugInfo(); // 自动显示调试信息
+							statusEl.textContent = `❌ 获取访问令牌失败: ${errorData.error_description || errorData.error}`;
 						}
 					} catch (err) {
-						statusEl.innerHTML = `❌ 授权过程出错: ${err.message} <a href="javascript:showDebugInfo()" style="color: #dc2626; text-decoration: none; margin-left: 10px;">🔍 查看配置详情</a>`;
-						showDebugInfo(); // 自动显示调试信息
+						statusEl.textContent = `❌ 授权过程出错: ${err.message}`;
 					}
 				}
 			}
@@ -1415,6 +1870,52 @@
 				const filePath = dayFolderPath + '/' + filename;
 
 				try {
+					// 先检查该日期文件夹中是否已有CSV文件，如果有则删除
+					statusEl.textContent = '正在检查现有文件...';
+					try {
+						const listResponse = await fetch('https://api.dropboxapi.com/2/files/list_folder', {
+							method: 'POST',
+							headers: {
+								'Authorization': 'Bearer ' + accessToken,
+								'Content-Type': 'application/json'
+							},
+							body: JSON.stringify({
+								path: dayFolderPath,
+								recursive: false
+							})
+						});
+						
+						if (listResponse.ok) {
+							const listData = await listResponse.json();
+							const csvFiles = listData.entries.filter(file => 
+								file['.tag'] === 'file' && file.name.endsWith('.csv')
+							);
+							
+							// 删除所有旧的CSV文件
+							if (csvFiles.length > 0) {
+								statusEl.textContent = `正在删除 ${csvFiles.length} 个旧文件...`;
+								for (const file of csvFiles) {
+									await fetch('https://api.dropboxapi.com/2/files/delete_v2', {
+										method: 'POST',
+										headers: {
+											'Authorization': 'Bearer ' + accessToken,
+											'Content-Type': 'application/json'
+										},
+										body: JSON.stringify({
+											path: file.path_lower
+										})
+									});
+								}
+								console.log(`已删除 ${csvFiles.length} 个旧CSV文件`);
+							}
+						}
+					} catch (error) {
+						console.log('检查/删除旧文件时出错:', error);
+						// 如果文件夹不存在，继续上传新文件
+					}
+					
+					// 上传新的CSV文件
+					statusEl.textContent = '正在上传新文件...';
 					const response = await fetch('https://content.dropboxapi.com/2/files/upload', {
 						method: 'POST',
 						headers: {
@@ -1423,7 +1924,7 @@
 							'Dropbox-API-Arg': JSON.stringify({
 								path: filePath,
 								mode: 'add',
-								autorename: true
+								autorename: false
 							})
 						},
 						body: csv
@@ -1436,8 +1937,10 @@
 						const result = await response.json();
 						statusEl.textContent = '✅ 成功上传到云端: ' + result.name;
 						
-						// Record this collection in calendar
-						recordCollection();
+						// Record this collection in calendar (update to 1 since we keep only one file per day)
+						const dateKey = `${year}-${month}-${day}`;
+						collectionData[dateKey] = 1;
+						generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
 						
 						return true;
 					} else {
@@ -1521,23 +2024,7 @@
 
 			// Initialize
 			if (isURLValid) {
-				// Show current redirect URI status  
-				const currentPath = window.location.origin + window.location.pathname;
-				let predictedRedirectUri;
-				if (window.location.protocol === 'file:') {
-					predictedRedirectUri = 'http://localhost:8000/';
-				} else {
-					if (currentPath.endsWith('/index.html')) {
-						predictedRedirectUri = currentPath;
-					} else if (currentPath.endsWith('/')) {
-						predictedRedirectUri = currentPath;
-					} else {
-						predictedRedirectUri = currentPath + '/';
-					}
-				}
-				
-				// Always show the redirect URI that needs to be configured
-				statusEl.innerHTML = `✅ 系统就绪 - 请确保重定向URI已配置: <code style="background: #f1f5f9; padding: 2px 6px; border-radius: 3px; font-size: 11px;">${predictedRedirectUri}</code> <a href="javascript:showDebugInfo()" style="color: #6b7280; text-decoration: none; margin-left: 10px; font-size: 11px;">🔍 查看详情</a> <a href="network-guide.html" target="_blank" style="color: #6b7280; text-decoration: none; margin-left: 5px; font-size: 11px;">🌐 网络指南</a>`;
+				statusEl.textContent = accessToken ? '✅ 已连接到 Dropbox' : '请连接 Dropbox 开始使用';
 				
 				updateButtonStates();
 				handleOAuthCallback();
