@@ -612,7 +612,7 @@
 			
 			.chart-content {
 				padding: 10px 5px;
-				min-height: 200px;
+				min-height: 100px;
 			}
 			
 			.chart-controls-row {
@@ -658,7 +658,7 @@
 				
 			.chart-content {
 				padding: 8px 3px;
-				min-height: 180px;
+				min-height: 90px;
 			}
 			
 			.chart-controls-row button {
@@ -844,11 +844,20 @@
 				{name: '回液PH', unit: 'pH', min: 0, max: 14, step: 0.1, value: 0, field: 'reflux_ph'}
 			];
 			
-			let currentIndicatorIndex = 0;
-			let trendChart = null;
-			let currentChartDate = new Date(); // 当前图表显示的月份
-
-			// 初始化图表功能
+			// 获取北京时间（UTC+8）
+			function getBeijingTime() {
+				const now = new Date();
+				// 获取UTC时间的毫秒数
+				const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
+				// 北京时间 = UTC + 8小时
+				const beijingTime = new Date(utcTime + (8 * 3600000));
+				return beijingTime;
+			}
+			
+		let currentIndicatorIndex = 0;
+		let trendChart = null;
+		let currentChartDate = getBeijingTime(); // 当前图表显示的月份
+		let currentTrendField = null; // 当前显示的趋势分析指标			// 初始化图表功能
 			async function initChart() {
 				// 填充指标选择下拉框
 				const indicatorSelect = document.getElementById('indicatorSelect');
@@ -891,23 +900,24 @@
 				}
 			}
 
-			// 处理指标选择变化
-			function handleIndicatorChange() {
-				const selectedField = document.getElementById('indicatorSelect').value;
-				if (selectedField) {
-					loadTrendData(selectedField);
-				} else {
-					showNoDataMessage();
-				}
-			}
-
-			// 加载趋势数据（直接从月度CSV文件加载）
+	// 处理指标选择变化
+	function handleIndicatorChange() {
+		const selectedField = document.getElementById('indicatorSelect').value;
+		if (selectedField) {
+			currentTrendField = selectedField; // 记录当前显示的指标
+			loadTrendData(selectedField);
+		} else {
+			currentTrendField = null;
+			showNoDataMessage();
+		}
+	}			// 加载趋势数据（直接从月度CSV文件加载）
 			async function loadTrendData(field) {
 				if (!accessToken) {
 					showNoDataMessage();
 					return;
 				}
 				
+				currentTrendField = field; // 记录当前显示的指标
 				showLoading(true);
 				
 				const year = currentChartDate.getFullYear();
@@ -1369,7 +1379,7 @@
 					return;
 				}
 				
-				const today = new Date();
+				const today = getBeijingTime();
 				const year = today.getFullYear();
 				const month = String(today.getMonth() + 1).padStart(2, '0');
 				const day = String(today.getDate()).padStart(2, '0');
@@ -1564,7 +1574,7 @@
 			const isURLValid = checkURLRegistration();
 
 			// Calendar functionality
-			let currentDate = new Date();
+			let currentDate = getBeijingTime();
 			let collectionData = {}; // Store collection history: {date: count}
 
 			function generateCalendar(year, month) {
@@ -1599,14 +1609,12 @@
 					calendarGrid.appendChild(emptyDay);
 				}
 				
-				// Add days of the month
-				const today = new Date();
-				for (let day = 1; day <= daysInMonth; day++) {
-					const dayElement = document.createElement('div');
-					dayElement.className = 'calendar-day';
-					dayElement.textContent = day;
-					
-					const dayKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+			// Add days of the month
+			const today = getBeijingTime();
+			for (let day = 1; day <= daysInMonth; day++) {
+				const dayElement = document.createElement('div');
+				dayElement.className = 'calendar-day';
+				dayElement.textContent = day;					const dayKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 					
 					// Check if it's today
 					if (year === today.getFullYear() && month === today.getMonth() && day === today.getDate()) {
@@ -1717,19 +1725,17 @@
 				}
 			}
 
-			// Record new collection
-			function recordCollection() {
-				const today = new Date();
-				const dateKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-				
-				// Increment count for today
-				collectionData[dateKey] = (collectionData[dateKey] || 0) + 1;
-				
-				// Update calendar display
-				generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
-			}
-
-			// Select a specific day (simplified - no details shown)
+		// Record new collection
+		function recordCollection() {
+			const today = getBeijingTime();
+			const dateKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+			
+			// Increment count for today
+			collectionData[dateKey] = (collectionData[dateKey] || 0) + 1;
+			
+			// Update calendar display
+			generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+		}			// Select a specific day (simplified - no details shown)
 			async function selectDay(year, month, day, dateKey) {
 				// Remove previous selection
 				document.querySelectorAll('.calendar-day').forEach(el => {
@@ -1742,28 +1748,26 @@
 
 
 
-			function buildCSV(formData){
-				const headers = [
-					'timestamp','growth_cm','stem_mm','leaf_count','leaf_length_cm','leaf_width_cm',
-					'potential_flower_count','current_flower_order','accum_ear_count','accum_grain_count',
-					'yield_kg_m2','single_grain_g','total_harvest_ear_count','total_harvest_grain_g',
-					'ear_weight_g','single_head_yield_g','brix','acidity','cracking_rate',
-					'irrigation_ml','reflux_ml','reflux_ec','reflux_ph'
-				];
+		function buildCSV(formData){
+			const headers = [
+				'timestamp','growth_cm','stem_mm','leaf_count','leaf_length_cm','leaf_width_cm',
+				'potential_flower_count','current_flower_order','accum_ear_count','accum_grain_count',
+				'yield_kg_m2','single_grain_g','total_harvest_ear_count','total_harvest_grain_g',
+				'ear_weight_g','single_head_yield_g','brix','acidity','cracking_rate',
+				'irrigation_ml','reflux_ml','reflux_ec','reflux_ph'
+			];
 
-				const row = [new Date().toISOString()];
-				for(const h of headers.slice(1)){
-					let v = formData.get(h);
-					if(v === null || v === '') v = '';
-					// escape double quotes
-					if(typeof v === 'string' && v.includes(',')) v = '"'+v.replace(/"/g,'""')+'"';
-					row.push(v);
-				}
-				const csv = headers.join(',') + '\n' + row.join(',') + '\n';
-				return csv;
+			const row = [getBeijingTime().toISOString()];
+			for(const h of headers.slice(1)){
+				let v = formData.get(h);
+				if(v === null || v === '') v = '';
+				// escape double quotes
+				if(typeof v === 'string' && v.includes(',')) v = '"'+v.replace(/"/g,'""')+'"';
+				row.push(v);
 			}
-
-			// Generate random string for PKCE
+			const csv = headers.join(',') + '\n' + row.join(',') + '\n';
+			return csv;
+		}			// Generate random string for PKCE
 			function generateRandomString(length) {
 				const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
 				let result = '';
@@ -1917,33 +1921,32 @@
 				}
 			}
 
-			// Upload CSV to Dropbox
-			async function uploadToDropbox(csv) {
-				if (!accessToken) {
-					statusEl.textContent = '请先连接 Dropbox';
-					return false;
-				}
 
-				statusEl.textContent = '正在上传到 Dropbox...';
-				
-				const now = new Date();
-				const year = now.getFullYear();
-				const month = String(now.getMonth() + 1).padStart(2, '0');
-				const day = String(now.getDate()).padStart(2, '0');
-				
-				// 新格式：/Plant_Data_Collection/YYYY_MM.csv
-				const mainFolder = '/Plant_Data_Collection';
-				const monthFileName = `${year}_${month}.csv`;
-				const filePath = `${mainFolder}/${monthFileName}`;
-				const dateKey = `${year}-${month}-${day}`;
+		// Upload CSV to Dropbox
+		async function uploadToDropbox(csv) {
+			if (!accessToken) {
+				statusEl.textContent = '请先连接 Dropbox';
+				return false;
+			}
 
-				try {
-					// 解析当前要上传的CSV数据（只有数据行，不含表头）
-					const csvLines = csv.trim().split('\n');
-					const headers = csvLines[0]; // timestamp,growth_cm,stem_mm,...
-					const newDataLine = csvLines[1]; // 新的数据行
-					
-					// 尝试下载现有的月度文件
+			statusEl.textContent = '正在上传到 Dropbox...';
+			
+			const now = getBeijingTime();
+			const year = now.getFullYear();
+			const month = String(now.getMonth() + 1).padStart(2, '0');
+			const day = String(now.getDate()).padStart(2, '0');
+			
+			// 新格式：/Plant_Data_Collection/YYYY_MM.csv
+			const mainFolder = '/Plant_Data_Collection';
+			const monthFileName = `${year}_${month}.csv`;
+			const filePath = `${mainFolder}/${monthFileName}`;
+			const dateKey = `${year}-${month}-${day}`;
+
+			try {
+				// 解析当前要上传的CSV数据（只有数据行，不含表头）
+				const csvLines = csv.trim().split('\n');
+				const headers = csvLines[0]; // timestamp,growth_cm,stem_mm,...
+				const newDataLine = csvLines[1]; // 新的数据行					// 尝试下载现有的月度文件
 					let existingContent = null;
 					let existingLines = [];
 					
@@ -2030,6 +2033,20 @@
 						collectionData[dateKey] = 1;
 						generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
 						
+						// 如果当前正在显示趋势分析图表，并且上传的数据是当前显示月份的数据，则刷新图表
+						if (currentTrendField) {
+							const uploadYear = now.getFullYear();
+							const uploadMonth = now.getMonth();
+							const chartYear = currentChartDate.getFullYear();
+							const chartMonth = currentChartDate.getMonth();
+							
+							// 检查上传的数据是否属于当前显示的月份
+							if (uploadYear === chartYear && uploadMonth === chartMonth) {
+								console.log('刷新趋势分析图表:', currentTrendField);
+								await loadTrendData(currentTrendField);
+							}
+						}
+						
 						return true;
 					} else {
 						const errorText = await response.text();
@@ -2080,28 +2097,22 @@
 			submitBtn.addEventListener('click', ()=>{
 				const fd = new FormData(form);
 				const csv = buildCSV(fd);
-				csvPreview.style.display = 'block';
-				csvPreview.textContent = csv;
 				
 				// Download CSV
 				const blob = new Blob([csv],{type:'text/csv'});
 				const url = URL.createObjectURL(blob);
 				const a = document.createElement('a');
 				a.href = url;
-				a.download = 'data_' + (new Date()).toISOString().replace(/[:.]/g,'-') + '.csv';
-				document.body.appendChild(a);
-				a.click();
-				a.remove();
-				URL.revokeObjectURL(url);
-				
-				statusEl.textContent = 'CSV 已下载';
-			});
-
-			dropboxBtn.addEventListener('click', async ()=>{
+			a.download = 'data_' + (getBeijingTime()).toISOString().replace(/[:.]/g,'-') + '.csv';
+			document.body.appendChild(a);
+			a.click();
+			a.remove();
+			URL.revokeObjectURL(url);
+			
+			statusEl.textContent = 'CSV 已下载';
+		});			dropboxBtn.addEventListener('click', async ()=>{
 				const fd = new FormData(form);
 				const csv = buildCSV(fd);
-				csvPreview.style.display = 'block';
-				csvPreview.textContent = csv;
 				
 				await uploadToDropbox(csv);
 			});
