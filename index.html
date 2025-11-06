@@ -4,159 +4,134 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>🌱 得希表型采集系统</title>
+		<title>🌱 得希表型采集系统 (Supabase)</title>
 		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		<!-- Supabase JS Client -->
+		<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 		<style>
-			/* Light Green Theme Design */
+			/* Deep Green Theme Design */
 			* { box-sizing: border-box; }
 			
-			body {
-				font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-				margin: 0;
-				padding: 0;
-				background: linear-gradient(135deg, #e8f5e8 0%, #f0fdf4 50%, #dcfce7 100%);
-				min-height: 100vh;
-				color: #1f2937;
+		body {
+			font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+			margin: 0;
+			padding: 0;
+			background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 50%, #e0f2fe 100%);
+			min-height: 100vh;
+			color: #064e3b;
+			display: flex;
+			flex-direction: column;
+		}
+		
+		.page-header {
+			background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 50%, #e0f2fe 100%);
+			color: #064e3b;
+			text-align: center;
+			padding: 30px 20px;
+			box-shadow: 0 2px 8px rgba(5, 150, 105, 0.1);
+			border-bottom: 1px solid rgba(5, 150, 105, 0.15);
+		}			.page-title {
+			font-size: 52px;
+			font-weight: 800;
+			margin: 0 0 10px 0;
+			text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+			background: linear-gradient(135deg, #059669, #047857, #10b981);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+			background-clip: text;
+		}
+		
+		.page-subtitle {
+			font-size: 18px;
+			opacity: 1;
+			margin: 0 0 25px 0;
+			text-shadow: none;
+			color: #047857;
+			font-weight: 600;
+		}			.action-buttons {
 				display: flex;
-				flex-direction: column;
-			}
-			
-			.page-header {
-				background: linear-gradient(135deg, #e8f5e8 0%, #f0fdf4 50%, #dcfce7 100%);
-				color: #1f2937;
-				text-align: center;
-				padding: 30px 20px;
-				box-shadow: 0 4px 20px rgba(34, 197, 94, 0.2);
-			}
-			
-			.page-title {
-				font-size: 52px;
-				font-weight: 800;
-				margin: 0 0 10px 0;
-				text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.15);
-				background: linear-gradient(135deg, #065f46, #059669, #10b981);
-				-webkit-background-clip: text;
-				-webkit-text-fill-color: transparent;
-				background-clip: text;
-			}
-			
-			.page-subtitle {
-				font-size: 18px;
-				opacity: 1;
-				margin: 0 0 25px 0;
-				text-shadow: none;
-				color: #047857;
-				font-weight: 600;
-			}
-			
-			.action-buttons {
-				display: flex;
-				gap: 15px;
 				justify-content: center;
-				margin: 20px 0;
-				flex-wrap: wrap;
-			}
-			
-			.status-bar {
-				background: rgba(34, 197, 94, 0.15);
-				border-radius: 8px;
-				padding: 10px 20px;
-				margin: 15px auto 0;
-				max-width: 400px;
-				font-size: 16px;
-				word-break: break-word;
-			}
-			
-			.status-text {
-				color: #065f46;
-				font-weight: 600;
-				overflow-wrap: break-word;
-			}
-
-			/* 图表容器样式 */
-			.chart-container {
-				width: 90%;
-				max-width: 1400px;
-				margin: 0 auto 20px;
-				background: rgba(255, 255, 255, 0.9);
-				border-radius: 20px;
-				padding: 20px;
-				box-shadow: 0 8px 32px rgba(102, 126, 234, 0.1);
-				border: 1px solid rgba(102, 126, 234, 0.1);
-				overflow-x: auto;
-			}
-			
-			.chart-content {
-				min-width: 300px;
-			}
-
-			.chart-header {
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-				margin-bottom: 20px;
-				flex-wrap: wrap;
 				gap: 15px;
-			}
-
-			.chart-header h3 {
-				margin: 0;
-				color: #374151;
-				font-size: 1.4rem;
-			}
-
-			.chart-controls {
-				display: flex;
-				flex-direction: column;
-				gap: 10px;
+				flex-wrap: wrap;
+				margin-top: 20px;
 			}
 			
-			.chart-controls-row {
-				display: flex;
-				align-items: center;
-				gap: 10px;
-				justify-content: center;
-			}
-
-			.indicator-select {
-				padding: 8px 12px;
-				border: 1px solid #d1d5db;
-				border-radius: 6px;
-				font-size: 14px;
-				background: white;
-				min-width: 150px;
-				max-width: 100%;
-			}
-
-			.chart-content {
-				position: relative;
-				background: white;
+		.lang-switch {
+			position: absolute;
+			top: 20px;
+			right: 20px;
+			background: rgba(255, 255, 255, 0.9);
+			border: 2px solid #10b981;
+			border-radius: 8px;
+			padding: 8px 16px;
+			cursor: pointer;
+			font-weight: 600;
+			color: #047857;
+			transition: all 0.2s ease;
+		}
+		
+		.lang-switch:hover {
+			background: #10b981;
+			color: white;
+		}
+			
+		.status-bar {
+			margin-top: 20px;
+			padding: 12px 20px;
+			background: rgba(255, 255, 255, 0.9);
+			border-radius: 12px;
+			max-width: 600px;
+			margin-left: auto;
+			margin-right: auto;
+			box-shadow: 0 2px 8px rgba(5, 150, 105, 0.15);
+			border: 1px solid rgba(5, 150, 105, 0.2);
+		}
+		
+		.status-text {
+			color: #047857;
+			font-weight: 600;
+		}			.btn {
+				padding: 12px 24px;
+				border: none;
 				border-radius: 12px;
-				padding: 20px;
-				min-height: 400px;
-				display: flex;
-				align-items: center;
-				justify-content: center;
+				font-size: 14px;
+				font-weight: 600;
+				cursor: pointer;
+				transition: all 0.3s ease;
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 			}
-
-			.chart-loading, .no-data-message {
-				text-align: center;
-				color: #6b7280;
-				font-size: 16px;
+			
+			.btn:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 			}
-
-			.loading-spinner {
-				font-size: 24px;
-				margin-bottom: 10px;
-			}
-
-			#trendChart {
-				max-width: 100%;
-				height: auto;
-				display: none;
-			}
-
-			.main-container {
+			
+		.btn-primary {
+			background: linear-gradient(135deg, #10b981, #059669);
+			color: white;
+		}
+		
+	
+	.btn-secondary {
+		background: linear-gradient(135deg, #059669, #047857);
+		color: white;
+	}			.chart-container {
+			background: rgba(255, 255, 255, 0.95);
+			border-radius: 20px;
+			padding: 20px;
+			box-shadow: 0 8px 32px rgba(5, 150, 105, 0.12);
+			border: 1px solid rgba(5, 150, 105, 0.15);
+	}
+	
+	.chart-content {
+		padding: 15px 5px;
+		min-height: 270px;
+		height: 270px;
+	}			#trendChart {
+			max-width: 100%;
+			height: auto;
+			display: none;
+		}			.main-container {
 				width: 90%;
 				max-width: 1400px;
 				margin: 0 auto;
@@ -167,240 +142,144 @@
 				align-items: start;
 			}
 			
-			/* Left Panel - Calendar */
-			.left-panel {
-				background: rgba(255, 255, 255, 0.9);
-				border-radius: 20px;
-				padding: 20px;
-				box-shadow: 0 8px 32px rgba(34, 197, 94, 0.1);
-				border: 1px solid rgba(34, 197, 94, 0.1);
-				display: flex;
-				flex-direction: column;
-				height: 500px;
-			}
-			
-			.calendar-header {
-				text-align: center;
-				margin-bottom: 10px;
-			}
-			
-			.calendar-title {
-				font-size: 1.2rem;
-				font-weight: 700;
-				color: #15803d;
-				margin-bottom: 5px;
-			}
-			
-			.calendar-nav {
+		/* Left Panel - Calendar */
+		.left-panel {
+			background: rgba(255, 255, 255, 0.95);
+			border-radius: 20px;
+			padding: 20px;
+			box-shadow: 0 8px 32px rgba(5, 150, 105, 0.12);
+			border: 1px solid rgba(5, 150, 105, 0.15);
+			display: flex;
+			flex-direction: column;
+			height: 500px;
+		}
+		
+		.calendar-header {
+			text-align: center;
+			margin-bottom: 10px;
+		}
+		
+		.calendar-title {
+			font-size: 1.2rem;
+			font-weight: 700;
+			color: #047857;
+			margin-bottom: 5px;
+		}			.calendar-nav {
 				display: flex;
 				justify-content: space-between;
 				align-items: center;
 				margin-bottom: 15px;
 			}
 			
-			.nav-btn {
-				background: linear-gradient(135deg, #22c55e, #16a34a);
-				color: white;
-				border: none;
-				padding: 8px 12px;
-				border-radius: 8px;
-				cursor: pointer;
-				font-weight: 600;
-			}
-			
-			.nav-btn:hover {
-				background: linear-gradient(135deg, #16a34a, #15803d);
-			}
-			
-			.month-year {
-				font-weight: 600;
-				color: #166534;
-			}
-			
-			.calendar-grid {
+		.nav-btn {
+			background: linear-gradient(135deg, #10b981, #059669);
+			color: white;
+			border: none;
+			padding: 6px 12px;
+			border-radius: 8px;
+			cursor: pointer;
+			font-size: 0.9rem;
+			font-weight: 600;
+			transition: all 0.2s ease;
+		}
+		
+		.nav-btn:hover {
+			transform: scale(1.05);
+			box-shadow: 0 4px 8px rgba(5, 150, 105, 0.3);
+		}
+		
+		.current-month {
+			font-size: 1.1rem;
+			font-weight: 700;
+			color: #047857;
+		}			.calendar-weekdays {
 				display: grid;
 				grid-template-columns: repeat(7, 1fr);
-				gap: 3px;
-				margin-bottom: 10px;
-				flex-shrink: 0;
+				gap: 5px;
+				margin-bottom: 5px;
 			}
 			
-			.calendar-day-header {
-				text-align: center;
-				font-weight: 600;
-				color: #15803d;
-				padding: 4px 2px;
-				font-size: 11px;
+		.weekday {
+			text-align: center;
+			font-size: 0.75rem;
+			font-weight: 600;
+			color: #059669;
+			padding: 4px 0;
+		}			.calendar-grid {
+				display: grid;
+				grid-template-columns: repeat(7, 1fr);
+				gap: 5px;
+				flex: 1;
+				align-content: start;
 			}
 			
-			.calendar-day {
-				aspect-ratio: 1;
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				justify-content: center;
-				border: 1px solid #e5e7eb;
-				border-radius: 4px;
-				cursor: pointer;
-				transition: all 0.3s ease;
+	.calendar-day {
+		aspect-ratio: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 8px;
+		font-size: 0.85rem;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		background: #d1fae5;
+		color: #064e3b;
+		font-weight: 500;
+		position: relative;
+	}		.calendar-day:hover {
+			background: #a7f3d0;
+			transform: scale(1.05);
+		}
+		
+		.calendar-day.other-month {
+			color: #6ee7b7;
+			opacity: 0.5;
+		}
+		
+		.calendar-day.today {
+			background: linear-gradient(135deg, #10b981, #059669);
+			color: white;
+			font-weight: 700;
+			box-shadow: 0 2px 8px rgba(5, 150, 105, 0.4);
+		}
+		
+		.calendar-day.has-data::after {
+			content: '';
+			position: absolute;
+			bottom: 2px;
+			width: 4px;
+			height: 4px;
+			background: #059669;
+			border-radius: 50%;
+		}			.calendar-day.today.has-data::after {
 				background: white;
-				position: relative;
-				font-size: 13px;
-				padding: 2px;
 			}
-			
-			.calendar-day:hover {
-				background: #f0fdf4;
-				border-color: #22c55e;
-			}
-			
-			.calendar-day.today {
-				background: linear-gradient(135deg, #22c55e, #16a34a);
-				color: white;
-				font-weight: bold;
-			}
-			
-			.calendar-day.other-month {
-				color: #9ca3af;
-				background: #f9fafb;
-			}
-			
-			.calendar-day.has-data {
-				background: linear-gradient(135deg, #bbf7d0, #86efac);
-				border-color: #22c55e;
-			}
-			
-			.data-count {
-				font-size: 10px;
-				background: #dc2626;
-				color: white;
-				border-radius: 50%;
-				width: 16px;
-				height: 16px;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				position: absolute;
-				top: -2px;
-				right: -2px;
-				font-weight: bold;
-			}
-			
 
-			.file-time {
-				color: #6b7280;
-				font-size: 11px;
-			}
-			
-			.no-data {
-				text-align: center;
-				color: #6b7280;
-				padding: 20px;
-				font-style: italic;
-			}
-			
 			/* Right Panel - Data Collection */
 			.right-panel {
 				background: rgba(255, 255, 255, 0.9);
 				border-radius: 20px;
-				padding: 0;
-				box-shadow: 0 8px 32px rgba(34, 197, 94, 0.1);
-				border: 1px solid rgba(34, 197, 94, 0.1);
-				display: flex;
-				flex-direction: column;
-				overflow: hidden;
-				height: 500px;
-			}
-			
-			.page-header {
-				text-align: center;
-				margin-bottom: 20px;
-				flex-shrink: 0;
-			}
-			
-			.page-title {
-				background: linear-gradient(135deg, #22c55e, #15803d);
-				-webkit-background-clip: text;
-				-webkit-text-fill-color: transparent;
-				background-clip: text;
-				font-size: clamp(1.5rem, 3vw, 1.8rem);
-				font-weight: 700;
-				margin-bottom: 8px;
-			}
-			
-			.page-subtitle {
-				color: #15803d;
-				font-size: 13px;
-				background: linear-gradient(135deg, #f0fdf4, #dcfce7);
-				padding: 8px 16px;
-				border-radius: 20px;
-				border: 1px solid #bbf7d0;
-				display: inline-block;
-			}
-			
-			/* 滚动指标选择器样式 */
-			.indicators-scroll-container {
-				display: flex;
-				flex-direction: column;
-				background: rgba(248, 250, 252, 0.8);
-				border-radius: 15px;
-				border: 1px solid rgba(34, 197, 94, 0.1);
-				height: 100%;
-				min-height: 300px;
-				overflow: hidden;
-			}
-			
-			.scroll-header {
-				background: white;
-				padding: 15px;
-				border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-				text-align: center;
-				border-radius: 12px 12px 0 0;
-			}
-			
-			.scroll-header h3 {
-				margin: 0 0 5px 0;
-				color: #374151;
-				font-size: 1.2rem;
-				font-weight: bold;
-			}
-			
-			.scroll-hint {
-				font-size: 0.85rem;
-				color: #6b7280;
-				margin: 0;
-			}
-			
-			.scroll-hint {
-				font-size: 0.8rem;
-				color: #059669;
-			}
-			
-			.indicators-scroll-wrapper {
-				flex: 1;
+				padding: 30px;
+				box-shadow: 0 8px 32px rgba(5, 150, 105, 0.15);
+				border: 1px solid rgba(5, 150, 105, 0.15);
+				max-height: 500px;
 				overflow-y: auto;
-				overflow-x: hidden;
-				padding: 8px;
-				-webkit-overflow-scrolling: touch; /* iOS平滑滚动 */
-				min-height: 200px;
 			}
 			
-			.indicator-item {
-				background: white;
-				border: 1px solid #e5e7eb;
-				border-radius: 8px;
-				padding: 12px;
-				margin-bottom: 8px;
-				transition: all 0.2s ease;
-				box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+			.section-title {
+				font-size: 1.5rem;
+				font-weight: 700;
+				color: #065f46;
+				margin-bottom: 20px;
+				padding-bottom: 10px;
+				border-bottom: 2px solid #6ee7b7;
 			}
 			
-			.indicator-item:hover {
-				border-color: #22c55e;
-				box-shadow: 0 2px 8px rgba(34, 197, 94, 0.1);
+			.indicator-group {
+				margin-bottom: 20px;
 			}
 			
-			.indicator-header {
+			.indicator-label {
 				display: flex;
 				justify-content: space-between;
 				align-items: center;
@@ -409,270 +288,245 @@
 			
 			.indicator-name {
 				font-weight: 600;
-				color: #374151;
-				font-size: 0.9rem;
+				color: #064e3b;
+				font-size: 0.95rem;
 			}
 			
 			.indicator-value-display {
-				display: flex;
-				align-items: center;
-				gap: 5px;
-				font-size: 0.85rem;
-				color: #059669;
-				font-weight: 600;
+				font-weight: 700;
+				color: #065f46;
+				font-size: 0.95rem;
 			}
 			
-			.indicator-controls {
-				display: block;
-				margin-top: 8px;
+			.slider-container {
+				position: relative;
 			}
 			
-			.control-range {
+			input[type="range"] {
 				width: 100%;
-				height: 6px;
-				border-radius: 3px;
-				background: linear-gradient(to right, #dcfce7, #22c55e);
+				height: 8px;
+				border-radius: 5px;
+				background: linear-gradient(to right, #d1fae5, #6ee7b7);
 				outline: none;
 				-webkit-appearance: none;
-				appearance: none;
 			}
 			
-			.control-range::-webkit-slider-thumb {
+			input[type="range"]::-webkit-slider-thumb {
+				-webkit-appearance: none;
 				appearance: none;
-				width: 16px;
-				height: 16px;
+				width: 20px;
+				height: 20px;
 				border-radius: 50%;
-				background: #22c55e;
+				background: linear-gradient(135deg, #10b981, #059669);
 				cursor: pointer;
-				box-shadow: 0 2px 4px rgba(34, 197, 94, 0.3);
+				box-shadow: 0 2px 6px rgba(5, 150, 105, 0.4);
 			}
 			
-			.control-range::-moz-range-thumb {
-				width: 16px;
-				height: 16px;
+			input[type="range"]::-moz-range-thumb {
+				width: 20px;
+				height: 20px;
 				border-radius: 50%;
-				background: #22c55e;
+				background: linear-gradient(135deg, #10b981, #059669);
 				cursor: pointer;
 				border: none;
-				box-shadow: 0 2px 4px rgba(34, 197, 94, 0.3);
+				box-shadow: 0 2px 6px rgba(5, 150, 105, 0.4);
 			}
-			
-			.btn {
-				padding: 10px 20px;
-				border: none;
-				border-radius: 20px;
-				font-weight: 600;
-				font-size: 13px;
-				cursor: pointer;
-				transition: all 0.3s ease;
-				display: flex;
-				align-items: center;
-				gap: 6px;
-				min-width: 120px;
-				justify-content: center;
+
+			.result {
+				margin-top: 30px;
+				padding: 20px;
+				background: rgba(209, 250, 229, 0.5);
+				border-radius: 12px;
+				border: 1px solid #a7f3d0;
 			}
-			
-			.btn-primary {
-				background: linear-gradient(135deg, #22c55e, #16a34a);
-				color: white;
-				box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+
+			/* Chart Controls */
+			.chart-controls {
+				margin-bottom: 20px;
+				padding: 15px;
+				background: rgba(209, 250, 229, 0.4);
+				border-radius: 12px;
 			}
-			
-			.btn-primary:hover {
-				background: linear-gradient(135deg, #16a34a, #15803d);
-				transform: translateY(-2px);
-				box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
-			}
-			
-			.btn-secondary {
+
+	.chart-controls-row {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 10px;
+		margin-bottom: 15px;
+	}
+
+	.chart-controls-row:last-child {
+		margin-bottom: 0;
+	}
+	
+	.chart-controls-row.time-controls {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 15px;
+	}
+	
+	.chart-controls-row.time-controls > div {
+		flex: 2;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 10px;
+	}
+	
+	.indicator-select {
+		flex: 0 0 200px;
+		max-width: 200px;
+	}			.chart-controls-row button {
 				background: linear-gradient(135deg, #10b981, #059669);
 				color: white;
-				box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+				border: none;
+				padding: 8px 16px;
+				border-radius: 8px;
+				cursor: pointer;
+				font-size: 13px;
+				font-weight: 600;
+				transition: all 0.2s ease;
 			}
-			
-			.btn-secondary:hover {
-				background: linear-gradient(135deg, #059669, #047857);
-				transform: translateY(-2px);
+
+			.chart-controls-row button:hover {
+				transform: scale(1.05);
+				box-shadow: 0 4px 8px rgba(5, 150, 105, 0.3);
 			}
-			
+
+		.chart-controls-row span {
+			font-size: 14px;
+			font-weight: 600;
+			color: #065f46;
+			min-width: 120px;
+			text-align: center;
+		}			.indicator-select {
+				padding: 8px 12px;
+				border: 2px solid #6ee7b7;
+				border-radius: 8px;
+				font-size: 13px;
+				color: #064e3b;
+				background: white;
+				cursor: pointer;
+				transition: all 0.2s ease;
+			}
+
+			.indicator-select:focus {
+				outline: none;
+				border-color: #10b981;
+				box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+			}
+
+			.loading-overlay {
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background: rgba(255, 255, 255, 0.9);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				border-radius: 12px;
+				z-index: 10;
+			}
+
+		.loading-text {
+			font-size: 16px;
+			font-weight: 600;
+			color: #065f46;
+		}			.no-data-message {
+				text-align: center;
+				padding: 40px 20px;
+				color: #6b7280;
+				font-size: 14px;
+			}
+
 			/* Responsive Design */
-			@media (max-width: 1024px) {
+			@media (max-width: 768px) {
 				.main-container {
 					grid-template-columns: 1fr;
-					gap: 15px;
+				}
+				
+				.page-title {
+					font-size: 2rem;
 				}
 				
 				.left-panel {
-					order: 1;
 					height: auto;
-					max-height: 500px;
 				}
 				
 				.right-panel {
-					order: 2;
-					height: auto;
-					min-height: 400px;
+					max-height: none;
 				}
 			}
-			
-			@media (max-width: 768px) {
-				body {
-					padding: 5px;
-				}
-				
-				.page-header {
-					padding: 20px 10px;
-				}
-				
-				.page-title {
-					font-size: 1.8rem;
-					word-break: keep-all;
-				}
-				
-				.page-subtitle {
-					font-size: 11px;
-					padding: 6px 12px;
-				}
-				
-				.action-buttons {
-					gap: 8px;
-					flex-wrap: wrap;
-				}
-				
-				.btn {
-					font-size: 12px;
-					padding: 8px 12px;
-					white-space: nowrap;
-					flex: 1 1 auto;
-					min-width: 120px;
-				}
-				
-				.status-bar {
-					max-width: 90%;
-					font-size: 14px;
-					padding: 8px 15px;
-				}
-				
-				.main-container {
-					width: 100%;
-					padding: 5px;
-					gap: 10px;
-				}
-				
-				.chart-container {
-					width: 95%;
-					padding: 15px 10px;
-					margin: 0 auto 15px;
-				}
-				
-			.left-panel, .right-panel {
-				padding: 12px;
-				height: auto;
-				border-radius: 12px;
+
+		@media (max-width: 768px) {
+			.main-container {
+				width: 98%;
+				padding: 10px;
 			}
 			
-			.left-panel {
-				min-height: 300px;
-				max-height: none;
-				overflow-y: visible;
-				overflow-x: visible;
-			}
-			
-			.right-panel {
-				min-height: 350px;
-				max-height: 500px;
-				overflow-y: auto;
-				overflow-x: hidden;
-			}				.calendar-day {
-					font-size: 11px;
-				}
-				
-				.indicator-item {
-					padding: 8px;
-				}
-				
-				.indicator-name {
-					font-size: 12px;
-				}
-				
-				.control-range {
-					height: 6px;
-				}
-				
 			.chart-container {
-				width: 90%;
-				padding: 12px 8px;
+				padding: 20px 15px;
+		margin: 0;
+		}
+		
+	.chart-content {
+		padding: 15px 5px;
+		min-height: 200px;
+		height: 200px;
+	}
+	}			@media (max-width: 480px) {
+			.page-title {
+				font-size: 1.5rem;
 			}
 			
-			.chart-header {
-				flex-direction: column;
-				gap: 8px;
-				align-items: stretch;
-			}
-			
-			.chart-content {
-				padding: 10px 5px;
-				min-height: 100px;
-			}
-			
-			.chart-controls-row {
-				gap: 6px;
+			.page-subtitle {
 				font-size: 12px;
-			}				.chart-controls-row label {
-					font-size: 11px;
-					margin: 0;
-				}
-				
-				.chart-controls-row button {
-					font-size: 11px;
-					padding: 6px 10px;
-					white-space: nowrap;
-				}
-				
-				.chart-controls-row span {
-					font-size: 12px !important;
-					margin: 0 8px !important;
-				}
-				
-				.indicator-select {
-					max-width: 140px;
-					font-size: 11px;
-					padding: 6px 8px;
-				}
+			}			.btn {
+				font-size: 11px;
+				padding: 6px 10px;
 			}
 			
-			@media (max-width: 480px) {
-				.page-title {
-					font-size: 1.5rem;
-				}
-				
-				.btn {
-					font-size: 11px;
-					padding: 6px 10px;
-				}
-				
-				.chart-container {
-					width: 95%;
-					padding: 10px 5px;
-				}
-				
-			.chart-content {
-				padding: 8px 3px;
-				min-height: 180px;
+			.main-container {
+				width: 100%;
+				padding: 5px;
 			}
 			
-			.chart-controls-row button {
+		.chart-container {
+			width: 100%;
+		padding: 15px 10px;
+		margin: 0;
+	}		.chart-content {
+		padding: 10px 5px;
+		min-height: 240px;
+		height: 240px;
+	}			.chart-controls-row button {
+			font-size: 10px;
+			padding: 5px 8px;
+		}				.chart-controls-row span {
+				font-size: 11px !important;
+				margin: 0 5px !important;
+			}
+			
+			.chart-controls-row.time-controls {
+				flex-direction: column;
+				gap: 10px;
+			}
+			
+			.chart-controls-row.time-controls > div {
+				flex: none;
+				width: 100%;
+			}
+			
+			.indicator-select {
+				flex: none;
+				max-width: 100%;
+				width: 100%;
 				font-size: 10px;
-				padding: 5px 8px;
-			}				.chart-controls-row span {
-					font-size: 11px !important;
-					margin: 0 5px !important;
-				}
-				
-				.indicator-select {
-					max-width: 120px;
-					font-size: 10px;
-				}
+			}
 				
 				.left-panel {
 					overflow-y: visible;
@@ -705,501 +559,666 @@
 		</style>
 	</head>
 	<body>
-		<!-- 页面顶部标题 -->
+		<!-- Page Header -->
 		<div class="page-header">
-			<h1 class="page-title">🌱 得希表型采集系统</h1>
-			<p class="page-subtitle">使用本系统记录和管理植物表型数据，助力精准农业研究与分析。</p>			
+			<button class="lang-switch" id="langSwitch">EN</button>
+			<h1 class="page-title" data-lang="title">🌱 得希表型采集系统</h1>
+			<p class="page-subtitle" data-lang="subtitle">使用本系统记录和管理植物表型数据，助力精准农业研究与分析。</p>			
 			<div class="action-buttons">
-				<button type="button" class="btn btn-primary" id="submitBtn">📥 导出 CSV</button>
-				<button type="button" class="btn btn-secondary" id="dropboxBtn">☁️ 同步到云端</button>
-				<button type="button" class="btn btn-primary" id="authBtn" style="display:none;">🔗 连接 Dropbox</button>
+				<button type="button" class="btn btn-primary" id="submitBtn" data-lang="exportBtn">📥 导出 CSV</button>
+				<button type="button" class="btn btn-secondary" id="syncBtn" data-lang="syncBtn">☁️ 同步到云端</button>
+				<button type="button" class="btn btn-primary" id="authBtn" style="display:none;" data-lang="authBtn">🔗 登录</button>
 			</div>
 			
 			<div class="status-bar">
-				<div class="status-text">状态：<span id="status">系统就绪</span></div>
+				<div class="status-text"><span data-lang="statusLabel">状态：</span><span id="status" data-lang="statusReady">系统就绪</span></div>
 			</div>
 		</div>
 		
 		<div class="main-container">
-			<!-- Left Panel - Calendar and Statistics -->
+			<!-- Left Panel - Calendar -->
 			<div class="left-panel">
 				<div class="calendar-header">
-					<div class="calendar-title">📅 采集历史</div>
+					<h2 class="calendar-title" data-lang="calendarTitle">📅 采集日历</h2>
 					<div class="calendar-nav">
-						<button class="nav-btn" onclick="changeMonth(-1)">←</button>
-						<span class="month-year" id="monthYear">2025年11月</span>
-						<button class="nav-btn" onclick="changeMonth(1)">→</button>
+						<button class="nav-btn" id="prevCalMonth">◀</button>
+						<span class="current-month" id="currentCalMonth">2025年1月</span>
+						<button class="nav-btn" id="nextCalMonth">▶</button>
 					</div>
 				</div>
-				
-				<div class="calendar-grid" id="calendarGrid">
-					<!-- Calendar will be generated by JavaScript -->
+				<div class="calendar-weekdays" id="calendarWeekdays">
+					<div class="weekday">日</div>
+					<div class="weekday">一</div>
+					<div class="weekday">二</div>
+					<div class="weekday">三</div>
+					<div class="weekday">四</div>
+					<div class="weekday">五</div>
+					<div class="weekday">六</div>
 				</div>
+				<div class="calendar-grid" id="calendarGrid"></div>
 			</div>
-			
-			<!-- Right Panel - Data Collection Form -->
+
+			<!-- Right Panel - Data Input -->
 			<div class="right-panel">
-				<!-- 滚动指标选择器 -->
-				<div class="indicators-scroll-container">
-					<div class="scroll-header">
-						<h3>📊 指标采集</h3>
-						<div class="scroll-hint">滑动调整各项指标数值</div>
-					</div>
-					
-					<div class="indicators-scroll-wrapper" id="indicatorsScroll">
-						<!-- 指标项将通过JavaScript动态生成 -->
-					</div>
-				</div>
-				
-				<!-- 隐藏的数据表单 -->
-				<form id="dataForm" style="display: none;">
-					<input type="hidden" name="growth_cm" value="100">
-					<input type="hidden" name="stem_mm" value="25">
-					<input type="hidden" name="leaf_count" value="50">
-					<input type="hidden" name="leaf_length_cm" value="25">
-					<input type="hidden" name="leaf_width_cm" value="15">
-					<input type="hidden" name="potential_flower_count" value="10">
-					<input type="hidden" name="current_flower_order" value="7">
-					<input type="hidden" name="accum_ear_count" value="25">
-					<input type="hidden" name="accum_grain_count" value="250">
-					<input type="hidden" name="yield_kg_m2" value="50">
-					<input type="hidden" name="single_grain_g" value="25">
-					<input type="hidden" name="total_harvest_ear_count" value="15">
-					<input type="hidden" name="total_harvest_grain_g" value="1000">
-					<input type="hidden" name="ear_weight_g" value="100">
-					<input type="hidden" name="single_head_yield_g" value="500">
-					<input type="hidden" name="brix" value="15">
-					<input type="hidden" name="acidity" value="1">
-					<input type="hidden" name="cracking_rate" value="25">
-					<input type="hidden" name="irrigation_ml" value="2500">
-					<input type="hidden" name="reflux_ml" value="1500">
-					<input type="hidden" name="reflux_ec" value="5">
-					<input type="hidden" name="reflux_ph" value="7">
+				<h2 class="section-title" data-lang="dataCollection">📊 指标采集</h2>
+				<form id="dataForm">
+					<!-- Indicators will be dynamically generated here -->
 				</form>
-				
-				<!-- Debug Info Section -->
-				<div id="debugInfo" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin: 10px 0; font-family: monospace; font-size: 12px; display: none;">
-					<div style="font-weight: bold; color: #374151; margin-bottom: 10px;">🔧 调试信息</div>
-					<div id="debugContent"></div>
-					<button onclick="document.getElementById('debugInfo').style.display='none'" style="background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; margin-top: 10px; cursor: pointer;">关闭</button>
-				</div>
 			</div>
 		</div>
 
-		<!-- 图表分析区域 -->
-		<div class="chart-container">
-			<div class="chart-header">
-				<h3>📈 趋势分析</h3>
+		<!-- Trend Analysis Chart -->
+		<div class="main-container" style="margin-top: 20px;">
+			<div class="chart-container" style="grid-column: 1 / -1;">
+				<h2 class="section-title" data-lang="trendAnalysis">📈 趋势分析</h2>
 				<div class="chart-controls">
-					<div class="chart-controls-row">
-						<button id="prevMonth" class="btn btn-secondary">← 上月</button>
-						<span id="chartMonthDisplay" style="margin: 0 15px; font-weight: 600; color: #374151;">2025年11月</span>
-						<button id="nextMonth" class="btn btn-secondary">下月 →</button>
-					</div>
-					<div class="chart-controls-row">
-						<label for="indicatorSelect">选择指标：</label>
+					<div class="chart-controls-row time-controls">
+						<div>
+							<button type="button" id="prevMonth" data-lang="prevMonth">◀ 上月</button>
+							<span id="chartMonthDisplay">2025年1月</span>
+							<button type="button" id="nextMonth" data-lang="nextMonth">下月 ▶</button>
+						</div>
 						<select id="indicatorSelect" class="indicator-select">
+							<option value="" data-lang="selectIndicator">选择指标...</option>
 						</select>
 					</div>
 				</div>
-			</div>
-			<div class="chart-content">
-				<canvas id="trendChart" width="800" height="400"></canvas>
-				<div id="chartLoading" class="chart-loading" style="display: none;">
-					<div class="loading-spinner">⏳</div>
-					<div>正在加载数据...</div>
-				</div>
-				<div id="noDataMessage" class="no-data-message" style="display: none;">
-					📊 请选择指标查看过去30天的变化趋势
+				<div class="chart-content" style="position: relative;">
+					<canvas id="trendChart" width="800" height="400"></canvas>
+					<div id="loadingOverlay" class="loading-overlay" style="display: none;">
+						<div class="loading-text" data-lang="loading">加载中...</div>
+					</div>
+					<div id="noDataMessage" class="no-data-message" style="display: none;" data-lang="noData">
+						暂无数据
+					</div>
 				</div>
 			</div>
 		</div>
 
-		<div class="result" id="csvPreview" style="white-space:pre-wrap;display:none"></div>
-
 		<script>
-			// 指标数据定义
-			const indicators = [
-				{name: '生长量', unit: 'cm', min: 0, max: 200, step: 0.1, value: 0, field: 'growth_cm'},
-				{name: '茎粗', unit: 'mm', min: 0, max: 50, step: 0.1, value: 0, field: 'stem_mm'},
-				{name: '叶片数', unit: '个', min: 0, max: 100, step: 1, value: 0, field: 'leaf_count'},
-				{name: '叶长', unit: 'cm', min: 0, max: 50, step: 0.1, value: 0, field: 'leaf_length_cm'},
-				{name: '叶宽', unit: 'cm', min: 0, max: 30, step: 0.1, value: 0, field: 'leaf_width_cm'},
-				{name: '潜力开花数', unit: '串', min: 0, max: 20, step: 1, value: 0, field: 'potential_flower_count'},
-				{name: '当前开花序数', unit: '串', min: 0, max: 15, step: 1, value: 0, field: 'current_flower_order'},
-				{name: '单头累计坐果穗数', unit: '个', min: 0, max: 50, step: 1, value: 0, field: 'accum_ear_count'},
-				{name: '单头累计坐果粒数', unit: '个', min: 0, max: 500, step: 1, value: 0, field: 'accum_grain_count'},
-				{name: '单位产量', unit: 'kg/㎡', min: 0, max: 100, step: 0.1, value: 0, field: 'yield_kg_m2'},
-				{name: '单粒果重', unit: 'g', min: 0, max: 50, step: 0.1, value: 0, field: 'single_grain_g'},
-				{name: '单头总采收果穗数', unit: '个', min: 0, max: 30, step: 1, value: 0, field: 'total_harvest_ear_count'},
-				{name: '单头总采收果粒数', unit: 'g', min: 0, max: 2000, step: 1, value: 0, field: 'total_harvest_grain_g'},
-				{name: '单穗重', unit: 'g', min: 0, max: 200, step: 0.1, value: 0, field: 'ear_weight_g'},
-				{name: '单头产量', unit: 'g', min: 0, max: 1000, step: 1, value: 0, field: 'single_head_yield_g'},
-				{name: '可溶性固形物', unit: '°Brix', min: 0, max: 30, step: 0.1, value: 0, field: 'brix'},
-				{name: '酸度', unit: '', min: 0, max: 2, step: 0.01, value: 0, field: 'acidity'},
-				{name: '裂果率', unit: '%', min: 0, max: 50, step: 0.1, value: 0, field: 'cracking_rate'},
-				{name: '灌溉量', unit: 'ml', min: 0, max: 5000, step: 10, value: 0, field: 'irrigation_ml'},
-				{name: '回液量', unit: 'ml', min: 0, max: 3000, step: 10, value: 0, field: 'reflux_ml'},
-				{name: '回液EC', unit: 'mS/cm', min: 0, max: 10, step: 0.1, value: 0, field: 'reflux_ec'},
-				{name: '回液PH', unit: 'pH', min: 0, max: 14, step: 0.1, value: 0, field: 'reflux_ph'}
+		// ====================================
+		// LANGUAGE CONFIGURATION
+		// ====================================
+		let currentLang = 'zh';
+		
+		const translations = {
+			zh: {
+				title: '🌱 得希表型采集系统',
+				subtitle: '使用本系统记录和管理植物表型数据，助力精准农业研究与分析。',
+				exportBtn: '📥 导出 CSV',
+				syncBtn: '☁️ 同步到云端',
+				authBtn: '🔗 登录',
+				statusLabel: '状态：',
+				statusReady: '系统就绪',
+				calendarTitle: '📅 采集日历',
+				dataCollection: '📊 指标采集',
+				trendAnalysis: '📈 趋势分析',
+				prevMonth: '◀ 上月',
+				nextMonth: '下月 ▶',
+				selectIndicator: '选择指标...',
+				loading: '加载中...',
+				noData: '暂无数据',
+				weekdays: ['日', '一', '二', '三', '四', '五', '六'],
+				indicators: {
+					growth_cm: '生长量',
+					stem_mm: '茎粗',
+					leaf_count: '叶片数',
+					leaf_length_cm: '叶长',
+					leaf_width_cm: '叶宽',
+					potential_flower_count: '潜在花数',
+					current_flower_order: '当前花序',
+					accum_ear_count: '累计穗数',
+					accum_grain_count: '累计粒数',
+					yield_kg_m2: '产量',
+					single_grain_g: '单粒重',
+					total_harvest_ear_count: '总收获穗数',
+					total_harvest_grain_g: '总收获粒重',
+					ear_weight_g: '穗重',
+					single_head_yield_g: '单头产量',
+					brix: '糖度',
+					acidity: '酸度',
+					cracking_rate: '裂果率',
+					irrigation_ml: '灌溉量',
+					reflux_ml: '回流量',
+					reflux_ec: '回流EC',
+					reflux_ph: '回流pH'
+				}
+			},
+			en: {
+				title: '🌱 Dexi Phenotype Collection System',
+				subtitle: 'Record and manage plant phenotype data for precision agriculture research and analysis.',
+				exportBtn: '📥 Export CSV',
+				syncBtn: '☁️ Sync to Cloud',
+				authBtn: '🔗 Login',
+				statusLabel: 'Status: ',
+				statusReady: 'System Ready',
+				calendarTitle: '📅 Collection Calendar',
+				dataCollection: '📊 Data Collection',
+				trendAnalysis: '📈 Trend Analysis',
+				prevMonth: '◀ Prev',
+				nextMonth: 'Next ▶',
+				selectIndicator: 'Select Indicator...',
+				loading: 'Loading...',
+				noData: 'No Data',
+				weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+				indicators: {
+					growth_cm: 'Growth',
+					stem_mm: 'Stem Diameter',
+					leaf_count: 'Leaf Count',
+					leaf_length_cm: 'Leaf Length',
+					leaf_width_cm: 'Leaf Width',
+					potential_flower_count: 'Potential Flowers',
+					current_flower_order: 'Current Flower Order',
+					accum_ear_count: 'Accumulated Ears',
+					accum_grain_count: 'Accumulated Grains',
+					yield_kg_m2: 'Yield',
+					single_grain_g: 'Single Grain Weight',
+					total_harvest_ear_count: 'Total Harvest Ears',
+					total_harvest_grain_g: 'Total Harvest Grain Weight',
+					ear_weight_g: 'Ear Weight',
+					single_head_yield_g: 'Single Head Yield',
+					brix: 'Brix',
+					acidity: 'Acidity',
+					cracking_rate: 'Cracking Rate',
+					irrigation_ml: 'Irrigation',
+					reflux_ml: 'Reflux',
+					reflux_ec: 'Reflux EC',
+					reflux_ph: 'Reflux pH'
+				}
+			}
+		};
+		
+		function switchLanguage() {
+			currentLang = currentLang === 'zh' ? 'en' : 'zh';
+			document.getElementById('langSwitch').textContent = currentLang === 'zh' ? 'EN' : '中文';
+			updateLanguage();
+		}
+		
+		function updateLanguage() {
+			const lang = translations[currentLang];
+			
+			// Update all elements with data-lang attribute
+			document.querySelectorAll('[data-lang]').forEach(el => {
+				const key = el.getAttribute('data-lang');
+				if (lang[key]) {
+					el.textContent = el.textContent.replace(/[^🌱📅📊📈📥☁️🔗◀▶]/g, '') + lang[key].replace(/[🌱📅📊📈📥☁️🔗◀▶]/g, '');
+				}
+			});
+			
+			// Update weekdays
+			const weekdayElements = document.querySelectorAll('#calendarWeekdays .weekday');
+			weekdayElements.forEach((el, index) => {
+				el.textContent = lang.weekdays[index];
+			});
+			
+			// Update title
+			document.title = lang.title;
+			
+			// Refresh indicators with new language
+			indicators = getIndicators();
+			
+			// Regenerate form with new language
+			generateForm();
+			
+			// Update chart indicator dropdown
+			updateChartIndicators();
+			
+			// Update chart month display
+			updateChartMonthDisplay();
+			generateCalendar(currentCalDate.getFullYear(), currentCalDate.getMonth());
+		}
+		
+		// ====================================
+		// SUPABASE CONFIGURATION
+		// ====================================
+		const SUPABASE_URL = 'https://fnahnjojeiwclyixcyia.supabase.co';
+		const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZuYWhuam9qZWl3Y2x5aXhjeWlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI0NDQxMDksImV4cCI6MjA3ODAyMDEwOX0.7ftrvq8MAsAepwrRll0lcHDkXBt7MClgIgXsBn2KED8';
+		
+		// Initialize Supabase client
+		const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+		// ====================================
+		// DATA CONFIGURATION
+		// ====================================
+			const indicatorsConfig = [
+				{field:'growth_cm', unit:'cm', unitEn:'cm', min:0, max:200, step:0.1, defaultValue:0},
+				{field:'stem_mm', unit:'mm', unitEn:'mm', min:0, max:100, step:0.1, defaultValue:0},
+				{field:'leaf_count', unit:'片', unitEn:'pcs', min:0, max:500, step:1, defaultValue:0},
+				{field:'leaf_length_cm', unit:'cm', unitEn:'cm', min:0, max:100, step:0.1, defaultValue:0},
+				{field:'leaf_width_cm', unit:'cm', unitEn:'cm', min:0, max:50, step:0.1, defaultValue:0},
+				{field:'potential_flower_count', unit:'朵', unitEn:'pcs', min:0, max:200, step:1, defaultValue:0},
+				{field:'current_flower_order', unit:'序', unitEn:'order', min:0, max:50, step:1, defaultValue:0},
+				{field:'accum_ear_count', unit:'穗', unitEn:'ears', min:0, max:100, step:1, defaultValue:0},
+				{field:'accum_grain_count', unit:'粒', unitEn:'grains', min:0, max:1000, step:1, defaultValue:0},
+				{field:'yield_kg_m2', unit:'kg/m²', unitEn:'kg/m²', min:0, max:50, step:0.01, defaultValue:0},
+				{field:'single_grain_g', unit:'g', unitEn:'g', min:0, max:10, step:0.001, defaultValue:0},
+				{field:'total_harvest_ear_count', unit:'穗', unitEn:'ears', min:0, max:100, step:1, defaultValue:0},
+				{field:'total_harvest_grain_g', unit:'g', unitEn:'g', min:0, max:5000, step:0.1, defaultValue:0},
+				{field:'ear_weight_g', unit:'g', unitEn:'g', min:0, max:500, step:0.1, defaultValue:0},
+				{field:'single_head_yield_g', unit:'g', unitEn:'g', min:0, max:200, step:0.1, defaultValue:0},
+				{field:'brix', unit:'°Bx', unitEn:'°Bx', min:0, max:30, step:0.1, defaultValue:0},
+				{field:'acidity', unit:'%', unitEn:'%', min:0, max:5, step:0.01, defaultValue:0},
+				{field:'cracking_rate', unit:'%', unitEn:'%', min:0, max:100, step:0.1, defaultValue:0},
+				{field:'irrigation_ml', unit:'ml', unitEn:'ml', min:0, max:10000, step:1, defaultValue:0},
+				{field:'reflux_ml', unit:'ml', unitEn:'ml', min:0, max:10000, step:1, defaultValue:0},
+				{field:'reflux_ec', unit:'mS/cm', unitEn:'mS/cm', min:0, max:10, step:0.01, defaultValue:0},
+				{field:'reflux_ph', unit:'pH', unitEn:'pH', min:0, max:14, step:0.01, defaultValue:0}
 			];
 			
-			// 获取北京时间（UTC+8）
+			// Get indicators with current language
+			function getIndicators() {
+				const lang = translations[currentLang];
+				return indicatorsConfig.map(ind => ({
+					...ind,
+					name: lang.indicators[ind.field],
+					unit: currentLang === 'zh' ? ind.unit : ind.unitEn
+				}));
+			}
+			
+			let indicators = getIndicators();
+
+			// Helper function to get Beijing time (UTC+8)
 			function getBeijingTime() {
 				const now = new Date();
-				// 获取UTC时间的毫秒数
 				const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
-				// 北京时间 = UTC + 8小时
 				const beijingTime = new Date(utcTime + (8 * 3600000));
 				return beijingTime;
 			}
 			
-		let currentIndicatorIndex = 0;
-		let trendChart = null;
-		let currentChartDate = getBeijingTime(); // 当前图表显示的月份
-		let currentTrendField = null; // 当前显示的趋势分析指标			// 初始化图表功能
-			async function initChart() {
-				// 填充指标选择下拉框
-				const indicatorSelect = document.getElementById('indicatorSelect');
+			let currentIndicatorIndex = 0;
+			let trendChart = null;
+			let currentChartDate = getBeijingTime();
+			let currentTrendField = null;
+			let currentCalDate = getBeijingTime();
+			let collectionData = {}; // {YYYY-MM-DD: count}
+			let currentUser = null;
+
+			// DOM Elements
+			const form = document.getElementById('dataForm');
+			const statusEl = document.getElementById('status');
+			const submitBtn = document.getElementById('submitBtn');
+			const syncBtn = document.getElementById('syncBtn');
+			const authBtn = document.getElementById('authBtn');
+
+			// ====================================
+			// AUTHENTICATION
+			// ====================================
+			async function initAuth() {
+				// Check if user is already logged in
+				const { data: { session } } = await supabase.auth.getSession();
+				
+				if (session) {
+					currentUser = session.user;
+					statusEl.textContent = '✅ 已登录';
+					syncBtn.style.display = 'inline-block';
+					authBtn.style.display = 'none';
+					await loadCollectionHistory();
+				} else {
+					statusEl.textContent = '请登录以同步数据';
+					syncBtn.style.display = 'none';
+					authBtn.style.display = 'inline-block';
+				}
+			}
+
+		async function signIn() {
+			// Email/password login
+			const email = prompt('请输入邮箱:');
+			const password = prompt('请输入密码:');
+			
+			if (!email || !password) return;
+			
+			statusEl.textContent = '正在登录...';
+			
+			// Try to sign in first
+			const { data, error } = await supabase.auth.signInWithPassword({
+				email: email,
+				password: password
+			});
+			
+			if (error) {
+				// If user doesn't exist, try to sign up
+				statusEl.textContent = '正在注册...';
+				const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+					email: email,
+					password: password
+				});
+				
+				if (signUpError) {
+					statusEl.textContent = '❌ 注册失败: ' + signUpError.message;
+					return;
+				}
+				
+				// Check if session is available (email confirmation disabled)
+				if (signUpData.session && signUpData.user) {
+					currentUser = signUpData.user;
+					statusEl.textContent = '✅ 注册成功并已登录';
+					
+					syncBtn.style.display = 'inline-block';
+					authBtn.style.display = 'none';
+					await loadCollectionHistory();
+				} else {
+					statusEl.textContent = '❌ 注册失败，请确保已禁用邮箱验证';
+					alert('请在 Supabase 控制台的 Authentication → Providers → Email 中禁用 "Confirm email" 选项');
+				}
+			} else {
+				// Successful login
+				currentUser = data.user;
+				statusEl.textContent = '✅ 登录成功';
+				
+				syncBtn.style.display = 'inline-block';
+				authBtn.style.display = 'none';
+				await loadCollectionHistory();
+			}
+		}			// ====================================
+			// FORM GENERATION
+			// ====================================
+			function generateForm() {
+				// Clear existing form
+				form.innerHTML = '';
+				
 				indicators.forEach((indicator, index) => {
+					const group = document.createElement('div');
+					group.className = 'indicator-group';
+					
+					const label = document.createElement('div');
+					label.className = 'indicator-label';
+					
+					const nameSpan = document.createElement('span');
+					nameSpan.className = 'indicator-name';
+					nameSpan.textContent = `${indicator.name} (${indicator.unit})`;
+					
+					const valueSpan = document.createElement('span');
+					valueSpan.className = 'indicator-value-display';
+					valueSpan.id = `value-${indicator.field}`;
+					valueSpan.textContent = indicator.defaultValue;
+					
+					label.appendChild(nameSpan);
+					label.appendChild(valueSpan);
+					
+					const sliderContainer = document.createElement('div');
+					sliderContainer.className = 'slider-container';
+					
+					const slider = document.createElement('input');
+					slider.type = 'range';
+					slider.name = indicator.field;
+					slider.min = indicator.min;
+					slider.max = indicator.max;
+					slider.step = indicator.step;
+					slider.value = indicator.defaultValue;
+					slider.id = `slider-${indicator.field}`;
+					
+					slider.addEventListener('input', (e) => {
+						valueSpan.textContent = e.target.value;
+					});
+					
+					sliderContainer.appendChild(slider);
+					group.appendChild(label);
+					group.appendChild(sliderContainer);
+					form.appendChild(group);
+				});
+			}
+
+			// ====================================
+			// CALENDAR
+			// ====================================
+			function generateCalendar(year, month) {
+				const grid = document.getElementById('calendarGrid');
+				grid.innerHTML = '';
+				
+				const firstDay = new Date(year, month, 1);
+				const lastDay = new Date(year, month + 1, 0);
+				const daysInMonth = lastDay.getDate();
+				const startingDayOfWeek = firstDay.getDay();
+				
+				const monthNames = currentLang === 'zh'
+					? ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+					: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+				const display = currentLang === 'zh'
+					? `${year}年${monthNames[month]}`
+					: `${monthNames[month]} ${year}`;
+				document.getElementById('currentCalMonth').textContent = display;
+				
+				const prevMonthDays = new Date(year, month, 0).getDate();
+				for (let i = startingDayOfWeek - 1; i >= 0; i--) {
+					const dayElement = document.createElement('div');
+					dayElement.className = 'calendar-day other-month';
+					dayElement.textContent = prevMonthDays - i;
+					grid.appendChild(dayElement);
+				}
+				
+				const today = getBeijingTime();
+				for (let day = 1; day <= daysInMonth; day++) {
+					const dayElement = document.createElement('div');
+					dayElement.className = 'calendar-day';
+					dayElement.textContent = day;
+					
+					if (year === today.getFullYear() && month === today.getMonth() && day === today.getDate()) {
+						dayElement.classList.add('today');
+					}
+					
+					const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+					if (collectionData[dateKey]) {
+						dayElement.classList.add('has-data');
+					}
+					
+					grid.appendChild(dayElement);
+				}
+				
+				const totalCells = startingDayOfWeek + daysInMonth;
+				const remainingCells = 7 - (totalCells % 7);
+				if (remainingCells < 7) {
+					for (let i = 1; i <= remainingCells; i++) {
+						const dayElement = document.createElement('div');
+						dayElement.className = 'calendar-day other-month';
+						dayElement.textContent = i;
+						grid.appendChild(dayElement);
+					}
+				}
+			}
+
+			document.getElementById('prevCalMonth').addEventListener('click', () => {
+				currentCalDate.setMonth(currentCalDate.getMonth() - 1);
+				generateCalendar(currentCalDate.getFullYear(), currentCalDate.getMonth());
+			});
+
+			document.getElementById('nextCalMonth').addEventListener('click', () => {
+				currentCalDate.setMonth(currentCalDate.getMonth() + 1);
+				generateCalendar(currentCalDate.getFullYear(), currentCalDate.getMonth());
+			});
+
+			// ====================================
+			// CHART FUNCTIONS
+			// ====================================
+			async function initChart() {
+				const indicatorSelect = document.getElementById('indicatorSelect');
+				indicators.forEach((indicator) => {
 					const option = document.createElement('option');
 					option.value = indicator.field;
 					option.textContent = `${indicator.name} (${indicator.unit})`;
 					indicatorSelect.appendChild(option);
 				});
 
-				// 绑定事件
-				indicatorSelect.addEventListener('change', handleIndicatorChange);
-				document.getElementById('prevMonth').addEventListener('click', () => changeChartMonth(-1));
-				document.getElementById('nextMonth').addEventListener('click', () => changeChartMonth(1));
+			indicatorSelect.addEventListener('change', handleIndicatorChange);
+			document.getElementById('prevMonth').addEventListener('click', () => changeChartMonth(-1));
+			document.getElementById('nextMonth').addEventListener('click', () => changeChartMonth(1));
 
-				// 更新月份显示
-				updateChartMonthDisplay();
-
-				// 默认选择并加载生长量数据
-				indicatorSelect.value = 'growth_cm';
+			updateChartMonthDisplay();
+			indicatorSelect.value = 'growth_cm';
+			// Load trend data after authentication
+			const { data: { session } } = await supabase.auth.getSession();
+			if (session) {
 				loadTrendData('growth_cm');
 			}
-
-			// 更新月份显示
-			function updateChartMonthDisplay() {
-				const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
-				const display = `${currentChartDate.getFullYear()}年${monthNames[currentChartDate.getMonth()]}`;
+		}			function updateChartMonthDisplay() {
+				const monthNames = currentLang === 'zh' 
+					? ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+					: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+				const display = currentLang === 'zh'
+					? `${currentChartDate.getFullYear()}年${monthNames[currentChartDate.getMonth()]}`
+					: `${monthNames[currentChartDate.getMonth()]} ${currentChartDate.getFullYear()}`;
 				document.getElementById('chartMonthDisplay').textContent = display;
 			}
-
-			// 切换图表显示的月份
-			async function changeChartMonth(direction) {
-				currentChartDate.setMonth(currentChartDate.getMonth() + direction);
-				updateChartMonthDisplay();
+			
+			function updateChartIndicators() {
+				const indicatorSelect = document.getElementById('indicatorSelect');
+				const currentValue = indicatorSelect.value;
 				
-				// 重新加载当前选择的指标
-				const selectedField = document.getElementById('indicatorSelect').value;
-				if (selectedField) {
-					loadTrendData(selectedField);
+				// Clear existing options
+				indicatorSelect.innerHTML = '';
+				
+				// Add new options with current language
+				indicators.forEach((indicator) => {
+					const option = document.createElement('option');
+					option.value = indicator.field;
+					option.textContent = `${indicator.name} (${indicator.unit})`;
+					indicatorSelect.appendChild(option);
+				});
+				
+				// Restore selected value
+				if (currentValue) {
+					indicatorSelect.value = currentValue;
 				}
 			}
 
-	// 处理指标选择变化
-	function handleIndicatorChange() {
-		const selectedField = document.getElementById('indicatorSelect').value;
-		if (selectedField) {
-			currentTrendField = selectedField; // 记录当前显示的指标
-			loadTrendData(selectedField);
-		} else {
-			currentTrendField = null;
-			showNoDataMessage();
+		async function changeChartMonth(direction) {
+			currentChartDate.setMonth(currentChartDate.getMonth() + direction);
+			updateChartMonthDisplay();
+			
+			const selectedField = document.getElementById('indicatorSelect').value;
+			if (selectedField) {
+				loadTrendData(selectedField);
+			}
 		}
-	}			// 加载趋势数据（直接从月度CSV文件加载）
-			async function loadTrendData(field) {
-				if (!accessToken) {
-					showNoDataMessage();
-					return;
-				}
-				
-				currentTrendField = field; // 记录当前显示的指标
-				showLoading(true);
-				
-				const year = currentChartDate.getFullYear();
-				const month = currentChartDate.getMonth();
-				const monthFileName = `${year}_${String(month + 1).padStart(2, '0')}.csv`;
-				const filePath = `/Plant_Data_Collection/${monthFileName}`;
-				
-				try {
-					// 下载月度CSV文件
-					const downloadResponse = await fetch('https://content.dropboxapi.com/2/files/download', {
-						method: 'POST',
-						headers: {
-							'Authorization': 'Bearer ' + accessToken,
-							'Dropbox-API-Arg': JSON.stringify({
-								path: filePath
-							})
-						}
-					});
+
+		async function handleIndicatorChange() {
+			const selectedField = document.getElementById('indicatorSelect').value;
+			if (selectedField) {
+				currentTrendField = selectedField;
+				await loadTrendData(selectedField);
+			} else {
+				currentTrendField = null;
+				showNoDataMessage();
+			}
+		}		async function loadTrendData(field) {
+			const { data: { session } } = await supabase.auth.getSession();
+			if (!session || !session.user) {
+				showNoDataMessage();
+				return;
+			}
+			
+			currentTrendField = field;
+			showLoading(true);
+			
+			const year = currentChartDate.getFullYear();
+			const month = currentChartDate.getMonth();
+			const startDate = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+			const endDate = new Date(year, month + 1, 0);
+			const endDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(endDate.getDate()).padStart(2, '0')}`;
+			
+			try {
+				// Query data from Supabase
+				const { data, error } = await supabase
+					.from('plant_data')
+					.select('date, data')
+					.eq('user_id', session.user.id)
+					.gte('date', startDate)
+					.lte('date', endDateStr)
+					.order('date', { ascending: true });					if (error) throw error;
 					
-					if (!downloadResponse.ok) {
-						// 月度文件不存在，显示空数据
-						const daysInMonth = new Date(year, month + 1, 0).getDate();
-						const dates = [];
-						const values = [];
-						for (let day = 1; day <= daysInMonth; day++) {
-							dates.push(String(day));
-							values.push(null);
-						}
-						createTrendChart(dates, values, field);
-						showLoading(false);
-						return;
-					}
-					
-					const csvText = await downloadResponse.text();
-					const lines = csvText.trim().split('\n');
-					
-					if (lines.length < 1) {
-						showNoDataMessage();
-						showLoading(false);
-						return;
-					}
-					
-					const headers = lines[0].split(',');
-					const fieldIndex = headers.findIndex(h => h.trim() === field);
-					
-					if (fieldIndex === -1) {
-						console.error('字段不存在:', field);
-						showNoDataMessage();
-						showLoading(false);
-						return;
-					}
-					
-					// 初始化1-31天的空数据
-					const daysInMonth = new Date(year, month + 1, 0).getDate();
+					// Prepare chart data
+					const daysInMonth = endDate.getDate();
 					const dates = [];
 					const values = [];
+					const dataMap = {};
 					
-					for (let day = 1; day <= daysInMonth; day++) {
-						dates.push(String(day));
-						values.push(null);
-					}
-					
-					// 解析CSV中的每一行数据
-					for (let i = 1; i < lines.length; i++) {
-						const dataLine = lines[i].split(',');
-						if (dataLine.length === 0) continue;
-						
-						const timestamp = dataLine[0];
-						if (!timestamp) continue;
-						
-						const rowDate = timestamp.split('T')[0]; // YYYY-MM-DD
-						const dateParts = rowDate.split('-');
-						const day = parseInt(dateParts[2], 10);
-						
-						if (day < 1 || day > daysInMonth) continue;
-						
-						// 更新该天的数据
-						const value = parseFloat(dataLine[fieldIndex]);
-						values[day - 1] = isNaN(value) ? null : value;
-					}
-					
-					// 创建图表
-					createTrendChart(dates, values, field);
-					
-				} catch (error) {
-					console.error('加载趋势数据失败:', error);
-					showNoDataMessage();
-				} finally {
-					showLoading(false);
-				}
-			}
-
-			// 获取指定日期的数据（获取最新的CSV文件）
-			async function getDataForDate(field, date) {
-				if (!accessToken) {
-					return null;
-				}
-				
-				const year = date.getFullYear();
-				const month = String(date.getMonth() + 1).padStart(2, '0');
-				const day = String(date.getDate()).padStart(2, '0');
-				const monthFileName = `${year}_${month}.csv`;
-				const filePath = `/Plant_Data_Collection/${monthFileName}`;
-				const targetDate = `${year}-${month}-${day}`;
-				
-				try {
-					// 下载月度CSV文件
-					const downloadResponse = await fetch('https://content.dropboxapi.com/2/files/download', {
-						method: 'POST',
-						headers: {
-							'Authorization': 'Bearer ' + accessToken,
-							'Dropbox-API-Arg': JSON.stringify({
-								path: filePath
-							})
-						}
+				// Map existing data
+				if (data) {
+					data.forEach(row => {
+						const day = new Date(row.date).getDate();
+						dataMap[day] = row.data[field] || 0;
 					});
-					
-					if (!downloadResponse.ok) {
-						return null; // 月度文件不存在
-					}
-					
-					const csvText = await downloadResponse.text();
-					const lines = csvText.trim().split('\n');
-					
-					if (lines.length < 2) return null; // 没有数据行
-					
-					const headers = lines[0].split(',');
-					const fieldIndex = headers.findIndex(header => header.trim() === field);
-					
-					if (fieldIndex === -1) return null; // 字段不存在
-					
-					// 查找目标日期的行
-					for (let i = 1; i < lines.length; i++) {
-						const dataLine = lines[i].split(',');
-						const timestamp = dataLine[0]; // 第一列是timestamp
-						const rowDate = timestamp.split('T')[0]; // 提取YYYY-MM-DD
-						
-						if (rowDate === targetDate) {
-							const value = parseFloat(dataLine[fieldIndex]);
-							return isNaN(value) ? null : value;
-						}
-					}
-					
-					return null; // 文件中未找到该日期
-					
+				}
+				
+				// Fill in all days
+				for (let day = 1; day <= daysInMonth; day++) {
+					dates.push(String(day));
+					values.push(dataMap[day] !== undefined ? dataMap[day] : 0);
+				}					createTrendChart(dates, values, field);
+					showLoading(false);
 				} catch (error) {
-					console.log(`无法读取 ${targetDate} 的数据:`, error);
-					return null;
+					console.error('Error loading trend data:', error);
+					statusEl.textContent = '❌ 加载趋势数据失败';
+					showLoading(false);
+					showNoDataMessage();
 				}
 			}
 
-			// 解析CSV数据中的指定字段
-			function parseCSVData(csvText, field) {
-				const lines = csvText.trim().split('\n');
-				if (lines.length < 2) return null;
-				
-				const headers = lines[0].split(',');
-				const values = lines[1].split(',');
-				
-				const fieldIndex = headers.findIndex(header => header.trim() === field);
-				if (fieldIndex === -1) return null;
-				
-				const value = parseFloat(values[fieldIndex]);
-				return isNaN(value) ? null : value;
-			}
-
-			// 创建趋势图表
 			function createTrendChart(dates, values, field) {
 				const ctx = document.getElementById('trendChart').getContext('2d');
+				const indicator = indicators.find(ind => ind.field === field);
 				
-				// 销毁现有图表
 				if (trendChart) {
 					trendChart.destroy();
 				}
 				
-				// 找到指标信息
-				const indicator = indicators.find(ind => ind.field === field);
-				const indicatorName = indicator ? `${indicator.name} (${indicator.unit})` : field;
-				
-				// 将null值转换为0，保持所有日期
-				const chartData = dates.map((date, index) => ({
-					x: date,
-					y: values[index] !== null ? values[index] : 0
-				}));
-				
-				// 检测是否为手机端
 				const isMobile = window.innerWidth <= 768;
+				const maxTicks = isMobile ? 10 : 31;
 				
 				trendChart = new Chart(ctx, {
 					type: 'line',
 					data: {
+						labels: dates,
 						datasets: [{
-							label: indicatorName,
-							data: chartData,
-							borderColor: '#667eea',
-							backgroundColor: 'rgba(102, 126, 234, 0.1)',
-							borderWidth: 2,
+							label: `${indicator.name} (${indicator.unit})`,
+							data: values,
+							borderColor: '#22c55e',
+							backgroundColor: 'rgba(34, 197, 94, 0.1)',
+							tension: 0.4,
 							fill: true,
-							tension: 0.2,
-							pointBackgroundColor: '#667eea',
-							pointBorderColor: '#ffffff',
-							pointBorderWidth: 2,
-							pointRadius: isMobile ? 2 : 4,
-							pointHoverRadius: isMobile ? 4 : 6
+							pointRadius: 4,
+							pointHoverRadius: 6
 						}]
 					},
 					options: {
 						responsive: true,
 						maintainAspectRatio: false,
 						scales: {
-							x: {
-								type: 'category',
+							y: {
+								beginAtZero: true,
 								title: {
-									display: !isMobile,
-									text: '日期',
-									font: {
-										size: isMobile ? 10 : 12
-									}
-								},
-								ticks: {
-									autoSkip: true,
-									maxTicksLimit: isMobile ? 10 : 31,
-									maxRotation: 0,
-									minRotation: 0,
-									font: {
-										size: isMobile ? 9 : 11
-									}
+									display: true,
+									text: `${indicator.name} (${indicator.unit})`
 								}
 							},
-							y: {
+							x: {
 								title: {
-									display: !isMobile,
-									text: indicatorName,
-									font: {
-										size: isMobile ? 10 : 12
-									}
+									display: true,
+									text: '日期'
 								},
-								beginAtZero: true,
 								ticks: {
-									stepSize: 1,
-									font: {
-										size: isMobile ? 9 : 11
-									}
+									maxTicksLimit: maxTicks
 								}
 							}
 						},
 						plugins: {
-							title: {
-								display: false
-							},
 							legend: {
 								display: false
 							}
-						},
-						interaction: {
-							intersect: false,
-							mode: 'index'
 						}
 					}
 				});
 				
-				// 显示图表
 				document.getElementById('trendChart').style.display = 'block';
-				document.getElementById('noDataMessage').style.display = 'none';
 			}
 
-			// 显示加载状态
 			function showLoading(show) {
-				const loadingEl = document.getElementById('chartLoading');
-				const loadingTextEl = loadingEl.querySelector('div:last-child');
-				loadingTextEl.textContent = '正在加载数据...';
-				
-				loadingEl.style.display = show ? 'block' : 'none';
+				document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
 				document.getElementById('trendChart').style.display = show ? 'none' : 'block';
 				document.getElementById('noDataMessage').style.display = 'none';
 			}
 
-			// 显示重新加载提示
-			// 显示无数据消息
 			function showNoDataMessage() {
-				document.getElementById('chartLoading').style.display = 'none';
 				document.getElementById('trendChart').style.display = 'none';
+				document.getElementById('loadingOverlay').style.display = 'none';
 				document.getElementById('noDataMessage').style.display = 'block';
 				
 				if (trendChart) {
@@ -1208,932 +1227,233 @@
 				}
 			}
 
-			// 初始化空图表（显示网格）
-			function initEmptyChart() {
-				const ctx = document.getElementById('trendChart').getContext('2d');
-				
-				// 销毁现有图表
-				if (trendChart) {
-					trendChart.destroy();
-				}
-				
-				// 生成1-31的日期标签
-				const labels = Array.from({length: 31}, (_, i) => String(i + 1));
-				
-				// 创建空数据（全部为0）
-				const emptyData = Array(31).fill(0);
-				
-				trendChart = new Chart(ctx, {
-					type: 'line',
-					data: {
-						labels: labels,
-						datasets: [{
-							label: '请选择指标',
-							data: emptyData,
-							borderColor: '#e5e7eb',
-							backgroundColor: 'rgba(229, 231, 235, 0.1)',
-							borderWidth: 2,
-							fill: true,
-							tension: 0.2,
-							pointBackgroundColor: '#e5e7eb',
-							pointBorderColor: '#ffffff',
-							pointBorderWidth: 2,
-							pointRadius: 0,
-							pointHoverRadius: 0
-						}]
-					},
-					options: {
-						responsive: true,
-						maintainAspectRatio: false,
-						scales: {
-							x: {
-								type: 'category',
-								title: {
-									display: true,
-									text: '日期'
-								},
-								ticks: {
-									autoSkip: false,
-									maxRotation: 0,
-									minRotation: 0
-								},
-								grid: {
-									display: true,
-									color: 'rgba(0, 0, 0, 0.05)'
-								}
-							},
-							y: {
-								title: {
-									display: true,
-									text: '数值'
-								},
-								beginAtZero: true,
-								ticks: {
-									stepSize: 1
-								},
-								grid: {
-									display: true,
-									color: 'rgba(0, 0, 0, 0.05)'
-								}
-							}
-						},
-						plugins: {
-							title: {
-								display: true,
-								text: '趋势分析 - 请选择指标查看数据',
-								font: {
-									size: 16,
-									weight: 'bold'
-								}
-							},
-							legend: {
-								display: false
-							}
-						}
-					}
-				});
-				
-				// 显示图表
-				document.getElementById('trendChart').style.display = 'block';
-				document.getElementById('noDataMessage').style.display = 'none';
-				document.getElementById('chartLoading').style.display = 'none';
-			}
-
-			// 格式化日期
-			function formatDate(date) {
-				return date.getFullYear() + '-' + 
-					   String(date.getMonth() + 1).padStart(2, '0') + '-' + 
-					   String(date.getDate()).padStart(2, '0');
-			}
+		// ====================================
+		// LOAD TODAY'S DATA
+		// ====================================
+		async function loadTodayData() {
+			const { data: { session } } = await supabase.auth.getSession();
+			if (!session || !session.user) return;
 			
-			// 格式化日期为短格式（只显示日期数字：1-31）
-			function formatDateShort(date) {
-				return String(date.getDate());
-			}
-			
-			// 初始化滚动指标选择器
-			function initIndicatorsScroll() {
-				const scrollWrapper = document.getElementById('indicatorsScroll');
-				
-				// 生成指标列表
-				indicators.forEach((indicator, index) => {
-					const item = document.createElement('div');
-					item.className = 'indicator-item';
-					
-					const percentage = ((indicator.value - indicator.min) / (indicator.max - indicator.min)) * 100;
-					
-					item.innerHTML = `
-						<div class="indicator-header">
-							<div class="indicator-name">${indicator.name}</div>
-							<div class="indicator-value-display">
-								<span class="value">${indicator.value}</span>
-								<span class="unit">${indicator.unit}</span>
-							</div>
-						</div>
-						<div class="indicator-controls">
-							<input type="range" class="control-range" value="${indicator.value}" 
-								   min="${indicator.min}" max="${indicator.max}" step="${indicator.step}">
-						</div>
-					`;
-					
-					// 控制输入事件
-					const rangeInput = item.querySelector('.control-range');
-					
-					rangeInput.addEventListener('input', (e) => {
-						const value = parseFloat(e.target.value);
-						updateIndicatorValue(index, value);
-					});
-					
-					scrollWrapper.appendChild(item);
-				});
-			}
-			
-			// 更新指标值
-			function updateIndicatorValue(index, value) {
-				if (index < 0 || index >= indicators.length) return;
-				
-				const indicator = indicators[index];
-				
-				// 确保值在范围内
-				value = Math.max(indicator.min, Math.min(indicator.max, value));
-				indicator.value = value;
-				
-				// 更新显示值
-				const indicatorItems = document.querySelectorAll('.indicator-item');
-				if (indicatorItems[index]) {
-					const valueSpan = indicatorItems[index].querySelector('.value');
-					if (valueSpan) valueSpan.textContent = value;
-				}
-				
-				// 更新隐藏表单中的对应字段
-				const hiddenInput = document.querySelector(`input[name="${indicator.field}"]`);
-				if (hiddenInput) {
-					hiddenInput.value = value;
-				}
-			}
-			
-			// 从Dropbox加载今天的数据并初始化表单
-			async function loadTodayData() {
-				if (!accessToken) {
-					console.log('未登录Dropbox，使用默认值');
-					return;
-				}
-				
-				const today = getBeijingTime();
-				const year = today.getFullYear();
-				const month = String(today.getMonth() + 1).padStart(2, '0');
-				const day = String(today.getDate()).padStart(2, '0');
-				const monthFileName = `${year}_${month}.csv`;
-				const filePath = `/Plant_Data_Collection/${monthFileName}`;
-				const targetDate = `${year}-${month}-${day}`;
-				
-				try {
-					// 下载月度CSV文件
-					const downloadResponse = await fetch('https://content.dropboxapi.com/2/files/download', {
-						method: 'POST',
-						headers: {
-							'Authorization': 'Bearer ' + accessToken,
-							'Dropbox-API-Arg': JSON.stringify({
-								path: filePath
-							})
-						}
-					});
-					
-					if (!downloadResponse.ok) {
-						console.log('当月文件不存在，使用默认值');
-						return;
-					}
-					
-					const csvText = await downloadResponse.text();
-					const lines = csvText.trim().split('\n');
-					
-					if (lines.length < 2) {
-						console.log('当月无数据，使用默认值');
-						return;
-					}
-					
-					const headers = lines[0].split(',');
-					
-					// 查找今天的数据行
-					for (let i = 1; i < lines.length; i++) {
-						const dataLine = lines[i].split(',');
-						if (dataLine.length === 0) continue;
-						
-						const timestamp = dataLine[0];
-						const rowDate = timestamp.split('T')[0]; // YYYY-MM-DD
-						
-						if (rowDate === targetDate) {
-							console.log('找到今天的数据，正在加载...');
-							
-							// 更新每个指标的值
-							indicators.forEach((indicator, index) => {
-								const fieldIndex = headers.findIndex(h => h.trim() === indicator.field);
-								if (fieldIndex !== -1) {
-									const value = parseFloat(dataLine[fieldIndex]);
-									if (!isNaN(value)) {
-										// 更新指标默认值
-										indicator.value = value;
-										
-										// 更新滚动指标UI
-										const indicatorItems = document.querySelectorAll('.indicator-item');
-										if (indicatorItems[index]) {
-											const rangeInput = indicatorItems[index].querySelector('.control-range');
-											const valueSpan = indicatorItems[index].querySelector('.value');
-											if (rangeInput) rangeInput.value = value;
-											if (valueSpan) valueSpan.textContent = value;
-										}
-										
-										// 更新隐藏表单
-										const hiddenInput = document.querySelector(`input[name="${indicator.field}"]`);
-										if (hiddenInput) {
-											hiddenInput.value = value;
-										}
-									}
-								}
-							});
-							
-							statusEl.textContent = '✅ 已加载今天的数据';
-							console.log('今天的数据加载完成');
-							return;
-						}
-					}
-					
-					console.log('今天还没有数据，使用默认值');
-					
-				} catch (error) {
-					console.error('加载今天数据失败:', error);
-				}
-			}
-			
-			// 页面加载完成后初始化
-			document.addEventListener('DOMContentLoaded', async function() {
-				initIndicatorsScroll();
-				await loadTodayData(); // 尝试加载今天的数据
-				initChart();
-			});
-
-			const form = document.getElementById('dataForm');
-			const submitBtn = document.getElementById('submitBtn');
-			const dropboxBtn = document.getElementById('dropboxBtn');
-			const authBtn = document.getElementById('authBtn');
-			const statusEl = document.getElementById('status');
-			const csvPreview = document.getElementById('csvPreview');
-
-			// Dropbox App Key (直接明文配置)
-			// 注意: 在生产环境中，建议使用环境变量或服务器端配置
-			const DROPBOX_APP_KEY = 'j38wp0xvibd9bjq';
-			
-			// Registered URLs for this app (add your URLs here)
-			const REGISTERED_URLS = [
-				// Local development (from project directory)
-				'http://localhost:8000/',
-				'http://localhost:8000/index.html',
-								
-				// Local development (from parent directory)
-				'http://localhost:8000/deci_data_collection/',
-				'http://localhost:8000/deci_data_collection/index.html',
-				
-				// GitHub Pages deployment
-				'https://jianchaoci.github.io/deci_data_collection/',
-				'https://jianchaoci.github.io/deci_data_collection/index.html'
-			];
-			
-			let accessToken = localStorage.getItem('dropbox_access_token');
-
-			// Debug function to show current configuration
-			function showDebugInfo() {
-				const debugContent = document.getElementById('debugContent');
-				debugContent.innerHTML = `
-					<div style="margin: 5px 0;"><strong>APP Key:</strong> ${DROPBOX_APP_KEY}</div>
-					<div style="margin: 5px 0;"><strong>Access Token:</strong> ${accessToken ? '✅ 已存储' : '❌ 未获取'}</div>
-					
-					<div style="margin: 10px 0; padding: 10px; background: #eff6ff; border-radius: 4px; border-left: 4px solid #3b82f6;">
-						<strong>📋 如果授权失败，请检查:</strong><br>
-						1. 访问 <a href="https://www.dropbox.com/developers/apps" target="_blank">Dropbox开发者控制台</a><br>
-						2. 确认应用的 App Key 是否正确<br>
-						3. 确认已在 OAuth 2 设置中添加重定向URI<br>
-						4. 重试授权流程
-					</div>
-				`;
-				
-				document.getElementById('debugInfo').style.display = 'block';
-			}
-
-			// Update slider value display
-			function updateSliderValue(slider) {
-				const valueSpan = slider.parentElement.querySelector('.slider-value');
-				if (valueSpan) {
-					valueSpan.textContent = slider.value;
-				}
-				
-				// 同步更新滚动指标系统中的对应值
-				const fieldName = slider.name;
-				const indicatorIndex = indicators.findIndex(ind => ind.field === fieldName);
-				if (indicatorIndex !== -1) {
-					updateIndicatorValue(indicatorIndex, parseFloat(slider.value));
-				}
-			}
-
-			// Check if current URL is registered and show specific redirect URI guidance
-			function checkURLRegistration() {
-				const currentOrigin = window.location.origin;
-				const currentURL = window.location.href;
-				
-				// Generate the exact redirect URI that OAuth will use
-				let predictedRedirectUri;
-				if (window.location.protocol === 'file:') {
-					predictedRedirectUri = 'http://localhost:8000/';
-				} else {
-					const currentPath = window.location.origin + window.location.pathname;
-					if (currentPath.endsWith('/index.html')) {
-						predictedRedirectUri = currentPath;
-					} else if (currentPath.endsWith('/')) {
-						predictedRedirectUri = currentPath;
-					} else {
-						predictedRedirectUri = currentPath + '/';
-					}
-				}
-				
-				// Check if the exact redirect URI is registered
-				const isRedirectUriRegistered = REGISTERED_URLS.includes(predictedRedirectUri);
-				
-				if (!isRedirectUriRegistered) {
-					// 静默记录到控制台，不显示任何提示
-					console.warn('Redirect URI not found in registered list:', predictedRedirectUri);
-					console.log('Registered URLs:', REGISTERED_URLS);
-					console.log('如果遇到授权问题，请在Dropbox应用中添加重定向URI:', predictedRedirectUri);
-					return true; // Allow functionality
-				}
-				
-				// All good - URI is properly registered
-				console.log('✓ Redirect URI is registered:', predictedRedirectUri);
-				return true;
-			}
-
-			// Initialize URL check
-			const isURLValid = checkURLRegistration();
-
-			// Calendar functionality
-			let currentDate = getBeijingTime();
-			let collectionData = {}; // Store collection history: {date: count}
-
-			function generateCalendar(year, month) {
-				const firstDay = new Date(year, month, 1);
-				const lastDay = new Date(year, month + 1, 0);
-				const firstDayWeek = firstDay.getDay();
-				const daysInMonth = lastDay.getDate();
-				
-				const calendarGrid = document.getElementById('calendarGrid');
-				const monthYear = document.getElementById('monthYear');
-				
-				// Update month/year display
-				const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
-				monthYear.textContent = `${year}年${monthNames[month]}`;
-				
-				// Clear previous calendar
-				calendarGrid.innerHTML = '';
-				
-				// Add day headers
-				const dayHeaders = ['日', '一', '二', '三', '四', '五', '六'];
-				dayHeaders.forEach(day => {
-					const header = document.createElement('div');
-					header.className = 'calendar-day-header';
-					header.textContent = day;
-					calendarGrid.appendChild(header);
-				});
-				
-				// Add empty cells for days before month starts
-				for (let i = 0; i < firstDayWeek; i++) {
-					const emptyDay = document.createElement('div');
-					emptyDay.className = 'calendar-day other-month';
-					calendarGrid.appendChild(emptyDay);
-				}
-				
-			// Add days of the month
-			const today = getBeijingTime();
-			for (let day = 1; day <= daysInMonth; day++) {
-				const dayElement = document.createElement('div');
-				dayElement.className = 'calendar-day';
-				dayElement.textContent = day;					const dayKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-					
-					// Check if it's today
-					if (year === today.getFullYear() && month === today.getMonth() && day === today.getDate()) {
-						dayElement.classList.add('today');
-					}
-					
-					// Check if there's collection data for this day
-					if (collectionData[dayKey]) {
-						dayElement.classList.add('has-data');
-						const countBadge = document.createElement('div');
-						countBadge.className = 'data-count';
-						countBadge.textContent = '✓';  // 显示对勾符号而不是数字
-						dayElement.appendChild(countBadge);
-					}
-					
-					// Add click event listener
-					dayElement.addEventListener('click', () => {
-						selectDay(year, month, day, dayKey);
-					});
-					
-					calendarGrid.appendChild(dayElement);
-				}
-				
-			}
-
-			function changeMonth(direction) {
-				currentDate.setMonth(currentDate.getMonth() + direction);
-				generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
-			}
-
-			// Load collection history from Dropbox
-			async function loadCollectionHistory() {
-				if (!accessToken) return;
-				
-				try {
-					statusEl.textContent = '正在加载采集历史...';
-					
-					// List all files in Plant_Data_Collection
-					const response = await fetch('https://api.dropboxapi.com/2/files/list_folder', {
-						method: 'POST',
-						headers: {
-							'Authorization': 'Bearer ' + accessToken,
-							'Content-Type': 'application/json'
-						},
-						body: JSON.stringify({
-							path: '/Plant_Data_Collection',
-							recursive: false
-						})
-					});
-
-					if (response.ok) {
-						const data = await response.json();
-						collectionData = {};
-						
-						// Process each monthly CSV file
-						for (const entry of data.entries) {
-							if (entry['.tag'] === 'file' && entry.name.endsWith('.csv')) {
-								// 文件名格式: YYYY_MM.csv
-								const fileName = entry.name.replace('.csv', '');
-								const dateParts = fileName.split('_');
-								
-								if (dateParts.length === 2) {
-									const year = dateParts[0];
-									const month = dateParts[1];
-									
-									// 下载月度文件，统计其中的数据行数
-									const downloadResponse = await fetch('https://content.dropboxapi.com/2/files/download', {
-										method: 'POST',
-										headers: {
-											'Authorization': 'Bearer ' + accessToken,
-											'Dropbox-API-Arg': JSON.stringify({
-												path: entry.path_lower
-											})
-										}
-									});
-									
-									if (downloadResponse.ok) {
-										const csvText = await downloadResponse.text();
-										const lines = csvText.trim().split('\n');
-										
-										// 跳过表头，处理每一行数据
-										for (let i = 1; i < lines.length; i++) {
-											const dataLine = lines[i].split(',');
-											if (dataLine.length > 0) {
-												const timestamp = dataLine[0];
-												const rowDate = timestamp.split('T')[0]; // YYYY-MM-DD
-												
-												// 标记该日期有数据
-												collectionData[rowDate] = 1;
-											}
-										}
-									}
-								}
-							}
-						}
-						
-						// Refresh calendar display
-						generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
-						statusEl.textContent = '✅ 历史数据已加载';
-						
-					} else {
-						console.log('Failed to load collection history');
-						statusEl.textContent = '⚠️ 无法加载历史数据';
-					}
-				} catch (error) {
-					console.error('Error loading collection history:', error);
-					statusEl.textContent = '❌ 加载历史数据出错';
-				}
-			}
-
-		// Record new collection
-		function recordCollection() {
 			const today = getBeijingTime();
 			const dateKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 			
-			// Increment count for today
-			collectionData[dateKey] = (collectionData[dateKey] || 0) + 1;
-			
-			// Update calendar display
-			generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
-		}			// Select a specific day (simplified - no details shown)
-			async function selectDay(year, month, day, dateKey) {
-				// Remove previous selection
-				document.querySelectorAll('.calendar-day').forEach(el => {
-					el.classList.remove('selected');
-				});
-
-				// Highlight selected day
-				event.target.classList.add('selected');
-			}
-
-
-
-		function buildCSV(formData){
-			const headers = [
-				'timestamp','growth_cm','stem_mm','leaf_count','leaf_length_cm','leaf_width_cm',
-				'potential_flower_count','current_flower_order','accum_ear_count','accum_grain_count',
-				'yield_kg_m2','single_grain_g','total_harvest_ear_count','total_harvest_grain_g',
-				'ear_weight_g','single_head_yield_g','brix','acidity','cracking_rate',
-				'irrigation_ml','reflux_ml','reflux_ec','reflux_ph'
-			];
-
-			const row = [getBeijingTime().toISOString()];
-			for(const h of headers.slice(1)){
-				let v = formData.get(h);
-				if(v === null || v === '') v = '';
-				// escape double quotes
-				if(typeof v === 'string' && v.includes(',')) v = '"'+v.replace(/"/g,'""')+'"';
-				row.push(v);
-			}
-			const csv = headers.join(',') + '\n' + row.join(',') + '\n';
-			return csv;
-		}			// Generate random string for PKCE
-			function generateRandomString(length) {
-				const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
-				let result = '';
-				for (let i = 0; i < length; i++) {
-					result += chars.charAt(Math.floor(Math.random() * chars.length));
-				}
-				return result;
-			}
-
-			// SHA256 hash function
-			async function sha256(plain) {
-				const encoder = new TextEncoder();
-				const data = encoder.encode(plain);
-				const hash = await crypto.subtle.digest('SHA-256', data);
-				return hash;
-			}
-
-			// Base64 URL encode
-			function base64URLEncode(buffer) {
-				const bytes = new Uint8Array(buffer);
-				let binary = '';
-				for (let i = 0; i < bytes.byteLength; i++) {
-					binary += String.fromCharCode(bytes[i]);
-				}
-				return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-			}
-
-			// Dropbox OAuth2 PKCE flow
-			async function authenticateDropbox() {
-				console.log('Using App Key:', DROPBOX_APP_KEY);
-
-				// Generate the exact redirect URI that will be used
-				let predictedRedirectUri;
-				if (window.location.protocol === 'file:') {
-					alert('本地文件模式下 Dropbox OAuth 有限制。\n\n请使用以下方式之一：\n1. 启动一个简单的本地服务器\n2. 或者上传到网站托管服务\n\n现在将为您启动一个简单的 Python 服务器...');
-					predictedRedirectUri = 'http://localhost:8000/';
-				} else {
-					const currentPath = window.location.origin + window.location.pathname;
-					if (currentPath.endsWith('/index.html')) {
-						predictedRedirectUri = currentPath;
-					} else if (currentPath.endsWith('/')) {
-						predictedRedirectUri = currentPath;
-					} else {
-						predictedRedirectUri = currentPath + '/';
+			try {
+				const { data, error } = await supabase
+					.from('plant_data')
+					.select('data')
+					.eq('user_id', session.user.id)
+					.eq('date', dateKey)
+					.single();					if (error) {
+						// No data for today, keep defaults
+						console.log('No data for today, using defaults');
+						return;
 					}
-				}
-
-				// Use the predicted redirect URI
-				console.log('Will use redirect URI:', predictedRedirectUri);
-
-				// Generate PKCE parameters
-				const codeVerifier = generateRandomString(128);
-				const codeChallenge = base64URLEncode(await sha256(codeVerifier));
-				
-				// Store verifier for later use
-				localStorage.setItem('dropbox_code_verifier', codeVerifier);
-				
-				// Use the redirect URI we already determined and checked
-				const redirectUri = predictedRedirectUri;
-				
-				// Build authorization URL
-				const authUrl = 'https://www.dropbox.com/oauth2/authorize?' +
-					'client_id=' + encodeURIComponent(DROPBOX_APP_KEY) +
-					'&response_type=code' +
-					'&code_challenge=' + encodeURIComponent(codeChallenge) +
-					'&code_challenge_method=S256' +
-					'&redirect_uri=' + encodeURIComponent(redirectUri);
-				
-				// Debug: show what redirect URI we're using
-				console.log('Using redirect URI:', redirectUri);
-				console.log('Full auth URL:', authUrl);
-				
-				statusEl.textContent = '正在重定向到 Dropbox 授权页面...';
-				
-				window.location.href = authUrl;
-			}
-
-			// Handle OAuth callback
-			async function handleOAuthCallback() {
-				// Debug: show current URL and parameters
-				console.log('Current URL:', window.location.href);
-				console.log('URL search params:', window.location.search);
-				
-				const urlParams = new URLSearchParams(window.location.search);
-				const code = urlParams.get('code');
-				const error = urlParams.get('error');
-				
-				console.log('Code parameter:', code);
-				console.log('Error parameter:', error);
-
-				if (error) {
-					statusEl.textContent = `❌ Dropbox 授权失败: ${error}`;
-					return;
-				}
-
-				if (code) {
-					statusEl.textContent = '检测到授权码，正在获取访问令牌...';
-					console.log('Starting token exchange...');
-					console.log('Token exchange using App Key:', DROPBOX_APP_KEY);
-					const codeVerifier = localStorage.getItem('dropbox_code_verifier');
-
-				// Auto-detect redirect URI (same logic as in auth function)
-				let redirectUri;
-				if (window.location.protocol === 'file:') {
-					redirectUri = 'http://localhost:8000/';
-				} else {
-					const currentPath = window.location.origin + window.location.pathname;
-					if (currentPath.endsWith('/index.html')) {
-						redirectUri = currentPath;
-					} else if (currentPath.endsWith('/')) {
-						redirectUri = currentPath;
-					} else {
-						redirectUri = currentPath + '/';
-					}
-				}					try {
-						const response = await fetch('https://api.dropboxapi.com/oauth2/token', {
-							method: 'POST',
-							headers: {
-								'Content-Type': 'application/x-www-form-urlencoded',
-							},
-							body: new URLSearchParams({
-								code: code,
-								grant_type: 'authorization_code',
-								client_id: DROPBOX_APP_KEY,
-								code_verifier: codeVerifier,
-								redirect_uri: redirectUri
-							})
+					
+					if (data && data.data) {
+						// Load the data into sliders
+						indicators.forEach(indicator => {
+							const slider = document.getElementById(`slider-${indicator.field}`);
+							const valueDisplay = document.getElementById(`value-${indicator.field}`);
+							const value = data.data[indicator.field];
+							
+							if (value !== undefined && value !== null) {
+								slider.value = value;
+								valueDisplay.textContent = value;
+							}
 						});
-
-						if (response.ok) {
-							const data = await response.json();
-							accessToken = data.access_token;
-							localStorage.setItem('dropbox_access_token', accessToken);
-							localStorage.removeItem('dropbox_code_verifier');
-							
-							// Clean up URL
-							window.history.replaceState({}, document.title, window.location.pathname);
-							
-							statusEl.textContent = '✅ Dropbox 授权成功！';
-							updateButtonStates();
-							
-							// Load collection history
-							loadCollectionHistory();
-						} else {
-							const errorData = await response.json();
-							statusEl.textContent = `❌ 获取访问令牌失败: ${errorData.error_description || errorData.error}`;
-						}
-					} catch (err) {
-						statusEl.textContent = `❌ 授权过程出错: ${err.message}`;
+						
+						console.log('Loaded today\'s data');
 					}
+				} catch (error) {
+					console.error('Error loading today\'s data:', error);
 				}
 			}
 
+		// ====================================
+		// LOAD COLLECTION HISTORY
+		// ====================================
+		async function loadCollectionHistory() {
+			const { data: { session } } = await supabase.auth.getSession();
+			if (!session || !session.user) return;
+			
+			try {
+				const { data, error } = await supabase
+					.from('plant_data')
+					.select('date')
+					.eq('user_id', session.user.id);					if (error) throw error;
+					
+					collectionData = {};
+					if (data) {
+						data.forEach(row => {
+							collectionData[row.date] = 1;
+						});
+					}
+					
+					generateCalendar(currentCalDate.getFullYear(), currentCalDate.getMonth());
+				} catch (error) {
+					console.error('Error loading collection history:', error);
+				}
+			}
 
-		// Upload CSV to Dropbox
-		async function uploadToDropbox(csv) {
-			if (!accessToken) {
-				statusEl.textContent = '请先连接 Dropbox';
+			// ====================================
+			// DATA SYNC TO SUPABASE
+			// ====================================
+		async function syncToSupabase() {
+			// Get current session to ensure we have the latest user
+			const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+			
+			if (!session || !session.user) {
+				statusEl.textContent = '请先登录';
 				return false;
 			}
-
-			statusEl.textContent = '正在上传到 Dropbox...';
+			
+			const userId = session.user.id;
+			statusEl.textContent = '正在同步到云端...';
 			
 			const now = getBeijingTime();
-			const year = now.getFullYear();
-			const month = String(now.getMonth() + 1).padStart(2, '0');
-			const day = String(now.getDate()).padStart(2, '0');
+			const dateKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 			
-			// 新格式：/Plant_Data_Collection/YYYY_MM.csv
-			const mainFolder = '/Plant_Data_Collection';
-			const monthFileName = `${year}_${month}.csv`;
-			const filePath = `${mainFolder}/${monthFileName}`;
-			const dateKey = `${year}-${month}-${day}`;
-
+			// Collect form data
+			const formData = {};
+			indicators.forEach(indicator => {
+				const slider = document.getElementById(`slider-${indicator.field}`);
+				formData[indicator.field] = parseFloat(slider.value);
+			});
+			
 			try {
-				// 解析当前要上传的CSV数据（只有数据行，不含表头）
-				const csvLines = csv.trim().split('\n');
-				const headers = csvLines[0]; // timestamp,growth_cm,stem_mm,...
-				const newDataLine = csvLines[1]; // 新的数据行					// 尝试下载现有的月度文件
-					let existingContent = null;
-					let existingLines = [];
+				// Check if record exists (use maybeSingle instead of single to avoid error when no data)
+				const { data: existing, error: selectError } = await supabase
+					.from('plant_data')
+					.select('id')
+					.eq('user_id', userId)
+					.eq('date', dateKey)
+					.maybeSingle();
+				
+				// Ignore "not found" errors
+				if (selectError && selectError.code !== 'PGRST116') {
+					throw selectError;
+				}
+				
+				let result;
+				if (existing) {
+					// Update existing record
+					const { data, error } = await supabase
+						.from('plant_data')
+						.update({
+							data: formData,
+							updated_at: new Date().toISOString()
+						})
+						.eq('id', existing.id)
+						.select();
 					
-					statusEl.textContent = '正在检查当月文件...';
-					try {
-						const downloadResponse = await fetch('https://content.dropboxapi.com/2/files/download', {
-							method: 'POST',
-							headers: {
-								'Authorization': 'Bearer ' + accessToken,
-								'Dropbox-API-Arg': JSON.stringify({
-									path: filePath
-								})
-							}
-						});
-						
-						if (downloadResponse.ok) {
-							existingContent = await downloadResponse.text();
-							existingLines = existingContent.trim().split('\n');
-							console.log('找到现有月度文件，共', existingLines.length - 1, '行数据');
-						}
-					} catch (error) {
-						console.log('当月文件不存在或读取失败，将创建新文件');
-					}
+					if (error) throw error;
+					result = data;
+					console.log('Updated existing record');
+				} else {
+					// Insert new record
+					const { data, error } = await supabase
+						.from('plant_data')
+						.insert([{
+							user_id: userId,
+							date: dateKey,
+							data: formData,
+							created_at: new Date().toISOString(),
+							updated_at: new Date().toISOString()
+						}])
+						.select();
 					
-					// 构建新的CSV内容
-					let updatedCSV;
-					if (existingLines.length > 0) {
-						// 文件已存在，检查今天是否已有数据
-						const todayTimestamp = newDataLine.split(',')[0]; // 提取timestamp
-						const todayDate = todayTimestamp.split('T')[0]; // 提取日期部分 YYYY-MM-DD
-						
-						let dayUpdated = false;
-						const dataLines = existingLines.slice(1); // 去掉表头
-						const updatedDataLines = dataLines.map(line => {
-							const lineTimestamp = line.split(',')[0];
-							const lineDate = lineTimestamp.split('T')[0];
-							
-							if (lineDate === todayDate) {
-								// 找到今天的数据，更新它
-								dayUpdated = true;
-								console.log('更新今天的数据:', todayDate);
-								return newDataLine;
-							}
-							return line;
-						});
-						
-						if (!dayUpdated) {
-							// 今天还没有数据，追加新行
-							console.log('追加新的一天数据:', todayDate);
-							updatedDataLines.push(newDataLine);
-						}
-						
-						// 重新组合CSV（表头 + 数据行）
-						updatedCSV = headers + '\n' + updatedDataLines.join('\n');
-					} else {
-						// 文件不存在，创建新文件
-						console.log('创建新的月度文件');
-						updatedCSV = csv;
-					}
+					if (error) throw error;
+				result = data;
+			}					statusEl.textContent = '✅ 成功同步到云端';
+				
+				// Update calendar
+				collectionData[dateKey] = 1;
+				generateCalendar(currentCalDate.getFullYear(), currentCalDate.getMonth());
+				
+				// Refresh trend chart if showing current month
+				if (currentTrendField) {
+					const uploadYear = now.getFullYear();
+					const uploadMonth = now.getMonth();
+					const chartYear = currentChartDate.getFullYear();
+					const chartMonth = currentChartDate.getMonth();
 					
-					// 上传更新后的CSV文件（使用overwrite模式）
-					statusEl.textContent = '正在保存数据...';
-					const response = await fetch('https://content.dropboxapi.com/2/files/upload', {
-						method: 'POST',
-						headers: {
-							'Authorization': 'Bearer ' + accessToken,
-							'Content-Type': 'application/octet-stream',
-							'Dropbox-API-Arg': JSON.stringify({
-								path: filePath,
-								mode: 'overwrite', // 覆盖模式
-								autorename: false
-							})
-						},
-						body: updatedCSV
-					});
-
-					console.log('Upload response status:', response.status);
-
-					if (response.ok) {
-						const result = await response.json();
-						statusEl.textContent = '✅ 成功上传到云端: ' + result.name;
-						
-						// 更新日历显示
-						collectionData[dateKey] = 1;
-						generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
-						
-						// 如果当前正在显示趋势分析图表，并且上传的数据是当前显示月份的数据，则刷新图表
-						if (currentTrendField) {
-							const uploadYear = now.getFullYear();
-							const uploadMonth = now.getMonth();
-							const chartYear = currentChartDate.getFullYear();
-							const chartMonth = currentChartDate.getMonth();
-							
-							// 检查上传的数据是否属于当前显示的月份
-							if (uploadYear === chartYear && uploadMonth === chartMonth) {
-								console.log('刷新趋势分析图表:', currentTrendField);
-								await loadTrendData(currentTrendField);
-							}
-						}
-						
-						return true;
-					} else {
-						const errorText = await response.text();
-						console.log('Error response text:', errorText);
-						
-						let errorData;
-						try {
-							errorData = JSON.parse(errorText);
-						} catch (e) {
-							errorData = { error: errorText };
-						}
-
-						if (response.status === 401) {
-							localStorage.removeItem('dropbox_access_token');
-							accessToken = null;
-							updateButtonStates();
-							statusEl.textContent = 'Dropbox 令牌已过期，请重新授权';
-						} else {
-							statusEl.textContent = 'Dropbox 上传失败 (' + response.status + '): ' + (errorData.error_summary || errorData.error || errorText);
-						}
-						return false;
+					if (uploadYear === chartYear && uploadMonth === chartMonth) {
+						await loadTrendData(currentTrendField);
 					}
-				} catch (err) {
-					statusEl.textContent = 'Dropbox 上传出错: ' + err.message;
-					console.error('Upload error:', err);
+				}					return true;
+				} catch (error) {
+					console.error('Error syncing to Supabase:', error);
+					statusEl.textContent = '❌ 同步失败: ' + error.message;
 					return false;
 				}
 			}
 
-			// Update button states based on auth status
-			function updateButtonStates() {
-				if (!isURLValid) {
-					dropboxBtn.style.display = 'none';
-					authBtn.style.display = 'none';
-					return;
-				}
+			// ====================================
+			// EXPORT CSV
+			// ====================================
+			function buildCSV() {
+				const headers = [
+					'timestamp','growth_cm','stem_mm','leaf_count','leaf_length_cm','leaf_width_cm',
+					'potential_flower_count','current_flower_order','accum_ear_count','accum_grain_count',
+					'yield_kg_m2','single_grain_g','total_harvest_ear_count','total_harvest_grain_g',
+					'ear_weight_g','single_head_yield_g','brix','acidity','cracking_rate',
+					'irrigation_ml','reflux_ml','reflux_ec','reflux_ph'
+				];
 
-				if (accessToken) {
-					dropboxBtn.style.display = 'inline-block';
-					authBtn.style.display = 'none';
-				} else {
-					dropboxBtn.style.display = 'none';
-					authBtn.style.display = 'inline-block';
-				}
+				const row = [getBeijingTime().toISOString()];
+				indicators.forEach(indicator => {
+					const slider = document.getElementById(`slider-${indicator.field}`);
+					row.push(slider.value);
+				});
+				
+				const csv = headers.join(',') + '\n' + row.join(',') + '\n';
+				return csv;
 			}
 
-			// Event listeners
-			submitBtn.addEventListener('click', ()=>{
-				const fd = new FormData(form);
-				const csv = buildCSV(fd);
+			function exportCSV() {
+				const csv = buildCSV();
 				
-				// Download CSV
-				const blob = new Blob([csv],{type:'text/csv'});
+				const blob = new Blob([csv], {type: 'text/csv'});
 				const url = URL.createObjectURL(blob);
 				const a = document.createElement('a');
 				a.href = url;
-			a.download = 'data_' + (getBeijingTime()).toISOString().replace(/[:.]/g,'-') + '.csv';
-			document.body.appendChild(a);
-			a.click();
-			a.remove();
-			URL.revokeObjectURL(url);
-			
-			statusEl.textContent = 'CSV 已下载';
-		});			dropboxBtn.addEventListener('click', async ()=>{
-				const fd = new FormData(form);
-				const csv = buildCSV(fd);
+				a.download = 'data_' + getBeijingTime().toISOString().replace(/[:.]/g, '-') + '.csv';
+				document.body.appendChild(a);
+				a.click();
+				a.remove();
+				URL.revokeObjectURL(url);
 				
-				await uploadToDropbox(csv);
-			});
+				statusEl.textContent = 'CSV 已下载';
+			}
 
-			authBtn.addEventListener('click', authenticateDropbox);
+			// ====================================
+			// EVENT LISTENERS
+			// ====================================
+			submitBtn.addEventListener('click', exportCSV);
+			syncBtn.addEventListener('click', syncToSupabase);
+			authBtn.addEventListener('click', signIn);
 
-			// Initialize
-			if (isURLValid) {
-				statusEl.textContent = accessToken ? '✅ 已连接到 Dropbox' : '请连接 Dropbox 开始使用';
+			// ====================================
+			// INITIALIZATION
+			// ====================================
+			async function init() {
+				// Set up language switch button
+				document.getElementById('langSwitch').addEventListener('click', switchLanguage);
 				
-				updateButtonStates();
-				handleOAuthCallback();
+				generateForm();
+				generateCalendar(currentCalDate.getFullYear(), currentCalDate.getMonth());
+				await initChart();
+				await initAuth();
 				
-				// Generate initial calendar
-				generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
-				
-				// Load collection history if authenticated
-				if (accessToken) {
-					loadCollectionHistory();
+				// Load today's data if user is logged in
+				const { data: { session } } = await supabase.auth.getSession();
+				if (session) {
+					await loadTodayData();
 				}
 			}
+
+			// Start the app
+			init();
 		</script>
 	</body>
 </html>
