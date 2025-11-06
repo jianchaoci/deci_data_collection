@@ -151,7 +151,7 @@
 			border: 1px solid rgba(5, 150, 105, 0.15);
 			display: flex;
 			flex-direction: column;
-			height: 500px;
+			height: 550px;
 		}
 		
 		.calendar-header {
@@ -159,19 +159,30 @@
 			margin-bottom: 10px;
 		}
 		
-		.calendar-title {
-			font-size: 1.2rem;
-			font-weight: 700;
-			color: #047857;
-			margin-bottom: 5px;
-		}			.calendar-nav {
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-				margin-bottom: 15px;
-			}
-			
-		.nav-btn {
+	.calendar-title {
+		font-size: 1.2rem;
+		font-weight: 700;
+		color: #047857;
+		margin-bottom: 5px;
+	}
+	
+	.week-info {
+		font-size: 0.85rem;
+		color: #059669;
+		text-align: center;
+		margin-bottom: 10px;
+		padding: 4px 8px;
+		background: rgba(16, 185, 129, 0.1);
+		border-radius: 6px;
+		font-weight: 600;
+	}
+	
+	.calendar-nav {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 15px;
+		}		.nav-btn {
 			background: linear-gradient(135deg, #10b981, #059669);
 			color: white;
 			border: none;
@@ -262,7 +273,7 @@
 				padding: 30px;
 				box-shadow: 0 8px 32px rgba(5, 150, 105, 0.15);
 				border: 1px solid rgba(5, 150, 105, 0.15);
-				max-height: 500px;
+				max-height: 550px;
 				overflow-y: auto;
 			}
 			
@@ -275,24 +286,43 @@
 				border-bottom: 2px solid #6ee7b7;
 			}
 			
-			.indicator-group {
-				margin-bottom: 20px;
-			}
-			
-			.indicator-label {
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-				margin-bottom: 8px;
-			}
-			
-			.indicator-name {
-				font-weight: 600;
-				color: #064e3b;
-				font-size: 0.95rem;
-			}
-			
-			.indicator-value-display {
+		.indicator-group {
+			margin-bottom: 20px;
+			opacity: 0.5;
+			transition: opacity 0.2s ease;
+		}
+		
+		.indicator-group.active {
+			opacity: 1;
+		}
+		
+		.indicator-label {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 8px;
+		}
+		
+		.indicator-checkbox {
+			width: 18px;
+			height: 18px;
+			margin-right: 10px;
+			cursor: pointer;
+			accent-color: #10b981;
+		}
+		
+		.indicator-name {
+			font-weight: 600;
+			color: #064e3b;
+			font-size: 0.95rem;
+			flex: 1;
+		}
+		
+		.indicator-label-left {
+			display: flex;
+			align-items: center;
+			flex: 1;
+		}			.indicator-value-display {
 				font-weight: 700;
 				color: #065f46;
 				font-size: 0.95rem;
@@ -318,21 +348,34 @@
 				height: 20px;
 				border-radius: 50%;
 				background: linear-gradient(135deg, #10b981, #059669);
-				cursor: pointer;
-				box-shadow: 0 2px 6px rgba(5, 150, 105, 0.4);
-			}
-			
-			input[type="range"]::-moz-range-thumb {
-				width: 20px;
-				height: 20px;
-				border-radius: 50%;
-				background: linear-gradient(135deg, #10b981, #059669);
-				cursor: pointer;
-				border: none;
-				box-shadow: 0 2px 6px rgba(5, 150, 105, 0.4);
-			}
-
-			.result {
+			cursor: pointer;
+			box-shadow: 0 2px 6px rgba(5, 150, 105, 0.4);
+		}
+		
+		input[type="range"]::-moz-range-thumb {
+			width: 20px;
+			height: 20px;
+			border-radius: 50%;
+			background: linear-gradient(135deg, #10b981, #059669);
+			cursor: pointer;
+			border: none;
+			box-shadow: 0 2px 6px rgba(5, 150, 105, 0.4);
+		}
+		
+		input[type="range"]:disabled {
+			opacity: 0.4;
+			cursor: not-allowed;
+		}
+		
+		input[type="range"]:disabled::-webkit-slider-thumb {
+			cursor: not-allowed;
+			background: #9ca3af;
+		}
+		
+		input[type="range"]:disabled::-moz-range-thumb {
+			cursor: not-allowed;
+			background: #9ca3af;
+		}			.result {
 				margin-top: 30px;
 				padding: 20px;
 				background: rgba(209, 250, 229, 0.5);
@@ -564,22 +607,22 @@
 			<button class="lang-switch" id="langSwitch">EN</button>
 			<h1 class="page-title" data-lang="title">🌱 得希表型采集系统</h1>
 			<p class="page-subtitle" data-lang="subtitle">使用本系统记录和管理植物表型数据，助力精准农业研究与分析。</p>			
-			<div class="action-buttons">
-				<button type="button" class="btn btn-primary" id="submitBtn" data-lang="exportBtn">📥 导出 CSV</button>
-				<button type="button" class="btn btn-secondary" id="syncBtn" data-lang="syncBtn">☁️ 同步到云端</button>
-				<button type="button" class="btn btn-primary" id="authBtn" style="display:none;" data-lang="authBtn">🔗 登录</button>
-			</div>
-			
-			<div class="status-bar">
-				<div class="status-text"><span data-lang="statusLabel">状态：</span><span id="status" data-lang="statusReady">系统就绪</span></div>
-			</div>
+		<div class="action-buttons">
+			<button type="button" class="btn btn-primary" id="submitBtn" data-lang="exportBtn">📥 导出 CSV</button>
+			<button type="button" class="btn btn-secondary" id="syncBtn" data-lang="syncBtn">☁️ 同步到云端</button>
+			<button type="button" class="btn btn-primary" id="authBtn" style="display:none;" data-lang="authBtn">🔗 登录</button>
 		</div>
 		
-		<div class="main-container">
+		<div class="status-bar">
+			<div class="status-text"><span data-lang="statusLabel">状态：</span><span id="status" data-lang="statusReady">系统就绪</span></div>
+			<div class="status-text" id="collectionProgress" style="margin-top: 8px;"></div>
+		</div>
+	</div>		<div class="main-container">
 			<!-- Left Panel - Calendar -->
 			<div class="left-panel">
 				<div class="calendar-header">
 					<h2 class="calendar-title" data-lang="calendarTitle">📅 采集日历</h2>
+					<div class="week-info" id="weekInfo"></div>
 					<div class="calendar-nav">
 						<button class="nav-btn" id="prevCalMonth">◀</button>
 						<span class="current-month" id="currentCalMonth">2025年1月</span>
@@ -604,6 +647,16 @@
 				<form id="dataForm">
 					<!-- Indicators will be dynamically generated here -->
 				</form>
+				
+				<!-- Statistic Indicators Display -->
+				<div class="statistic-indicators" style="margin-top: 20px; padding: 15px; background: rgba(16, 185, 129, 0.05); border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.2);">
+					<h3 style="margin: 0 0 10px 0; font-size: 14px; color: #047857;">
+						<span data-lang="statisticIndicators">📊 累积统计指标</span>
+					</h3>
+					<div id="statisticValues" style="display: grid; gap: 8px; font-size: 13px;">
+						<!-- Statistic values will be displayed here -->
+					</div>
+				</div>
 			</div>
 		</div>
 
@@ -652,6 +705,7 @@
 				statusReady: '系统就绪',
 				calendarTitle: '📅 采集日历',
 				dataCollection: '📊 指标采集',
+				statisticIndicators: '📊 累积统计指标',
 				trendAnalysis: '📈 趋势分析',
 				prevMonth: '◀ 上月',
 				nextMonth: '下月 ▶',
@@ -665,27 +719,29 @@
 					leaf_count: '叶片数',
 					leaf_length_cm: '叶长',
 					leaf_width_cm: '叶宽',
-					potential_flower_count: '潜在花数',
-					current_flower_order: '当前花序',
-					accum_ear_count: '累计穗数',
-					accum_grain_count: '累计粒数',
-					yield_kg_m2: '产量',
-					single_grain_g: '单粒重',
-					total_harvest_ear_count: '总收获穗数',
-					total_harvest_grain_g: '总收获粒重',
-					ear_weight_g: '穗重',
+					potential_flower_count: '潜力开花数',
+					current_flower_order: '当前开花序数',
+					accum_ear_count: '单头累计坐果穗数',
+					new_grain_count: '本周单头新增坐果数',
+					accum_grain_count: '单头累计坐果粒数',
+					yield_kg_m2: '单位产量',
+					single_grain_g: '单粒果重',
+					total_harvest_ear_count: '单头总采收果穗数',
+					new_harvest_grain_g: '本周单头新增采收果数',
+					total_harvest_grain_g: '单头总采收果粒数',
+					ear_weight_g: '单穗重',
 					single_head_yield_g: '单头产量',
-					brix: '糖度',
+					brix: '可溶性固形物',
 					acidity: '酸度',
 					cracking_rate: '裂果率',
 					irrigation_ml: '灌溉量',
-					reflux_ml: '回流量',
-					reflux_ec: '回流EC',
-					reflux_ph: '回流pH'
+					reflux_ml: '回液量',
+					reflux_ec: '回液EC',
+					reflux_ph: '回液PH'
 				}
 			},
 			en: {
-				title: '🌱 Dexi Phenotype Collection System',
+				title: '🌱 Deci Phenotype Collection System',
 				subtitle: 'Record and manage plant phenotype data for precision agriculture research and analysis.',
 				exportBtn: '📥 Export CSV',
 				syncBtn: '☁️ Sync to Cloud',
@@ -694,6 +750,7 @@
 				statusReady: 'System Ready',
 				calendarTitle: '📅 Collection Calendar',
 				dataCollection: '📊 Data Collection',
+				statisticIndicators: '📊 Cumulative Statistics',
 				trendAnalysis: '📈 Trend Analysis',
 				prevMonth: '◀ Prev',
 				nextMonth: 'Next ▶',
@@ -707,21 +764,23 @@
 					leaf_count: 'Leaf Count',
 					leaf_length_cm: 'Leaf Length',
 					leaf_width_cm: 'Leaf Width',
-					potential_flower_count: 'Potential Flowers',
-					current_flower_order: 'Current Flower Order',
-					accum_ear_count: 'Accumulated Ears',
-					accum_grain_count: 'Accumulated Grains',
-					yield_kg_m2: 'Yield',
-					single_grain_g: 'Single Grain Weight',
-					total_harvest_ear_count: 'Total Harvest Ears',
-					total_harvest_grain_g: 'Total Harvest Grain Weight',
-					ear_weight_g: 'Ear Weight',
+					potential_flower_count: 'Potential Flower Count',
+					current_flower_order: 'Current Flowering Cluster',
+					accum_ear_count: 'Single Head Accumulated Fruit Clusters',
+					new_grain_count: 'Weekly New Fruit Count',
+					accum_grain_count: 'Single Head Accumulated Fruits',
+					yield_kg_m2: 'Unit Yield',
+					single_grain_g: 'Single Fruit Weight',
+					total_harvest_ear_count: 'Total Harvested Clusters',
+					new_harvest_grain_g: 'Weekly New Harvest Weight',
+					total_harvest_grain_g: 'Total Harvested Fruits',
+					ear_weight_g: 'Single Cluster Weight',
 					single_head_yield_g: 'Single Head Yield',
-					brix: 'Brix',
+					brix: 'Soluble Solids',
 					acidity: 'Acidity',
 					cracking_rate: 'Cracking Rate',
-					irrigation_ml: 'Irrigation',
-					reflux_ml: 'Reflux',
+					irrigation_ml: 'Irrigation Volume',
+					reflux_ml: 'Reflux Volume',
 					reflux_ec: 'Reflux EC',
 					reflux_ph: 'Reflux pH'
 				}
@@ -734,41 +793,69 @@
 			updateLanguage();
 		}
 		
-		function updateLanguage() {
-			const lang = translations[currentLang];
-			
-			// Update all elements with data-lang attribute
-			document.querySelectorAll('[data-lang]').forEach(el => {
-				const key = el.getAttribute('data-lang');
-				if (lang[key]) {
-					el.textContent = el.textContent.replace(/[^🌱📅📊📈📥☁️🔗◀▶]/g, '') + lang[key].replace(/[🌱📅📊📈📥☁️🔗◀▶]/g, '');
-				}
-			});
-			
-			// Update weekdays
-			const weekdayElements = document.querySelectorAll('#calendarWeekdays .weekday');
-			weekdayElements.forEach((el, index) => {
-				el.textContent = lang.weekdays[index];
-			});
-			
-			// Update title
-			document.title = lang.title;
-			
-			// Refresh indicators with new language
-			indicators = getIndicators();
-			
-			// Regenerate form with new language
-			generateForm();
-			
-			// Update chart indicator dropdown
-			updateChartIndicators();
-			
-			// Update chart month display
-			updateChartMonthDisplay();
-			generateCalendar(currentCalDate.getFullYear(), currentCalDate.getMonth());
-		}
+	function updateLanguage() {
+		const lang = translations[currentLang];
 		
-		// ====================================
+		// Update all elements with data-lang attribute
+		document.querySelectorAll('[data-lang]').forEach(el => {
+			const key = el.getAttribute('data-lang');
+			if (lang[key]) {
+				el.textContent = el.textContent.replace(/[^🌱📅📊📈📥☁️🔗◀▶]/g, '') + lang[key].replace(/[🌱📅📊📈📥☁️🔗◀▶]/g, '');
+			}
+		});
+		
+		// Update weekdays
+		const weekdayElements = document.querySelectorAll('#calendarWeekdays .weekday');
+		weekdayElements.forEach((el, index) => {
+			el.textContent = lang.weekdays[index];
+		});
+		
+		// Update title
+		document.title = lang.title;
+		
+		// Save current form values before regenerating
+		const currentValues = {};
+		indicators.forEach(indicator => {
+			const slider = document.getElementById(`slider-${indicator.field}`);
+			if (slider) {
+				currentValues[indicator.field] = slider.value;
+			}
+		});
+		
+		// Refresh indicators with new language
+		indicators = getIndicators();
+		
+		// Regenerate form with new language
+		generateForm();
+		
+		// Restore form values after regenerating
+		Object.keys(currentValues).forEach(field => {
+			const slider = document.getElementById(`slider-${field}`);
+			const valueDisplay = document.getElementById(`value-${field}`);
+			if (slider && valueDisplay) {
+				slider.value = currentValues[field];
+				valueDisplay.textContent = currentValues[field];
+			}
+		});
+		
+		// Update chart indicator dropdown
+		updateChartIndicators();
+		
+		// Update week info
+		updateWeekInfo();
+		
+		// Update collection progress
+		updateCollectionProgress();
+		
+		// Update chart month display
+		updateChartMonthDisplay();
+		generateCalendar(currentCalDate.getFullYear(), currentCalDate.getMonth());
+		
+		// Reload chart if a field is selected
+		if (currentTrendField) {
+			loadTrendData(currentTrendField);
+		}
+	}		// ====================================
 		// SUPABASE CONFIGURATION
 		// ====================================
 		const SUPABASE_URL = 'https://fnahnjojeiwclyixcyia.supabase.co';
@@ -779,32 +866,32 @@
 		// ====================================
 		// DATA CONFIGURATION
 		// ====================================
-			const indicatorsConfig = [
-				{field:'growth_cm', unit:'cm', unitEn:'cm', min:0, max:200, step:0.1, defaultValue:0},
-				{field:'stem_mm', unit:'mm', unitEn:'mm', min:0, max:100, step:0.1, defaultValue:0},
-				{field:'leaf_count', unit:'片', unitEn:'pcs', min:0, max:500, step:1, defaultValue:0},
-				{field:'leaf_length_cm', unit:'cm', unitEn:'cm', min:0, max:100, step:0.1, defaultValue:0},
-				{field:'leaf_width_cm', unit:'cm', unitEn:'cm', min:0, max:50, step:0.1, defaultValue:0},
-				{field:'potential_flower_count', unit:'朵', unitEn:'pcs', min:0, max:200, step:1, defaultValue:0},
-				{field:'current_flower_order', unit:'序', unitEn:'order', min:0, max:50, step:1, defaultValue:0},
-				{field:'accum_ear_count', unit:'穗', unitEn:'ears', min:0, max:100, step:1, defaultValue:0},
-				{field:'accum_grain_count', unit:'粒', unitEn:'grains', min:0, max:1000, step:1, defaultValue:0},
-				{field:'yield_kg_m2', unit:'kg/m²', unitEn:'kg/m²', min:0, max:50, step:0.01, defaultValue:0},
-				{field:'single_grain_g', unit:'g', unitEn:'g', min:0, max:10, step:0.001, defaultValue:0},
-				{field:'total_harvest_ear_count', unit:'穗', unitEn:'ears', min:0, max:100, step:1, defaultValue:0},
-				{field:'total_harvest_grain_g', unit:'g', unitEn:'g', min:0, max:5000, step:0.1, defaultValue:0},
-				{field:'ear_weight_g', unit:'g', unitEn:'g', min:0, max:500, step:0.1, defaultValue:0},
-				{field:'single_head_yield_g', unit:'g', unitEn:'g', min:0, max:200, step:0.1, defaultValue:0},
-				{field:'brix', unit:'°Bx', unitEn:'°Bx', min:0, max:30, step:0.1, defaultValue:0},
-				{field:'acidity', unit:'%', unitEn:'%', min:0, max:5, step:0.01, defaultValue:0},
-				{field:'cracking_rate', unit:'%', unitEn:'%', min:0, max:100, step:0.1, defaultValue:0},
-				{field:'irrigation_ml', unit:'ml', unitEn:'ml', min:0, max:10000, step:1, defaultValue:0},
-				{field:'reflux_ml', unit:'ml', unitEn:'ml', min:0, max:10000, step:1, defaultValue:0},
-				{field:'reflux_ec', unit:'mS/cm', unitEn:'mS/cm', min:0, max:10, step:0.01, defaultValue:0},
-				{field:'reflux_ph', unit:'pH', unitEn:'pH', min:0, max:14, step:0.01, defaultValue:0}
-			];
-			
-			// Get indicators with current language
+		const indicatorsConfig = [
+			{field:'growth_cm', unit:'cm', unitEn:'cm', min:5, max:50, step:0.1, defaultValue:5},
+			{field:'stem_mm', unit:'mm', unitEn:'mm', min:2, max:20, step:0.1, defaultValue:2},
+			{field:'leaf_count', unit:'个', unitEn:'pcs', min:5, max:23, step:1, defaultValue:5},
+			{field:'leaf_length_cm', unit:'cm', unitEn:'cm', min:20, max:60, step:0.1, defaultValue:20},
+			{field:'leaf_width_cm', unit:'cm', unitEn:'cm', min:5, max:60, step:0.1, defaultValue:5},
+			{field:'potential_flower_count', unit:'串', unitEn:'clusters', min:8, max:18, step:1, defaultValue:8},
+			{field:'current_flower_order', unit:'串', unitEn:'clusters', min:1, max:60, step:1, defaultValue:1},
+			{field:'accum_ear_count', unit:'个', unitEn:'pcs', min:1, max:60, step:1, defaultValue:1},
+			{field:'new_grain_count', unit:'个', unitEn:'pcs', min:0, max:100, step:1, defaultValue:0},
+			{field:'accum_grain_count', unit:'个', unitEn:'pcs', min:1, max:720, step:1, defaultValue:1, isStatistic: true},
+			{field:'yield_kg_m2', unit:'kg/m²', unitEn:'kg/m²', min:0, max:40, step:0.01, defaultValue:0},
+			{field:'single_grain_g', unit:'g', unitEn:'g', min:5, max:25, step:0.1, defaultValue:5},
+			{field:'total_harvest_ear_count', unit:'个', unitEn:'pcs', min:1, max:60, step:1, defaultValue:1},
+			{field:'new_harvest_grain_g', unit:'g', unitEn:'g', min:0, max:100, step:1, defaultValue:0},
+			{field:'total_harvest_grain_g', unit:'g', unitEn:'g', min:1, max:720, step:1, defaultValue:1, isStatistic: true},
+			{field:'ear_weight_g', unit:'g', unitEn:'g', min:50, max:280, step:1, defaultValue:50},
+			{field:'single_head_yield_g', unit:'g', unitEn:'g', min:0, max:18000, step:10, defaultValue:0},
+			{field:'brix', unit:'', unitEn:'', min:4, max:13, step:0.1, defaultValue:4},
+			{field:'acidity', unit:'', unitEn:'', min:0, max:10, step:0.1, defaultValue:0},
+			{field:'cracking_rate', unit:'%', unitEn:'%', min:0, max:100, step:0.1, defaultValue:0},
+			{field:'irrigation_ml', unit:'ml', unitEn:'ml', min:0, max:3000, step:10, defaultValue:0},
+			{field:'reflux_ml', unit:'ml', unitEn:'ml', min:0, max:8000, step:10, defaultValue:0},
+			{field:'reflux_ec', unit:'mS/cm', unitEn:'mS/cm', min:3, max:9, step:0.1, defaultValue:3},
+			{field:'reflux_ph', unit:'', unitEn:'', min:4, max:9, step:0.1, defaultValue:4}
+		];			// Get indicators with current language
 			function getIndicators() {
 				const lang = translations[currentLang];
 				return indicatorsConfig.map(ind => ({
@@ -822,6 +909,28 @@
 				const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
 				const beijingTime = new Date(utcTime + (8 * 3600000));
 				return beijingTime;
+			}
+			
+			// Calculate week number of the year (ISO week)
+			function getWeekNumber(date) {
+				const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+				const dayNum = d.getUTCDay() || 7;
+				d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+				const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+				return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+			}
+			
+			// Update week info display
+			function updateWeekInfo() {
+				const today = getBeijingTime();
+				const weekNum = getWeekNumber(today);
+				const weekInfoEl = document.getElementById('weekInfo');
+				
+				if (currentLang === 'zh') {
+					weekInfoEl.textContent = `今天是 ${today.getFullYear()} 年第 ${weekNum} 周`;
+				} else {
+					weekInfoEl.textContent = `Today is Week ${weekNum} of ${today.getFullYear()}`;
+				}
 			}
 			
 			let currentIndicatorIndex = 0;
@@ -895,6 +1004,7 @@
 					syncBtn.style.display = 'inline-block';
 					authBtn.style.display = 'none';
 					await loadCollectionHistory();
+					await loadTodayData();
 				} else {
 					statusEl.textContent = '❌ 注册失败，请确保已禁用邮箱验证';
 					alert('请在 Supabase 控制台的 Authentication → Providers → Email 中禁用 "Confirm email" 选项');
@@ -907,57 +1017,101 @@
 				syncBtn.style.display = 'inline-block';
 				authBtn.style.display = 'none';
 				await loadCollectionHistory();
+				await loadTodayData();
 			}
 		}			// ====================================
 			// FORM GENERATION
 			// ====================================
-			function generateForm() {
-				// Clear existing form
-				form.innerHTML = '';
-				
-				indicators.forEach((indicator, index) => {
-					const group = document.createElement('div');
-					group.className = 'indicator-group';
-					
-					const label = document.createElement('div');
-					label.className = 'indicator-label';
-					
-					const nameSpan = document.createElement('span');
-					nameSpan.className = 'indicator-name';
-					nameSpan.textContent = `${indicator.name} (${indicator.unit})`;
-					
-					const valueSpan = document.createElement('span');
-					valueSpan.className = 'indicator-value-display';
-					valueSpan.id = `value-${indicator.field}`;
-					valueSpan.textContent = indicator.defaultValue;
-					
-					label.appendChild(nameSpan);
-					label.appendChild(valueSpan);
-					
-					const sliderContainer = document.createElement('div');
-					sliderContainer.className = 'slider-container';
-					
-					const slider = document.createElement('input');
-					slider.type = 'range';
-					slider.name = indicator.field;
-					slider.min = indicator.min;
-					slider.max = indicator.max;
-					slider.step = indicator.step;
-					slider.value = indicator.defaultValue;
-					slider.id = `slider-${indicator.field}`;
-					
-					slider.addEventListener('input', (e) => {
-						valueSpan.textContent = e.target.value;
-					});
-					
-					sliderContainer.appendChild(slider);
-					group.appendChild(label);
-					group.appendChild(sliderContainer);
-					form.appendChild(group);
-				});
+		function generateForm() {
+		// Clear existing form
+		form.innerHTML = '';
+		
+		indicators.forEach((indicator, index) => {
+			// Skip statistic indicators (not for manual collection)
+			if (indicator.isStatistic) {
+				return;
 			}
-
-			// ====================================
+			
+			const group = document.createElement('div');
+			group.className = 'indicator-group';
+			group.id = `group-${indicator.field}`;
+			
+			const label = document.createElement('div');
+			label.className = 'indicator-label';				// Create left side container for checkbox and name
+				const labelLeft = document.createElement('div');
+				labelLeft.className = 'indicator-label-left';
+				
+				// Create checkbox
+				const checkbox = document.createElement('input');
+				checkbox.type = 'checkbox';
+				checkbox.className = 'indicator-checkbox';
+				checkbox.id = `check-${indicator.field}`;
+				checkbox.addEventListener('change', (e) => handleCheckboxChange(e, indicator.field));
+				
+				const nameSpan = document.createElement('span');
+				nameSpan.className = 'indicator-name';
+				nameSpan.textContent = `${indicator.name} (${indicator.unit})`;
+				
+				labelLeft.appendChild(checkbox);
+				labelLeft.appendChild(nameSpan);
+				
+				const valueSpan = document.createElement('span');
+				valueSpan.className = 'indicator-value-display';
+				valueSpan.id = `value-${indicator.field}`;
+				valueSpan.textContent = indicator.defaultValue;
+				
+				label.appendChild(labelLeft);
+				label.appendChild(valueSpan);
+				
+				const sliderContainer = document.createElement('div');
+				sliderContainer.className = 'slider-container';
+				
+				const slider = document.createElement('input');
+				slider.type = 'range';
+				slider.name = indicator.field;
+				slider.min = indicator.min;
+				slider.max = indicator.max;
+				slider.step = indicator.step;
+				slider.value = indicator.defaultValue;
+				slider.id = `slider-${indicator.field}`;
+				slider.disabled = true; // Initially disabled
+				
+				slider.addEventListener('input', (e) => {
+					valueSpan.textContent = e.target.value;
+					updateCollectionProgress();
+				});
+				
+				sliderContainer.appendChild(slider);
+				group.appendChild(label);
+				group.appendChild(sliderContainer);
+				form.appendChild(group);
+			});
+		}
+		
+		function handleCheckboxChange(event, field) {
+			const checkbox = event.target;
+			
+			// If checking this checkbox, uncheck all others
+			if (checkbox.checked) {
+				// Uncheck all other checkboxes
+				document.querySelectorAll('.indicator-checkbox').forEach(cb => {
+					if (cb.id !== `check-${field}`) {
+						cb.checked = false;
+						const cbField = cb.id.replace('check-', '');
+						document.getElementById(`slider-${cbField}`).disabled = true;
+						document.getElementById(`group-${cbField}`).classList.remove('active');
+					}
+				});
+				
+				// Enable this slider
+				document.getElementById(`slider-${field}`).disabled = false;
+				document.getElementById(`group-${field}`).classList.add('active');
+			} else {
+				// Disable this slider
+				document.getElementById(`slider-${field}`).disabled = true;
+				document.getElementById(`group-${field}`).classList.remove('active');
+			}
+		}			// ====================================
 			// CALENDAR
 			// ====================================
 			function generateCalendar(year, month) {
@@ -1089,6 +1243,38 @@
 			}
 		}
 
+		// ====================================
+		// CALCULATE CUMULATIVE VALUE
+		// ====================================
+		async function calculateCumulativeValue(userId, endDate, sourceField) {
+			try {
+				// Query all data from beginning until the specified date
+				const { data, error } = await supabase
+					.from('plant_data')
+					.select('date, data')
+					.eq('user_id', userId)
+					.lte('date', endDate)
+					.order('date', { ascending: true });
+				
+				if (error) throw error;
+				
+				let cumulativeSum = 0;
+				if (data && data.length > 0) {
+					data.forEach(row => {
+						const value = row.data[sourceField];
+						if (value !== undefined && value !== null) {
+							cumulativeSum += parseFloat(value);
+						}
+					});
+				}
+				
+				return cumulativeSum;
+			} catch (error) {
+				console.error('Error calculating cumulative value:', error);
+				return 0;
+			}
+		}
+
 		async function handleIndicatorChange() {
 			const selectedField = document.getElementById('indicatorSelect').value;
 			if (selectedField) {
@@ -1138,10 +1324,36 @@
 					});
 				}
 				
+				// Check if this is a statistic indicator that needs cumulative calculation
+				const indicator = indicators.find(ind => ind.field === field);
+				const isStatistic = indicator && indicator.isStatistic;
+				
 				// Fill in all days
 				for (let day = 1; day <= daysInMonth; day++) {
 					dates.push(String(day));
-					values.push(dataMap[day] !== undefined ? dataMap[day] : 0);
+					
+					if (isStatistic) {
+						// For statistic indicators, calculate cumulative sum
+						// We need to get the corresponding weekly new value
+						let sourceField = '';
+						if (field === 'accum_grain_count') {
+							sourceField = 'new_grain_count';
+						} else if (field === 'total_harvest_grain_g') {
+							sourceField = 'new_harvest_grain_g';
+						}
+						
+						if (sourceField) {
+							// Calculate cumulative sum from beginning of time to current day
+							const currentDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+							const cumulativeValue = await calculateCumulativeValue(session.user.id, currentDate, sourceField);
+							values.push(cumulativeValue);
+						} else {
+							values.push(dataMap[day] !== undefined ? dataMap[day] : 0);
+						}
+					} else {
+						// For regular indicators, use the stored value
+						values.push(dataMap[day] !== undefined ? dataMap[day] : 0);
+					}
 				}					createTrendChart(dates, values, field);
 					showLoading(false);
 				} catch (error) {
@@ -1243,31 +1455,143 @@
 					.select('data')
 					.eq('user_id', session.user.id)
 					.eq('date', dateKey)
-					.single();					if (error) {
-						// No data for today, keep defaults
-						console.log('No data for today, using defaults');
-						return;
-					}
-					
-					if (data && data.data) {
-						// Load the data into sliders
-						indicators.forEach(indicator => {
-							const slider = document.getElementById(`slider-${indicator.field}`);
-							const valueDisplay = document.getElementById(`value-${indicator.field}`);
-							const value = data.data[indicator.field];
-							
-							if (value !== undefined && value !== null) {
-								slider.value = value;
-								valueDisplay.textContent = value;
-							}
-						});
+				.single();					if (error) {
+					// No data for today, initialize to null
+					console.log('No data for today, initializing to null');
+					initializeFormToNull();
+					updateCollectionProgress();
+					return;
+				}
+				
+				if (data && data.data) {
+					// Load the data into sliders
+					indicators.forEach(indicator => {
+						// Skip statistic indicators
+						if (indicator.isStatistic) {
+							return;
+						}
 						
-						console.log('Loaded today\'s data');
-					}
-				} catch (error) {
-					console.error('Error loading today\'s data:', error);
+						const slider = document.getElementById(`slider-${indicator.field}`);
+						const valueDisplay = document.getElementById(`value-${indicator.field}`);
+						const value = data.data[indicator.field];
+						
+						if (value !== undefined && value !== null) {
+							slider.value = value;
+							valueDisplay.textContent = value;
+						} else {
+							// Initialize uncollected indicators to min value
+							slider.value = indicator.min;
+							valueDisplay.textContent = indicator.min;
+						}
+					});
+					
+					console.log('Loaded today\'s data');
+					updateCollectionProgress();
+					updateStatisticIndicators();
+				}
+			} catch (error) {
+				console.error('Error loading today\'s data:', error);
+				initializeFormToNull();
+				updateCollectionProgress();
+				updateStatisticIndicators();
+			}
+		}
+		
+	// Initialize all indicators to null (min value)
+	function initializeFormToNull() {
+		indicators.forEach(indicator => {
+			// Skip statistic indicators
+			if (indicator.isStatistic) {
+				return;
+			}
+			
+			const slider = document.getElementById(`slider-${indicator.field}`);
+			const valueDisplay = document.getElementById(`value-${indicator.field}`);
+			if (slider && valueDisplay) {
+				slider.value = indicator.min;
+				valueDisplay.textContent = indicator.min;
+			}
+		});
+	}		// Update collection progress display
+		function updateCollectionProgress() {
+			const progressEl = document.getElementById('collectionProgress');
+			if (!progressEl) return;
+			
+		let uncollected = 0;
+		let total = 0;
+		
+		indicators.forEach(indicator => {
+			// Skip statistic indicators
+			if (indicator.isStatistic) {
+				return;
+			}
+			
+			total++;
+			const slider = document.getElementById(`slider-${indicator.field}`);
+			
+			// Check if value is still at minimum (not collected)
+			if (slider && parseFloat(slider.value) === indicator.min) {
+				uncollected++;
+			}
+		});
+		
+		const collected = total - uncollected;			if (currentLang === 'zh') {
+				if (uncollected === 0) {
+					progressEl.innerHTML = `✅ 今日所有指标已采集完成 (${total}/${total})`;
+					progressEl.style.color = '#059669';
+				} else {
+					progressEl.innerHTML = `📊 还有 <strong>${uncollected}</strong> 个指标未采集 (${collected}/${total})`;
+					progressEl.style.color = '#047857';
+				}
+			} else {
+				if (uncollected === 0) {
+					progressEl.innerHTML = `✅ All indicators collected today (${total}/${total})`;
+					progressEl.style.color = '#059669';
+				} else {
+					progressEl.innerHTML = `📊 <strong>${uncollected}</strong> indicators not collected yet (${collected}/${total})`;
+					progressEl.style.color = '#047857';
 				}
 			}
+		}
+
+		// ====================================
+		// UPDATE STATISTIC INDICATORS DISPLAY
+		// ====================================
+		async function updateStatisticIndicators() {
+			const { data: { session } } = await supabase.auth.getSession();
+			if (!session || !session.user) return;
+			
+			const today = getBeijingTime();
+			const dateKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+			
+			const statisticValuesEl = document.getElementById('statisticValues');
+			if (!statisticValuesEl) return;
+			
+			// Calculate cumulative values for each statistic indicator
+			const statisticIndicators = indicators.filter(ind => ind.isStatistic);
+			
+			let html = '';
+			for (const indicator of statisticIndicators) {
+				let sourceField = '';
+				if (indicator.field === 'accum_grain_count') {
+					sourceField = 'new_grain_count';
+				} else if (indicator.field === 'total_harvest_grain_g') {
+					sourceField = 'new_harvest_grain_g';
+				}
+				
+				if (sourceField) {
+					const cumulativeValue = await calculateCumulativeValue(session.user.id, dateKey, sourceField);
+					html += `
+						<div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: white; border-radius: 4px;">
+							<span style="color: #065f46; font-weight: 500;">${indicator.name}</span>
+							<span style="color: #047857; font-weight: 600; font-size: 16px;">${cumulativeValue.toFixed(indicator.step >= 1 ? 0 : 1)} ${indicator.unit}</span>
+						</div>
+					`;
+				}
+			}
+			
+			statisticValuesEl.innerHTML = html || '<div style="color: #6b7280; text-align: center; padding: 10px;">暂无数据</div>';
+		}
 
 		// ====================================
 		// LOAD COLLECTION HISTORY
@@ -1316,8 +1640,15 @@
 			// Collect form data
 			const formData = {};
 			indicators.forEach(indicator => {
+				// Skip statistic indicators
+				if (indicator.isStatistic) {
+					return;
+				}
+				
 				const slider = document.getElementById(`slider-${indicator.field}`);
-				formData[indicator.field] = parseFloat(slider.value);
+				if (slider) {
+					formData[indicator.field] = parseFloat(slider.value);
+				}
 			});
 			
 			try {
@@ -1370,6 +1701,9 @@
 				collectionData[dateKey] = 1;
 				generateCalendar(currentCalDate.getFullYear(), currentCalDate.getMonth());
 				
+				// Update statistic indicators
+				await updateStatisticIndicators();
+				
 				// Refresh trend chart if showing current month
 				if (currentTrendField) {
 					const uploadYear = now.getFullYear();
@@ -1394,8 +1728,8 @@
 			function buildCSV() {
 				const headers = [
 					'timestamp','growth_cm','stem_mm','leaf_count','leaf_length_cm','leaf_width_cm',
-					'potential_flower_count','current_flower_order','accum_ear_count','accum_grain_count',
-					'yield_kg_m2','single_grain_g','total_harvest_ear_count','total_harvest_grain_g',
+					'potential_flower_count','current_flower_order','accum_ear_count','new_grain_count','accum_grain_count',
+					'yield_kg_m2','single_grain_g','total_harvest_ear_count','new_harvest_grain_g','total_harvest_grain_g',
 					'ear_weight_g','single_head_yield_g','brix','acidity','cracking_rate',
 					'irrigation_ml','reflux_ml','reflux_ec','reflux_ph'
 				];
@@ -1441,6 +1775,7 @@
 				document.getElementById('langSwitch').addEventListener('click', switchLanguage);
 				
 				generateForm();
+				updateWeekInfo();
 				generateCalendar(currentCalDate.getFullYear(), currentCalDate.getMonth());
 				await initChart();
 				await initAuth();
