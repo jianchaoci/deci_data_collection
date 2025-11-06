@@ -30,17 +30,23 @@
 			}
 			
 			.page-title {
-				font-size: 42px;
-				font-weight: 700;
+				font-size: 52px;
+				font-weight: 800;
 				margin: 0 0 10px 0;
-				text-shadow: none;
+				text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.15);
+				background: linear-gradient(135deg, #065f46, #059669, #10b981);
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+				background-clip: text;
 			}
 			
 			.page-subtitle {
-				font-size: 16px;
-				opacity: 0.8;
+				font-size: 18px;
+				opacity: 1;
 				margin: 0 0 25px 0;
 				text-shadow: none;
+				color: #047857;
+				font-weight: 600;
 			}
 			
 			.action-buttons {
@@ -62,8 +68,8 @@
 			}
 			
 			.status-text {
-				color: #1f2937;
-				font-weight: 500;
+				color: #065f46;
+				font-weight: 600;
 				overflow-wrap: break-word;
 			}
 
@@ -170,7 +176,7 @@
 				border: 1px solid rgba(34, 197, 94, 0.1);
 				display: flex;
 				flex-direction: column;
-				height: 600px;
+				height: 500px;
 			}
 			
 			.calendar-header {
@@ -303,7 +309,7 @@
 				display: flex;
 				flex-direction: column;
 				overflow: hidden;
-				height: 600px;
+				height: 500px;
 			}
 			
 			.page-header {
@@ -593,27 +599,26 @@
 					height: 6px;
 				}
 				
-				.chart-container {
-					width: 90%;
-					padding: 12px 8px;
-				}
-				
-				.chart-header {
-					flex-direction: column;
-					gap: 8px;
-					align-items: stretch;
-				}
-				
-				.chart-content {
-					padding: 10px 5px;
-				}
-				
-				.chart-controls-row {
-					gap: 6px;
-					font-size: 12px;
-				}
-				
-				.chart-controls-row label {
+			.chart-container {
+				width: 90%;
+				padding: 12px 8px;
+			}
+			
+			.chart-header {
+				flex-direction: column;
+				gap: 8px;
+				align-items: stretch;
+			}
+			
+			.chart-content {
+				padding: 10px 5px;
+				min-height: 200px;
+			}
+			
+			.chart-controls-row {
+				gap: 6px;
+				font-size: 12px;
+			}				.chart-controls-row label {
 					font-size: 11px;
 					margin: 0;
 				}
@@ -651,16 +656,15 @@
 					padding: 10px 5px;
 				}
 				
-				.chart-content {
-					padding: 8px 3px;
-				}
-				
-				.chart-controls-row button {
-					font-size: 10px;
-					padding: 5px 8px;
-				}
-				
-				.chart-controls-row span {
+			.chart-content {
+				padding: 8px 3px;
+				min-height: 180px;
+			}
+			
+			.chart-controls-row button {
+				font-size: 10px;
+				padding: 5px 8px;
+			}				.chart-controls-row span {
 					font-size: 11px !important;
 					margin: 0 5px !important;
 				}
