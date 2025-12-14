@@ -1,0 +1,21 @@
+# 文档文件
+*.md
+!README.md
+
+# SQL 脚本
+*.sql
+
+# 编辑器配置
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 临时文件
+*.tmp
+*.log
+

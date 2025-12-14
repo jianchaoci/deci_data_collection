@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>📅 采集日历 - 得希表型采集系统</title>
+    <link rel="stylesheet" href="common.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .calendar-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(5, 150, 105, 0.12);
+            border: 1px solid rgba(5, 150, 105, 0.15);
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .month-nav {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .month-nav button {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: #059669;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .month-nav button:hover {
+            background: #ecfdf5;
+        }
+
+        .current-date {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #064e3b;
+        }
+
+        .weeks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 15px;
+        }
+
+        .week-item {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #374151;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .week-item.has-data {
+            background: #d1fae5;
+            border-color: #6ee7b7;
+            color: #065f46;
+            box-shadow: 0 2px 4px rgba(5, 150, 105, 0.1);
+        }
+
+        .week-item.current-week {
+            border: 2px solid #10b981;
+        }
+
+        .week-label {
+            font-size: 0.8rem;
+            color: #9ca3af;
+            margin-bottom: 4px;
+        }
+
+        .week-item.has-data .week-label {
+            color: #059669;
+        }
+
+        .week-number {
+            font-size: 1.5rem;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            margin-top: 5px;
+            opacity: 0;
+        }
+
+        .week-item.has-data .status-indicator {
+            opacity: 1;
+        }
+
+        .loading-placeholder {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+            grid-column: 1 / -1;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="nav-bar">
+        <div class="nav-links">
+            <a href="index.html" class="nav-link" data-page="home" data-lang="nav.home">🏠 首页</a>
+            <a href="calendar.html" class="nav-link active" data-page="calendar" data-lang="nav.calendar">📅 采集日历</a>
+            <a href="collection.html" class="nav-link" data-page="collection" data-lang="nav.collection">📊 数据采集</a>
+            <a href="statistics.html" class="nav-link" data-page="statistics" data-lang="nav.statistics">📈 统计数量</a>
+            <a href="trends.html" class="nav-link" data-page="trends" data-lang="nav.trends">📉 趋势分析</a>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <button class="nav-link" id="authBtn" style="border: 1px solid white; cursor: pointer; display: none;">🔗
+                登录</button>
+            <button class="lang-switch" id="langSwitch" style="position: static;">EN</button>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1 class="page-title" data-lang="calendarTitle">📅 采集日历</h1>
+        <p class="page-subtitle" data-lang="calendarSubtitle">查看和管理数据采集历史，追踪每日采集进度</p>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <div class="calendar-card">
+            <div class="calendar-header">
+                <div class="month-nav">
+                    <button id="prevYear">◀ <span data-lang="prevYear">去年</span></button>
+                    <span class="current-date" id="currentYearDisplay">2025</span>
+                    <button id="nextYear"><span data-lang="nextYear">明年</span> ▶</button>
+                </div>
+            </div>
+
+            <div class="weeks-grid" id="weeksGrid">
+                <div class="loading-placeholder" data-lang="loading">加载中...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="common.js?v=20251214"></script>
+    <script>
+        // Set active navigation
+        setActiveNav('calendar');
+
+        // Add translations
+        translations.zh.prevYear = '去年';
+        translations.zh.nextYear = '明年';
+        translations.zh.week = '周';
+
+        translations.en.prevYear = 'Prev Year';
+        translations.en.nextYear = 'Next Year';
+        translations.en.week = 'Week';
+
+        let currentYear = getBeijingTime().getFullYear();
+        let collectionData = {};
+
+        const grid = document.getElementById('weeksGrid');
+        const yearDisplay = document.getElementById('currentYearDisplay');
+
+        function updateHeader() {
+            yearDisplay.textContent = `${currentYear}年`;
+            if (currentLang === 'en') {
+                yearDisplay.textContent = `${currentYear}`;
+            }
+
+            // Update button text to specific years
+            const prevBtn = document.getElementById('prevYear');
+            const nextBtn = document.getElementById('nextYear');
+
+            if (prevBtn) prevBtn.textContent = `◀ ${currentYear - 1}`;
+            if (nextBtn) nextBtn.textContent = `${currentYear + 1} ▶`;
+        }
+
+        function generateCalendar(year) {
+            grid.innerHTML = '';
+            const today = getBeijingTime();
+            const currentWeek = getWeekNumber(today);
+            const isCurrentYear = year === today.getFullYear();
+
+            const lang = translations[currentLang];
+            const weekLabel = lang.week || '周';
+
+            for (let i = 1; i <= 53; i++) {
+                const weekItem = document.createElement('div');
+                weekItem.className = 'week-item';
+
+                // Check if this week has data
+                let hasData = false;
+                // In guest mode, no data
+                if (collectionData && Object.keys(collectionData).length > 0) {
+                    Object.keys(collectionData).forEach(dateStr => {
+                        const date = new Date(dateStr);
+                        if (date.getFullYear() === year && getWeekNumber(date) === i) {
+                            hasData = true;
+                        }
+                    });
+                }
+
+                if (hasData) {
+                    weekItem.classList.add('has-data');
+                }
+
+                if (isCurrentYear && i === currentWeek) {
+                    weekItem.classList.add('current-week');
+                }
+
+                weekItem.innerHTML = `
+					<span class="week-label">${weekLabel}</span>
+					<span class="week-number">${i}</span>
+					<div class="status-indicator"></div>
+				`;
+
+                grid.appendChild(weekItem);
+            }
+        }
+
+        document.getElementById('prevYear').addEventListener('click', () => {
+            currentYear--;
+            updateHeader();
+            loadCollectionHistory();
+        });
+
+        document.getElementById('nextYear').addEventListener('click', () => {
+            currentYear++;
+            updateHeader();
+            loadCollectionHistory();
+        });
+
+        // Load collection history
+        async function loadCollectionHistory() {
+            grid.innerHTML = `<div class="loading-placeholder" data-lang="loading">${currentLang === 'zh' ? '加载中...' : 'Loading...'}</div>`;
+
+            // If guest mode / not logged in, just show empty calendar
+            if (!currentUser || currentUser.is_guest) {
+                collectionData = {};
+                generateCalendar(currentYear);
+                return;
+            }
+
+            try {
+                const startDate = `${currentYear}-01-01`;
+                const endDate = `${currentYear}-12-31`;
+
+                const { data, error } = await supabase
+                    .from('phenotype_records')
+                    .select('date')
+                    .eq('user_id', currentUser.id)
+                    .gte('date', startDate)
+                    .lte('date', endDate);
+
+                if (error) throw error;
+
+                collectionData = {};
+                if (data) {
+                    data.forEach(row => {
+                        collectionData[row.date] = 1;
+                    });
+                }
+
+                generateCalendar(currentYear);
+            } catch (error) {
+                console.error('Error loading history:', error);
+                grid.innerHTML = `<div class="loading-placeholder">Error: ${error.message}</div>`;
+            }
+        }
+
+        async function init() {
+            updateHeader();
+            const session = await initAuth();
+            await loadCollectionHistory();
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

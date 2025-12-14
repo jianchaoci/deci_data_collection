@@ -1,151 +1,206 @@
-# 🌱 植物表型数据采集系统
+# 🌱 得希表型采集系统
 
-[![Deploy to GitHub Pages](https://img.shields.io/badge/Deploy-GitHub%20Pages-brightgreen)](https://pages.github.com/)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+一个用于农业表型数据采集、统计分析和趋势可视化的现代化Web应用。
 
-> 现代化的植物表型数据采集系统，支持云端同步和响应式设计
+## ✨ 功能特点
 
-## ✨ 特性
+- 📊 **数据采集** - 支持20个表型指标的在线采集
+- 📈 **统计分析** - 自动计算累积统计指标
+- 📉 **趋势分析** - 可视化展示数据趋势
+- 📅 **采集日历** - 直观查看采集进度
+- 🔐 **用户认证** - 基于邀请的安全登录
+- 🌐 **多语言** - 支持中文/英文切换
+- 📱 **响应式** - 完美适配移动端
 
-- 🎛️ 直观的滑块式数据输入界面
-- ☁️ 自动同步到Dropbox云端存储
-- 📅 交互式日历查看历史数据
-- 📱 支持手机、平板、电脑响应式设计
-- 🔒 安全的OAuth2认证
-- 🌿 专为植物表型学设计
+## 🚀 技术栈
 
-## 🌐 GitHub Pages部署
+- **前端**: HTML5, CSS3, JavaScript (ES6+)
+- **后端**: Supabase (PostgreSQL + Auth)
+- **图表**: Chart.js
+- **部署**: Vercel
 
-### 1. 创建GitHub仓库并上传文件
+## 📦 部署到 Vercel
 
-```bash
-# 1. 创建新仓库或fork现有仓库
-# 2. 克隆到本地
-git clone https://github.com/YOUR_USERNAME/deci_ui.git
-cd deci_ui
+### 方式一：通过 Git（推荐）
 
-# 3. 添加所有文件
-git add .
-git commit -m "Initial commit: Plant phenotyping data collection system"
-git push origin main
-```
-
-### 2. 启用GitHub Pages
-
-1. 访问你的GitHub仓库
-2. 点击 **Settings** 选项卡
-3. 在左侧菜单找到 **Pages**
-4. Source选择 **"Deploy from a branch"**
-5. 选择 **main** 分支和 **/ (root)** 目录
-6. 点击 **Save**
-
-### 3. 获取你的GitHub Pages地址
-
-部署完成后，你的系统将在以下地址可用：
-```
-https://YOUR_USERNAME.github.io/deci_ui/
-```
-
-### 4. 配置Dropbox重定向URI
-
-1. 访问 [Dropbox开发者控制台](https://www.dropbox.com/developers/apps)
-2. 选择你的应用 → **设置** → **OAuth 2**
-3. 在**重定向URI**中添加：
+1. **将代码推送到 Git 仓库**
+   ```bash
+   git init
+   git add .
+   git commit -m "Initial commit"
+   git remote add origin <your-git-repo-url>
+   git push -u origin main
    ```
-   https://YOUR_USERNAME.github.io/deci_ui/
+
+2. **在 Vercel 中导入项目**
+   - 访问 [vercel.com](https://vercel.com)
+   - 点击 "Import Project"
+   - 选择您的 Git 仓库
+   - 点击 "Deploy"
+
+### 方式二：通过 Vercel CLI
+
+1. **安装 Vercel CLI**
+   ```bash
+   npm install -g vercel
    ```
-4. 点击**添加**并保存
 
-## 🚀 快速开始
+2. **登录 Vercel**
+   ```bash
+   vercel login
+   ```
 
-### 本地开发和测试
+3. **部署项目**
+   ```bash
+   vercel
+   ```
 
-```bash
-# 启动本地服务器
-python -m http.server 8000
+4. **生产部署**
+   ```bash
+   vercel --prod
+   ```
 
-# 访问地址
-http://localhost:8000
+## 🔧 配置
+
+### 1. 设置 Supabase
+
+在 `common.js` 中配置您的 Supabase 凭据：
+
+```javascript
+const SUPABASE_URL = 'your-supabase-url';
+const SUPABASE_ANON_KEY = 'your-supabase-anon-key';
 ```
 
-### 在线使用
+### 2. 初始化数据库
 
-1. 访问你的GitHub Pages地址
-2. 系统会自动检测当前环境
-3. 点击"连接到Dropbox"进行授权
-4. 开始采集植物数据
+在 Supabase SQL Editor 中运行 `supabase_schema.sql`：
 
-## 📁 文件结构
+```sql
+-- 创建表
+CREATE TABLE phenotype_records (...);
+CREATE TABLE weekly_statistics (...);
 
-```
-deci_ui/
-├── index.html              # 主应用文件
-├── troubleshoot.html       # 诊断工具
-├── network-guide.html      # 网络环境指南
-├── redirect-guide.html     # 重定向URI配置指南
-├── CONFIG.md               # 配置说明
-├── README-usage.md         # 使用说明
-└── README.md               # 项目说明（本文件）
+-- 设置 RLS 策略
+-- 创建索引
 ```
 
-## 🔧 配置说明
+### 3. 邀请用户
 
-### APP Key配置
-- 当前APP Key: `j38wp0xvibd9bjq`
-- 如需更换，编辑 `index.html` 第809行
+在 Supabase Dashboard 中：
+1. 进入 Authentication > Users
+2. 点击 "Invite User"
+3. 输入用户邮箱
+4. 用户会收到邀请邮件
 
-### 重定向URI配置
-- **GitHub Pages**: `https://YOUR_USERNAME.github.io/deci_ui/`
-- **本地开发**: `http://localhost:8000/`
+## 📊 数据结构
 
-## 🌐 部署选项对比
+### phenotype_records (采集数据表)
+- 存储每个样本的原始采集数据
+- 30个样本/周 = 30行/周
+- 20个表型指标
 
-| 部署方式 | URL格式 | 稳定性 | 适用场景 |
-|---------|---------|--------|----------|
-| **GitHub Pages** | `https://username.github.io/repo/` | ✅ 高 | 团队协作、公开使用 |
-| 本地服务器 | `http://localhost:8000/` | ✅ 高 | 个人使用、开发测试 |
-| Netlify | `https://app-name.netlify.app/` | ✅ 高 | 专业部署 |
-| Vercel | `https://app-name.vercel.app/` | ✅ 高 | 现代化部署 |
+### weekly_statistics (统计指标表)
+- 存储每周的统计指标
+- 1周 = 1行
+- 基于30个样本计算的汇总数据
 
-## 📊 数据字段
+## 🎯 使用流程
 
-表单包含以下植物表型检测字段：
-- **基本信息**：检测信息描述
-- **生长指标**：生长量(cm)、茎粗(mm)、叶片数(个)、叶长(cm)、叶宽(cm)
-- **开花指标**：潜力开花数(串)、当前开花序数(串)
-- **坐果指标**：单头累计坐果穗数(个)、单头累计坐果粒数(个)
-- **产量指标**：单位产量(kg/㎡)、单粒果重(g)、单头总采收果穗数(个)等
-- **品质指标**：可溶性固形物(°Brix)、酸度、裂果率(%)
-- **管理指标**：灌溉量(ml)、回液量(ml)、回液EC(mS/cm)、回液PH
+1. **登录** - 使用邀请邮箱登录
+2. **数据采集** - 在"数据采集"页面输入表型数据
+3. **查看统计** - 在"统计数量"页面查看汇总指标
+4. **分析趋势** - 在"趋势分析"页面查看数据变化
+5. **导出数据** - 下载CSV格式的数据报表
 
-## 🛠️ 系统功能
+## 📱 页面说明
 
-- **智能数据输入**：滑块式界面，实时值显示
-- **自动时间戳**：每条记录自动添加提交时间
-- **数据验证**：必填字段检查和格式验证
-- **CSV预览**：提交前可预览生成的CSV内容
-- **持久授权**：Dropbox授权信息保存在本地
-- **历史数据**：交互式日历查看采集记录
-- **网络诊断**：智能检测重定向URI配置
+- **首页** (`index.html`) - 功能导航和系统介绍
+- **采集日历** (`calendar.html`) - 查看采集进度日历
+- **数据采集** (`collection.html`) - 输入表型数据
+- **统计数量** (`statistics.html`) - 查看累积统计
+- **趋势分析** (`trends.html`) - 可视化趋势图表
 
-## 🔒 安全性
+## 🔐 安全性
 
-- 使用OAuth2 PKCE流程，前端无需存储秘密信息
-- 访问令牌仅保存在本地浏览器
-- 支持令牌过期检测和自动重新授权
-- APP Key直接配置，简化了复杂的加密系统
+- ✅ Row Level Security (RLS) 启用
+- ✅ 用户只能访问自己的数据
+- ✅ 基于邀请的用户注册
+- ✅ HTTPS 加密传输（Vercel 自动提供）
 
-## 🆘 故障排除
+## 📝 开发说明
 
-- 📖 [使用说明](README-usage.md)
-- 🔧 [配置指南](CONFIG.md)
-- 🌐 [网络环境指南](network-guide.html)
-- 🛠️ [诊断工具](troubleshoot.html)
+### 文件结构
+```
+deci_data_collection/
+├── index.html              # 首页
+├── welcome.html            # 登录页
+├── calendar.html           # 日历页
+├── collection.html         # 采集页
+├── statistics.html         # 统计页
+├── trends.html             # 趋势页
+├── common.css              # 全局样式
+├── common.js               # 共享逻辑
+├── vercel.json             # Vercel 配置
+├── supabase_schema.sql     # 数据库架构
+└── README.md               # 项目说明
+```
+
+### 代码规范
+- ES6+ 语法
+- 模块化设计
+- 注释清晰
+- 响应式布局
+
+## 🐛 故障排查
+
+### 数据库连接失败
+- 检查 Supabase URL 和 API Key
+- 确认 RLS 策略已正确配置
+
+### 用户无法登录
+- 确认用户已被邀请
+- 检查邮箱地址是否正确
+- 查看浏览器控制台错误信息
+
+### 数据不显示
+- 确认已采集数据
+- 检查数据库表是否正确创建
+- 验证用户权限
+
+## 📈 性能优化
+
+- ✅ 静态资源 CDN 加速
+- ✅ 图片懒加载
+- ✅ 数据库查询优化
+- ✅ 索引优化
+
+## 🔄 更新日志
+
+### v2.0.0 (2025-12-14)
+- ✅ 重新设计数据库结构（双表方案）
+- ✅ 优化数据采集流程
+- ✅ 增强趋势分析功能
+- ✅ 改进用户认证系统
+- ✅ 修复已知问题
+
+### v1.0.0 (2025-12-01)
+- ✅ 初始版本发布
+- ✅ 基础数据采集功能
+- ✅ 统计分析功能
+- ✅ 用户认证系统
 
 ## 🤝 贡献
 
-欢迎提交Issue和Pull Request！
+欢迎提交 Issue 和 Pull Request！
+
+## 📄 许可
+
+MIT License
+
+## 📧 联系方式
+
+如有问题，请联系项目维护者。
 
 ---
 
-🌱 **得希表型采集系统** - 让植物数据采集更简单高效
+Made with ❤️ for Agricultural Research

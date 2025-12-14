@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>📉 趋势分析 - 得希表型采集系统</title>
+    <link rel="stylesheet" href="common.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .trends-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(5, 150, 105, 0.12);
+            border: 1px solid rgba(5, 150, 105, 0.15);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .chart-controls {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(209, 250, 229, 0.4);
+            border-radius: 12px;
+        }
+
+        .chart-controls-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .chart-controls-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .chart-controls-row.time-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .chart-controls-row.time-controls>div {
+            flex: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chart-controls-row button {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .chart-controls-row button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(5, 150, 105, 0.3);
+        }
+
+        .chart-controls-row span {
+            font-size: 14px;
+            font-weight: 600;
+            color: #065f46;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .indicator-checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.6);
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #d1fae5;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .checkbox-item:hover {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: #10b981;
+        }
+
+        .checkbox-item input {
+            margin-right: 8px;
+            accent-color: #10b981;
+            width: 16px;
+            height: 16px;
+        }
+
+        .checkbox-item span {
+            font-size: 0.9rem;
+            color: #064e3b;
+            font-weight: 500;
+        }
+
+        .charts-container {
+            padding: 10px;
+            min-height: 400px;
+            position: relative;
+        }
+
+        .chart-wrapper {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            position: relative;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chart-wrapper h3 {
+            margin: 0 0 15px 0;
+            color: #1f2937;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .chart-wrapper h3::before {
+            content: '';
+            display: block;
+            width: 4px;
+            height: 18px;
+            background: #10b981;
+            border-radius: 2px;
+            margin-right: 10px;
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            z-index: 10;
+        }
+
+        .loading-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #065f46;
+        }
+
+        .no-data-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .chart-controls-row.time-controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .chart-controls-row.time-controls>div {
+                flex: none;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="nav-bar">
+        <div class="nav-links">
+            <a href="index.html" class="nav-link" data-page="home" data-lang="nav.home">🏠 首页</a>
+            <a href="calendar.html" class="nav-link" data-page="calendar" data-lang="nav.calendar">📅 采集日历</a>
+            <a href="collection.html" class="nav-link" data-page="collection" data-lang="nav.collection">📊 数据采集</a>
+            <a href="statistics.html" class="nav-link" data-page="statistics" data-lang="nav.statistics">📈 统计数量</a>
+            <a href="trends.html" class="nav-link active" data-page="trends" data-lang="nav.trends">📉 趋势分析</a>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <button class="nav-link" id="authBtn" style="border: 1px solid white; cursor: pointer; display: none;">🔗 登录</button>
+            <button class="lang-switch" id="langSwitch" style="position: static;">EN</button>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1 class="page-title" data-lang="trendAnalysis">📉 趋势分析</h1>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <div class="trends-card">
+            <h2 class="section-title" data-lang="trendAnalysis">📈 趋势分析</h2>
+            <div class="chart-controls">
+                <div class="chart-controls-row time-controls">
+                    <div>
+                        <button type="button" id="prevYear">◀ <span data-lang="prevYear">去年</span></button>
+                        <span id="chartYearDisplay">2025年</span>
+                        <button type="button" id="nextYear"><span data-lang="nextYear">明年</span> ▶</button>
+                    </div>
+                </div>
+                <!-- Checkbox list -->
+                <div id="indicatorCheckboxes" class="indicator-checkbox-group">
+                    <!-- Checkboxes generated by JS -->
+                </div>
+            </div>
+
+            <div id="chartsContainer" class="charts-container">
+                <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+                    <div class="loading-text" data-lang="loading">加载中...</div>
+                </div>
+                <div id="noDataMessage" class="no-data-message" style="display: block;" data-lang="selectIndicator">
+                    请选择指标以查看趋势
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="common.js?v=20251214"></script>
+    <script>
+        // Set active navigation
+        setActiveNav('trends');
+
+        // Add translations
+        translations.zh.prevYear = '去年';
+        translations.zh.nextYear = '明年';
+        translations.zh.weekAxis = '周次';
+        translations.zh.selectIndicator = '请选择指标';
+        translations.zh.loading = '加载中...';
+
+        translations.en.prevYear = 'Prev Year';
+        translations.en.nextYear = 'Next Year';
+        translations.en.weekAxis = 'Week';
+        translations.en.selectIndicator = 'Select Indicator';
+        translations.en.loading = 'Loading...';
+
+        let indicators = getIndicators();
+        let currentChartYear = getBeijingTime().getFullYear();
+        let activeCharts = new Map(); // Store active chart instances: field -> chart
+        let yearDataCache = { phenotype: [], statistics: [] }; // Store data from both tables
+
+        const yearDisplay = document.getElementById('chartYearDisplay');
+        const indicatorContainer = document.getElementById('indicatorCheckboxes');
+        const chartsContainer = document.getElementById('chartsContainer');
+        const noDataMessage = document.getElementById('noDataMessage');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        // Show/hide loading overlay
+        function showLoading(show) {
+            loadingOverlay.style.display = show ? 'flex' : 'none';
+        }
+
+        // Update chart year display
+        function updateChartYearDisplay() {
+            if (currentLang === 'zh') {
+                yearDisplay.textContent = `${currentChartYear}年`;
+            } else {
+                yearDisplay.textContent = `${currentChartYear}`;
+            }
+
+            const prevBtn = document.getElementById('prevYear');
+            const nextBtn = document.getElementById('nextYear');
+
+            if (prevBtn) prevBtn.textContent = `◀ ${currentChartYear - 1}`;
+            if (nextBtn) nextBtn.textContent = `${currentChartYear + 1} ▶`;
+        }
+
+        // Change chart year
+        async function changeChartYear(delta) {
+            currentChartYear += delta;
+            updateChartYearDisplay();
+            await fetchYearData();
+            updateAllActiveCharts();
+        }
+
+        // Initialize Checkboxes
+        function initIndicators() {
+            indicatorContainer.innerHTML = '';
+
+            indicators.forEach(ind => {
+                if (ind.type === 'header') return; // Skip headers if any
+
+                const label = document.createElement('label');
+                label.className = 'checkbox-item';
+
+                const input = document.createElement('input');
+                input.type = 'checkbox';
+                input.value = ind.field;
+                input.addEventListener('change', (e) => toggleIndicator(ind.field, e.target.checked));
+
+                const span = document.createElement('span');
+                span.textContent = ind.name;
+
+                label.appendChild(input);
+                label.appendChild(span);
+                indicatorContainer.appendChild(label);
+            });
+        }
+
+        // Fetch Data for the whole year
+        // 从两个表获取数据：phenotype_records（采集数据）和 weekly_statistics（统计数据）
+        async function fetchYearData() {
+            if (!currentUser || currentUser.is_guest) return;
+
+            showLoading(true);
+
+            try {
+                // 1. 获取采集数据（原始样本数据）
+                const { data: phenotypeData, error: phenotypeError } = await supabase
+                    .from('phenotype_records')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .eq('year', currentChartYear)
+                    .order('week', { ascending: true });
+
+                if (phenotypeError) throw phenotypeError;
+
+                // 2. 获取统计数据（每周汇总数据）
+                const { data: statisticsData, error: statisticsError } = await supabase
+                    .from('weekly_statistics')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .eq('year', currentChartYear)
+                    .order('week', { ascending: true });
+
+                if (statisticsError) {
+                    console.warn('No statistics data found:', statisticsError);
+                }
+
+                // 合并数据：phenotype_records 用于采集指标，weekly_statistics 用于统计指标
+                yearDataCache = {
+                    phenotype: phenotypeData || [],
+                    statistics: statisticsData || []
+                };
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                yearDataCache = { phenotype: [], statistics: [] };
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Process data for a specific field
+        // 根据指标类型从不同的表读取数据
+        function processDataForField(field) {
+            // 查找指标配置
+            const indicator = indicators.find(ind => ind.field === field);
+            
+            // 判断是否为统计指标
+            const isStatistic = indicator && (indicator.isStatistic || indicator.isConstant);
+            
+            const labels = [];
+            const values = [];
+            
+            if (isStatistic) {
+                // 统计指标：直接从 weekly_statistics 读取（已经是每周一个值）
+                const weekValues = new Array(54).fill(null);
+                
+                if (yearDataCache.statistics) {
+                    yearDataCache.statistics.forEach(row => {
+                        const week = row.week;
+                        let val = row[field];
+                        
+                        if (val !== undefined && val !== null && week >= 1 && week <= 53) {
+                            val = parseFloat(val);
+                            if (!isNaN(val)) {
+                                weekValues[week] = val;
+                            }
+                        }
+                    });
+                }
+                
+                // 转换为图表数组
+                for (let w = 1; w <= 53; w++) {
+                    labels.push(w);
+                    values.push(weekValues[w]);
+                }
+            } else {
+                // 采集指标：从 phenotype_records 计算每周平均值
+                const weekData = new Array(54).fill(null).map(() => ({ count: 0, sum: 0 }));
+                
+                if (yearDataCache.phenotype) {
+                    yearDataCache.phenotype.forEach(row => {
+                        const week = row.week;
+                        let val = row[field];
+                        
+                        if (val !== undefined && val !== null) {
+                            val = parseFloat(val);
+                            if (!isNaN(val) && week >= 1 && week <= 53) {
+                                weekData[week].sum += val;
+                                weekData[week].count++;
+                            }
+                        }
+                    });
+                }
+                
+                // 转换为图表数组
+                for (let w = 1; w <= 53; w++) {
+                    labels.push(w);
+                    if (weekData[w].count > 0) {
+                        values.push(weekData[w].sum / weekData[w].count);
+                    } else {
+                        values.push(null);
+                    }
+                }
+            }
+
+            return { labels, values };
+        }
+
+        // Toggle Indicator
+        function toggleIndicator(field, isChecked) {
+            if (isChecked) {
+                addChart(field);
+            } else {
+                removeChart(field);
+            }
+
+            // Toggle no data message
+            if (activeCharts.size === 0) {
+                noDataMessage.style.display = 'block';
+            } else {
+                noDataMessage.style.display = 'none';
+            }
+        }
+
+        // Add Chart
+        function addChart(field) {
+            if (activeCharts.has(field)) return;
+
+            const indicator = indicators.find(ind => ind.field === field);
+            const { labels, values } = processDataForField(field);
+
+            // Create DOM elements
+            const wrapper = document.createElement('div');
+            wrapper.className = 'chart-wrapper';
+            wrapper.id = `chart-wrapper-${field}`;
+
+            const title = document.createElement('h3');
+            title.textContent = `${indicator.name} (${indicator.unit})`;
+
+            const canvasContainer = document.createElement('div');
+            canvasContainer.style.height = '300px';
+            canvasContainer.style.position = 'relative';
+
+            const canvas = document.createElement('canvas');
+
+            canvasContainer.appendChild(canvas);
+            wrapper.appendChild(title);
+            wrapper.appendChild(canvasContainer);
+            chartsContainer.appendChild(wrapper);
+
+            // Create Chart.js instance
+            const ctx = canvas.getContext('2d');
+            const newChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: indicator.name,
+                        data: values,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true,
+                        pointRadius: 3,
+                        spanGaps: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                title: (items) => `${translations[currentLang].weekAxis} ${items[0].label}`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            title: { display: true, text: translations[currentLang].weekAxis },
+                            grid: { display: false }
+                        },
+                        y: {
+                            display: true,
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            activeCharts.set(field, newChart);
+        }
+
+        // Remove Chart
+        function removeChart(field) {
+            if (activeCharts.has(field)) {
+                const chart = activeCharts.get(field);
+                chart.destroy();
+                activeCharts.delete(field);
+
+                const wrapper = document.getElementById(`chart-wrapper-${field}`);
+                if (wrapper) wrapper.remove();
+            }
+        }
+
+        // Update all active charts (when year changes)
+        function updateAllActiveCharts() {
+            activeCharts.forEach((chart, field) => {
+                const { labels, values } = processDataForField(field);
+                chart.data.datasets[0].data = values;
+                chart.update();
+            });
+        }
+
+        // Event Listeners
+        document.getElementById('prevYear').addEventListener('click', () => changeChartYear(-1));
+        document.getElementById('nextYear').addEventListener('click', () => changeChartYear(1));
+
+        // Init
+        async function init() {
+            await initAuth();
+            initIndicators();
+            updateChartYearDisplay();
+            await fetchYearData();
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

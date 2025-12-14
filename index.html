@@ -1,1794 +1,296 @@
 <!doctype html>
-
 <html lang="zh-CN">
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>🌱 得希表型采集系统 (Supabase)</title>
-		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-		<!-- Supabase JS Client -->
-		<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-		<style>
-			/* Deep Green Theme Design */
-			* { box-sizing: border-box; }
-			
-		body {
-			font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-			margin: 0;
-			padding: 0;
-			background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 50%, #e0f2fe 100%);
-			min-height: 100vh;
-			color: #064e3b;
-			display: flex;
-			flex-direction: column;
-		}
-		
-		.page-header {
-			background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 50%, #e0f2fe 100%);
-			color: #064e3b;
-			text-align: center;
-			padding: 30px 20px;
-			box-shadow: 0 2px 8px rgba(5, 150, 105, 0.1);
-			border-bottom: 1px solid rgba(5, 150, 105, 0.15);
-		}			.page-title {
-			font-size: 52px;
-			font-weight: 800;
-			margin: 0 0 10px 0;
-			text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-			background: linear-gradient(135deg, #059669, #047857, #10b981);
-			-webkit-background-clip: text;
-			-webkit-text-fill-color: transparent;
-			background-clip: text;
-		}
-		
-		.page-subtitle {
-			font-size: 18px;
-			opacity: 1;
-			margin: 0 0 25px 0;
-			text-shadow: none;
-			color: #047857;
-			font-weight: 600;
-		}			.action-buttons {
-				display: flex;
-				justify-content: center;
-				gap: 15px;
-				flex-wrap: wrap;
-				margin-top: 20px;
-			}
-			
-		.lang-switch {
-			position: absolute;
-			top: 20px;
-			right: 20px;
-			background: rgba(255, 255, 255, 0.9);
-			border: 2px solid #10b981;
-			border-radius: 8px;
-			padding: 8px 16px;
-			cursor: pointer;
-			font-weight: 600;
-			color: #047857;
-			transition: all 0.2s ease;
-		}
-		
-		.lang-switch:hover {
-			background: #10b981;
-			color: white;
-		}
-			
-		.status-bar {
-			margin-top: 20px;
-			padding: 12px 20px;
-			background: rgba(255, 255, 255, 0.9);
-			border-radius: 12px;
-			max-width: 600px;
-			margin-left: auto;
-			margin-right: auto;
-			box-shadow: 0 2px 8px rgba(5, 150, 105, 0.15);
-			border: 1px solid rgba(5, 150, 105, 0.2);
-		}
-		
-		.status-text {
-			color: #047857;
-			font-weight: 600;
-		}			.btn {
-				padding: 12px 24px;
-				border: none;
-				border-radius: 12px;
-				font-size: 14px;
-				font-weight: 600;
-				cursor: pointer;
-				transition: all 0.3s ease;
-				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-			}
-			
-			.btn:hover {
-				transform: translateY(-2px);
-				box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-			}
-			
-		.btn-primary {
-			background: linear-gradient(135deg, #10b981, #059669);
-			color: white;
-		}
-		
-	
-	.btn-secondary {
-		background: linear-gradient(135deg, #059669, #047857);
-		color: white;
-	}			.chart-container {
-			background: rgba(255, 255, 255, 0.95);
-			border-radius: 20px;
-			padding: 20px;
-			box-shadow: 0 8px 32px rgba(5, 150, 105, 0.12);
-			border: 1px solid rgba(5, 150, 105, 0.15);
-	}
-	
-	.chart-content {
-		padding: 15px 5px;
-		min-height: 270px;
-		height: 270px;
-	}			#trendChart {
-			max-width: 100%;
-			height: auto;
-			display: none;
-		}			.main-container {
-				width: 90%;
-				max-width: 1400px;
-				margin: 0 auto;
-				display: grid;
-				grid-template-columns: 400px 1fr;
-				gap: 20px;
-				padding: 20px;
-				align-items: start;
-			}
-			
-		/* Left Panel - Calendar */
-		.left-panel {
-			background: rgba(255, 255, 255, 0.95);
-			border-radius: 20px;
-			padding: 20px;
-			box-shadow: 0 8px 32px rgba(5, 150, 105, 0.12);
-			border: 1px solid rgba(5, 150, 105, 0.15);
-			display: flex;
-			flex-direction: column;
-			height: 550px;
-		}
-		
-		.calendar-header {
-			text-align: center;
-			margin-bottom: 10px;
-		}
-		
-	.calendar-title {
-		font-size: 1.2rem;
-		font-weight: 700;
-		color: #047857;
-		margin-bottom: 5px;
-	}
-	
-	.week-info {
-		font-size: 0.85rem;
-		color: #059669;
-		text-align: center;
-		margin-bottom: 10px;
-		padding: 4px 8px;
-		background: rgba(16, 185, 129, 0.1);
-		border-radius: 6px;
-		font-weight: 600;
-	}
-	
-	.calendar-nav {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			margin-bottom: 15px;
-		}		.nav-btn {
-			background: linear-gradient(135deg, #10b981, #059669);
-			color: white;
-			border: none;
-			padding: 6px 12px;
-			border-radius: 8px;
-			cursor: pointer;
-			font-size: 0.9rem;
-			font-weight: 600;
-			transition: all 0.2s ease;
-		}
-		
-		.nav-btn:hover {
-			transform: scale(1.05);
-			box-shadow: 0 4px 8px rgba(5, 150, 105, 0.3);
-		}
-		
-		.current-month {
-			font-size: 1.1rem;
-			font-weight: 700;
-			color: #047857;
-		}			.calendar-weekdays {
-				display: grid;
-				grid-template-columns: repeat(7, 1fr);
-				gap: 5px;
-				margin-bottom: 5px;
-			}
-			
-		.weekday {
-			text-align: center;
-			font-size: 0.75rem;
-			font-weight: 600;
-			color: #059669;
-			padding: 4px 0;
-		}			.calendar-grid {
-				display: grid;
-				grid-template-columns: repeat(7, 1fr);
-				gap: 5px;
-				flex: 1;
-				align-content: start;
-			}
-			
-	.calendar-day {
-		aspect-ratio: 1;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border-radius: 8px;
-		font-size: 0.85rem;
-		cursor: pointer;
-		transition: all 0.2s ease;
-		background: #d1fae5;
-		color: #064e3b;
-		font-weight: 500;
-		position: relative;
-	}		.calendar-day:hover {
-			background: #a7f3d0;
-			transform: scale(1.05);
-		}
-		
-		.calendar-day.other-month {
-			color: #6ee7b7;
-			opacity: 0.5;
-		}
-		
-		.calendar-day.today {
-			background: linear-gradient(135deg, #10b981, #059669);
-			color: white;
-			font-weight: 700;
-			box-shadow: 0 2px 8px rgba(5, 150, 105, 0.4);
-		}
-		
-		.calendar-day.has-data::after {
-			content: '';
-			position: absolute;
-			bottom: 2px;
-			width: 4px;
-			height: 4px;
-			background: #059669;
-			border-radius: 50%;
-		}			.calendar-day.today.has-data::after {
-				background: white;
-			}
 
-			/* Right Panel - Data Collection */
-			.right-panel {
-				background: rgba(255, 255, 255, 0.9);
-				border-radius: 20px;
-				padding: 30px;
-				box-shadow: 0 8px 32px rgba(5, 150, 105, 0.15);
-				border: 1px solid rgba(5, 150, 105, 0.15);
-				max-height: 550px;
-				overflow-y: auto;
-			}
-			
-			.section-title {
-				font-size: 1.5rem;
-				font-weight: 700;
-				color: #065f46;
-				margin-bottom: 20px;
-				padding-bottom: 10px;
-				border-bottom: 2px solid #6ee7b7;
-			}
-			
-		.indicator-group {
-			margin-bottom: 20px;
-			opacity: 0.5;
-			transition: opacity 0.2s ease;
-		}
-		
-		.indicator-group.active {
-			opacity: 1;
-		}
-		
-		.indicator-label {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			margin-bottom: 8px;
-		}
-		
-		.indicator-checkbox {
-			width: 18px;
-			height: 18px;
-			margin-right: 10px;
-			cursor: pointer;
-			accent-color: #10b981;
-		}
-		
-		.indicator-name {
-			font-weight: 600;
-			color: #064e3b;
-			font-size: 0.95rem;
-			flex: 1;
-		}
-		
-		.indicator-label-left {
-			display: flex;
-			align-items: center;
-			flex: 1;
-		}			.indicator-value-display {
-				font-weight: 700;
-				color: #065f46;
-				font-size: 0.95rem;
-			}
-			
-			.slider-container {
-				position: relative;
-			}
-			
-			input[type="range"] {
-				width: 100%;
-				height: 8px;
-				border-radius: 5px;
-				background: linear-gradient(to right, #d1fae5, #6ee7b7);
-				outline: none;
-				-webkit-appearance: none;
-			}
-			
-			input[type="range"]::-webkit-slider-thumb {
-				-webkit-appearance: none;
-				appearance: none;
-				width: 20px;
-				height: 20px;
-				border-radius: 50%;
-				background: linear-gradient(135deg, #10b981, #059669);
-			cursor: pointer;
-			box-shadow: 0 2px 6px rgba(5, 150, 105, 0.4);
-		}
-		
-		input[type="range"]::-moz-range-thumb {
-			width: 20px;
-			height: 20px;
-			border-radius: 50%;
-			background: linear-gradient(135deg, #10b981, #059669);
-			cursor: pointer;
-			border: none;
-			box-shadow: 0 2px 6px rgba(5, 150, 105, 0.4);
-		}
-		
-		input[type="range"]:disabled {
-			opacity: 0.4;
-			cursor: not-allowed;
-		}
-		
-		input[type="range"]:disabled::-webkit-slider-thumb {
-			cursor: not-allowed;
-			background: #9ca3af;
-		}
-		
-		input[type="range"]:disabled::-moz-range-thumb {
-			cursor: not-allowed;
-			background: #9ca3af;
-		}			.result {
-				margin-top: 30px;
-				padding: 20px;
-				background: rgba(209, 250, 229, 0.5);
-				border-radius: 12px;
-				border: 1px solid #a7f3d0;
-			}
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>🌱 得希表型采集系统</title>
+    <link rel="stylesheet" href="common.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .welcome-section {
+            text-align: center;
+            padding: 60px 20px;
+        }
 
-			/* Chart Controls */
-			.chart-controls {
-				margin-bottom: 20px;
-				padding: 15px;
-				background: rgba(209, 250, 229, 0.4);
-				border-radius: 12px;
-			}
+        .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 20px;
+            max-width: 1100px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 20px;
+        }
 
-	.chart-controls-row {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: 10px;
-		margin-bottom: 15px;
-	}
+        .feature-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
 
-	.chart-controls-row:last-child {
-		margin-bottom: 0;
-	}
-	
-	.chart-controls-row.time-controls {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		gap: 15px;
-	}
-	
-	.chart-controls-row.time-controls > div {
-		flex: 2;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		gap: 10px;
-	}
-	
-	.indicator-select {
-		flex: 0 0 200px;
-		max-width: 200px;
-	}			.chart-controls-row button {
-				background: linear-gradient(135deg, #10b981, #059669);
-				color: white;
-				border: none;
-				padding: 8px 16px;
-				border-radius: 8px;
-				cursor: pointer;
-				font-size: 13px;
-				font-weight: 600;
-				transition: all 0.2s ease;
-			}
+        /* Hover Effects */
+        .feature-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 20px 40px rgba(5, 150, 105, 0.2);
+            border-color: rgba(16, 185, 129, 0.3);
+            background: rgba(255, 255, 255, 0.98);
+        }
 
-			.chart-controls-row button:hover {
-				transform: scale(1.05);
-				box-shadow: 0 4px 8px rgba(5, 150, 105, 0.3);
-			}
+        .feature-card:hover .feature-icon-wrapper {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 10px 20px rgba(5, 150, 105, 0.3);
+        }
 
-		.chart-controls-row span {
-			font-size: 14px;
-			font-weight: 600;
-			color: #065f46;
-			min-width: 120px;
-			text-align: center;
-		}			.indicator-select {
-				padding: 8px 12px;
-				border: 2px solid #6ee7b7;
-				border-radius: 8px;
-				font-size: 13px;
-				color: #064e3b;
-				background: white;
-				cursor: pointer;
-				transition: all 0.2s ease;
-			}
+        .feature-card:hover .cta-arrow {
+            transform: translateX(5px);
+            opacity: 1;
+            color: #059669;
+        }
 
-			.indicator-select:focus {
-				outline: none;
-				border-color: #10b981;
-				box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-			}
+        /* Icon Styling */
+        .feature-icon-wrapper {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #d1fae5, #ecfdf5);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
 
-			.loading-overlay {
-				position: absolute;
-				top: 0;
-				left: 0;
-				right: 0;
-				bottom: 0;
-				background: rgba(255, 255, 255, 0.9);
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				border-radius: 12px;
-				z-index: 10;
-			}
+        .feature-icon {
+            font-size: 42px;
+            line-height: 1;
+        }
 
-		.loading-text {
-			font-size: 16px;
-			font-weight: 600;
-			color: #065f46;
-		}			.no-data-message {
-				text-align: center;
-				padding: 40px 20px;
-				color: #6b7280;
-				font-size: 14px;
-			}
+        /* Card Content */
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #064e3b;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
 
-			/* Responsive Design */
-			@media (max-width: 768px) {
-				.main-container {
-					grid-template-columns: 1fr;
-				}
-				
-				.page-title {
-					font-size: 2rem;
-				}
-				
-				.left-panel {
-					height: auto;
-				}
-				
-				.right-panel {
-					max-height: none;
-				}
-			}
+        .feature-description {
+            color: #4b5563;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
 
-		@media (max-width: 768px) {
-			.main-container {
-				width: 98%;
-				padding: 10px;
-			}
-			
-			.chart-container {
-				padding: 20px 15px;
-		margin: 0;
-		}
-		
-	.chart-content {
-		padding: 15px 5px;
-		min-height: 200px;
-		height: 200px;
-	}
-	}			@media (max-width: 480px) {
-			.page-title {
-				font-size: 1.5rem;
-			}
-			
-			.page-subtitle {
-				font-size: 12px;
-			}			.btn {
-				font-size: 11px;
-				padding: 6px 10px;
-			}
-			
-			.main-container {
-				width: 100%;
-				padding: 5px;
-			}
-			
-		.chart-container {
-			width: 100%;
-		padding: 15px 10px;
-		margin: 0;
-	}		.chart-content {
-		padding: 10px 5px;
-		min-height: 240px;
-		height: 240px;
-	}			.chart-controls-row button {
-			font-size: 10px;
-			padding: 5px 8px;
-		}				.chart-controls-row span {
-				font-size: 11px !important;
-				margin: 0 5px !important;
-			}
-			
-			.chart-controls-row.time-controls {
-				flex-direction: column;
-				gap: 10px;
-			}
-			
-			.chart-controls-row.time-controls > div {
-				flex: none;
-				width: 100%;
-			}
-			
-			.indicator-select {
-				flex: none;
-				max-width: 100%;
-				width: 100%;
-				font-size: 10px;
-			}
-				
-				.left-panel {
-					overflow-y: visible;
-					overflow-x: visible;
-					max-height: none;
-				}
-				
-				.right-panel {
-					max-height: 450px;
-					overflow-y: auto;
-				}
-				
-				.calendar-grid {
-					gap: 2px;
-				}
-				
-				.calendar-day {
-					font-size: 10px;
-					padding: 1px;
-				}
-				
-				.indicator-name {
-					font-size: 11px;
-				}
-				
-				.indicator-value-display {
-					font-size: 11px;
-				}
-			}
-		</style>
-	</head>
-	<body>
-		<!-- Page Header -->
-		<div class="page-header">
-			<button class="lang-switch" id="langSwitch">EN</button>
-			<h1 class="page-title" data-lang="title">🌱 得希表型采集系统</h1>
-			<p class="page-subtitle" data-lang="subtitle">使用本系统记录和管理植物表型数据，助力精准农业研究与分析。</p>			
-		<div class="action-buttons">
-			<button type="button" class="btn btn-primary" id="submitBtn" data-lang="exportBtn">📥 导出 CSV</button>
-			<button type="button" class="btn btn-secondary" id="syncBtn" data-lang="syncBtn">☁️ 同步到云端</button>
-			<button type="button" class="btn btn-primary" id="authBtn" style="display:none;" data-lang="authBtn">🔗 登录</button>
-		</div>
-		
-		<div class="status-bar">
-			<div class="status-text"><span data-lang="statusLabel">状态：</span><span id="status" data-lang="statusReady">系统就绪</span></div>
-			<div class="status-text" id="collectionProgress" style="margin-top: 8px;"></div>
-		</div>
-	</div>		<div class="main-container">
-			<!-- Left Panel - Calendar -->
-			<div class="left-panel">
-				<div class="calendar-header">
-					<h2 class="calendar-title" data-lang="calendarTitle">📅 采集日历</h2>
-					<div class="week-info" id="weekInfo"></div>
-					<div class="calendar-nav">
-						<button class="nav-btn" id="prevCalMonth">◀</button>
-						<span class="current-month" id="currentCalMonth">2025年1月</span>
-						<button class="nav-btn" id="nextCalMonth">▶</button>
-					</div>
-				</div>
-				<div class="calendar-weekdays" id="calendarWeekdays">
-					<div class="weekday">日</div>
-					<div class="weekday">一</div>
-					<div class="weekday">二</div>
-					<div class="weekday">三</div>
-					<div class="weekday">四</div>
-					<div class="weekday">五</div>
-					<div class="weekday">六</div>
-				</div>
-				<div class="calendar-grid" id="calendarGrid"></div>
-			</div>
+        /* Feature List inside Card */
+        .card-features {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+        }
 
-			<!-- Right Panel - Data Input -->
-			<div class="right-panel">
-				<h2 class="section-title" data-lang="dataCollection">📊 指标采集</h2>
-				<form id="dataForm">
-					<!-- Indicators will be dynamically generated here -->
-				</form>
-				
-				<!-- Statistic Indicators Display -->
-				<div class="statistic-indicators" style="margin-top: 20px; padding: 15px; background: rgba(16, 185, 129, 0.05); border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.2);">
-					<h3 style="margin: 0 0 10px 0; font-size: 14px; color: #047857;">
-						<span data-lang="statisticIndicators">📊 累积统计指标</span>
-					</h3>
-					<div id="statisticValues" style="display: grid; gap: 8px; font-size: 13px;">
-						<!-- Statistic values will be displayed here -->
-					</div>
-				</div>
-			</div>
-		</div>
+        .card-features li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
 
-		<!-- Trend Analysis Chart -->
-		<div class="main-container" style="margin-top: 20px;">
-			<div class="chart-container" style="grid-column: 1 / -1;">
-				<h2 class="section-title" data-lang="trendAnalysis">📈 趋势分析</h2>
-				<div class="chart-controls">
-					<div class="chart-controls-row time-controls">
-						<div>
-							<button type="button" id="prevMonth" data-lang="prevMonth">◀ 上月</button>
-							<span id="chartMonthDisplay">2025年1月</span>
-							<button type="button" id="nextMonth" data-lang="nextMonth">下月 ▶</button>
-						</div>
-						<select id="indicatorSelect" class="indicator-select">
-							<option value="" data-lang="selectIndicator">选择指标...</option>
-						</select>
-					</div>
-				</div>
-				<div class="chart-content" style="position: relative;">
-					<canvas id="trendChart" width="800" height="400"></canvas>
-					<div id="loadingOverlay" class="loading-overlay" style="display: none;">
-						<div class="loading-text" data-lang="loading">加载中...</div>
-					</div>
-					<div id="noDataMessage" class="no-data-message" style="display: none;" data-lang="noData">
-						暂无数据
-					</div>
-				</div>
-			</div>
-		</div>
+        .card-features li::before {
+            content: "•";
+            color: #10b981;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-right: 8px;
+            line-height: 1;
+        }
 
-		<script>
-		// ====================================
-		// LANGUAGE CONFIGURATION
-		// ====================================
-		let currentLang = 'zh';
-		
-		const translations = {
-			zh: {
-				title: '🌱 得希表型采集系统',
-				subtitle: '使用本系统记录和管理植物表型数据，助力精准农业研究与分析。',
-				exportBtn: '📥 导出 CSV',
-				syncBtn: '☁️ 同步到云端',
-				authBtn: '🔗 登录',
-				statusLabel: '状态：',
-				statusReady: '系统就绪',
-				calendarTitle: '📅 采集日历',
-				dataCollection: '📊 指标采集',
-				statisticIndicators: '📊 累积统计指标',
-				trendAnalysis: '📈 趋势分析',
-				prevMonth: '◀ 上月',
-				nextMonth: '下月 ▶',
-				selectIndicator: '选择指标...',
-				loading: '加载中...',
-				noData: '暂无数据',
-				weekdays: ['日', '一', '二', '三', '四', '五', '六'],
-				indicators: {
-					growth_cm: '生长量',
-					stem_mm: '茎粗',
-					leaf_count: '叶片数',
-					leaf_length_cm: '叶长',
-					leaf_width_cm: '叶宽',
-					potential_flower_count: '潜力开花数',
-					current_flower_order: '当前开花序数',
-					accum_ear_count: '单头累计坐果穗数',
-					new_grain_count: '本周单头新增坐果数',
-					accum_grain_count: '单头累计坐果粒数',
-					yield_kg_m2: '单位产量',
-					single_grain_g: '单粒果重',
-					total_harvest_ear_count: '单头总采收果穗数',
-					new_harvest_grain_g: '本周单头新增采收果数',
-					total_harvest_grain_g: '单头总采收果粒数',
-					ear_weight_g: '单穗重',
-					single_head_yield_g: '单头产量',
-					brix: '可溶性固形物',
-					acidity: '酸度',
-					cracking_rate: '裂果率',
-					irrigation_ml: '灌溉量',
-					reflux_ml: '回液量',
-					reflux_ec: '回液EC',
-					reflux_ph: '回液PH'
-				}
-			},
-			en: {
-				title: '🌱 Deci Phenotype Collection System',
-				subtitle: 'Record and manage plant phenotype data for precision agriculture research and analysis.',
-				exportBtn: '📥 Export CSV',
-				syncBtn: '☁️ Sync to Cloud',
-				authBtn: '🔗 Login',
-				statusLabel: 'Status: ',
-				statusReady: 'System Ready',
-				calendarTitle: '📅 Collection Calendar',
-				dataCollection: '📊 Data Collection',
-				statisticIndicators: '📊 Cumulative Statistics',
-				trendAnalysis: '📈 Trend Analysis',
-				prevMonth: '◀ Prev',
-				nextMonth: 'Next ▶',
-				selectIndicator: 'Select Indicator...',
-				loading: 'Loading...',
-				noData: 'No Data',
-				weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-				indicators: {
-					growth_cm: 'Growth',
-					stem_mm: 'Stem Diameter',
-					leaf_count: 'Leaf Count',
-					leaf_length_cm: 'Leaf Length',
-					leaf_width_cm: 'Leaf Width',
-					potential_flower_count: 'Potential Flower Count',
-					current_flower_order: 'Current Flowering Cluster',
-					accum_ear_count: 'Single Head Accumulated Fruit Clusters',
-					new_grain_count: 'Weekly New Fruit Count',
-					accum_grain_count: 'Single Head Accumulated Fruits',
-					yield_kg_m2: 'Unit Yield',
-					single_grain_g: 'Single Fruit Weight',
-					total_harvest_ear_count: 'Total Harvested Clusters',
-					new_harvest_grain_g: 'Weekly New Harvest Weight',
-					total_harvest_grain_g: 'Total Harvested Fruits',
-					ear_weight_g: 'Single Cluster Weight',
-					single_head_yield_g: 'Single Head Yield',
-					brix: 'Soluble Solids',
-					acidity: 'Acidity',
-					cracking_rate: 'Cracking Rate',
-					irrigation_ml: 'Irrigation Volume',
-					reflux_ml: 'Reflux Volume',
-					reflux_ec: 'Reflux EC',
-					reflux_ph: 'Reflux pH'
-				}
-			}
-		};
-		
-		function switchLanguage() {
-			currentLang = currentLang === 'zh' ? 'en' : 'zh';
-			document.getElementById('langSwitch').textContent = currentLang === 'zh' ? 'EN' : '中文';
-			updateLanguage();
-		}
-		
-	function updateLanguage() {
-		const lang = translations[currentLang];
-		
-		// Update all elements with data-lang attribute
-		document.querySelectorAll('[data-lang]').forEach(el => {
-			const key = el.getAttribute('data-lang');
-			if (lang[key]) {
-				el.textContent = el.textContent.replace(/[^🌱📅📊📈📥☁️🔗◀▶]/g, '') + lang[key].replace(/[🌱📅📊📈📥☁️🔗◀▶]/g, '');
-			}
-		});
-		
-		// Update weekdays
-		const weekdayElements = document.querySelectorAll('#calendarWeekdays .weekday');
-		weekdayElements.forEach((el, index) => {
-			el.textContent = lang.weekdays[index];
-		});
-		
-		// Update title
-		document.title = lang.title;
-		
-		// Save current form values before regenerating
-		const currentValues = {};
-		indicators.forEach(indicator => {
-			const slider = document.getElementById(`slider-${indicator.field}`);
-			if (slider) {
-				currentValues[indicator.field] = slider.value;
-			}
-		});
-		
-		// Refresh indicators with new language
-		indicators = getIndicators();
-		
-		// Regenerate form with new language
-		generateForm();
-		
-		// Restore form values after regenerating
-		Object.keys(currentValues).forEach(field => {
-			const slider = document.getElementById(`slider-${field}`);
-			const valueDisplay = document.getElementById(`value-${field}`);
-			if (slider && valueDisplay) {
-				slider.value = currentValues[field];
-				valueDisplay.textContent = currentValues[field];
-			}
-		});
-		
-		// Update chart indicator dropdown
-		updateChartIndicators();
-		
-		// Update week info
-		updateWeekInfo();
-		
-		// Update collection progress
-		updateCollectionProgress();
-		
-		// Update chart month display
-		updateChartMonthDisplay();
-		generateCalendar(currentCalDate.getFullYear(), currentCalDate.getMonth());
-		
-		// Reload chart if a field is selected
-		if (currentTrendField) {
-			loadTrendData(currentTrendField);
-		}
-	}		// ====================================
-		// SUPABASE CONFIGURATION
-		// ====================================
-		const SUPABASE_URL = 'https://fnahnjojeiwclyixcyia.supabase.co';
-		const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZuYWhuam9qZWl3Y2x5aXhjeWlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI0NDQxMDksImV4cCI6MjA3ODAyMDEwOX0.7ftrvq8MAsAepwrRll0lcHDkXBt7MClgIgXsBn2KED8';
-		
-		// Initialize Supabase client
-		const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-		// ====================================
-		// DATA CONFIGURATION
-		// ====================================
-		const indicatorsConfig = [
-			{field:'growth_cm', unit:'cm', unitEn:'cm', min:5, max:50, step:0.1, defaultValue:5},
-			{field:'stem_mm', unit:'mm', unitEn:'mm', min:2, max:20, step:0.1, defaultValue:2},
-			{field:'leaf_count', unit:'个', unitEn:'pcs', min:5, max:23, step:1, defaultValue:5},
-			{field:'leaf_length_cm', unit:'cm', unitEn:'cm', min:20, max:60, step:0.1, defaultValue:20},
-			{field:'leaf_width_cm', unit:'cm', unitEn:'cm', min:5, max:60, step:0.1, defaultValue:5},
-			{field:'potential_flower_count', unit:'串', unitEn:'clusters', min:8, max:18, step:1, defaultValue:8},
-			{field:'current_flower_order', unit:'串', unitEn:'clusters', min:1, max:60, step:1, defaultValue:1},
-			{field:'accum_ear_count', unit:'个', unitEn:'pcs', min:1, max:60, step:1, defaultValue:1},
-			{field:'new_grain_count', unit:'个', unitEn:'pcs', min:0, max:100, step:1, defaultValue:0},
-			{field:'accum_grain_count', unit:'个', unitEn:'pcs', min:1, max:720, step:1, defaultValue:1, isStatistic: true},
-			{field:'yield_kg_m2', unit:'kg/m²', unitEn:'kg/m²', min:0, max:40, step:0.01, defaultValue:0},
-			{field:'single_grain_g', unit:'g', unitEn:'g', min:5, max:25, step:0.1, defaultValue:5},
-			{field:'total_harvest_ear_count', unit:'个', unitEn:'pcs', min:1, max:60, step:1, defaultValue:1},
-			{field:'new_harvest_grain_g', unit:'g', unitEn:'g', min:0, max:100, step:1, defaultValue:0},
-			{field:'total_harvest_grain_g', unit:'g', unitEn:'g', min:1, max:720, step:1, defaultValue:1, isStatistic: true},
-			{field:'ear_weight_g', unit:'g', unitEn:'g', min:50, max:280, step:1, defaultValue:50},
-			{field:'single_head_yield_g', unit:'g', unitEn:'g', min:0, max:18000, step:10, defaultValue:0},
-			{field:'brix', unit:'', unitEn:'', min:4, max:13, step:0.1, defaultValue:4},
-			{field:'acidity', unit:'', unitEn:'', min:0, max:10, step:0.1, defaultValue:0},
-			{field:'cracking_rate', unit:'%', unitEn:'%', min:0, max:100, step:0.1, defaultValue:0},
-			{field:'irrigation_ml', unit:'ml', unitEn:'ml', min:0, max:3000, step:10, defaultValue:0},
-			{field:'reflux_ml', unit:'ml', unitEn:'ml', min:0, max:8000, step:10, defaultValue:0},
-			{field:'reflux_ec', unit:'mS/cm', unitEn:'mS/cm', min:3, max:9, step:0.1, defaultValue:3},
-			{field:'reflux_ph', unit:'', unitEn:'', min:4, max:9, step:0.1, defaultValue:4}
-		];			// Get indicators with current language
-			function getIndicators() {
-				const lang = translations[currentLang];
-				return indicatorsConfig.map(ind => ({
-					...ind,
-					name: lang.indicators[ind.field],
-					unit: currentLang === 'zh' ? ind.unit : ind.unitEn
-				}));
-			}
-			
-			let indicators = getIndicators();
+        /* CTA Arrow */
+        .cta-arrow {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            font-size: 1.5rem;
+            color: #d1fae5;
+            transition: all 0.3s ease;
+            opacity: 0.8;
+        }
 
-			// Helper function to get Beijing time (UTC+8)
-			function getBeijingTime() {
-				const now = new Date();
-				const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
-				const beijingTime = new Date(utcTime + (8 * 3600000));
-				return beijingTime;
-			}
-			
-			// Calculate week number of the year (ISO week)
-			function getWeekNumber(date) {
-				const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-				const dayNum = d.getUTCDay() || 7;
-				d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-				const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-				return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-			}
-			
-			// Update week info display
-			function updateWeekInfo() {
-				const today = getBeijingTime();
-				const weekNum = getWeekNumber(today);
-				const weekInfoEl = document.getElementById('weekInfo');
-				
-				if (currentLang === 'zh') {
-					weekInfoEl.textContent = `今天是 ${today.getFullYear()} 年第 ${weekNum} 周`;
-				} else {
-					weekInfoEl.textContent = `Today is Week ${weekNum} of ${today.getFullYear()}`;
-				}
-			}
-			
-			let currentIndicatorIndex = 0;
-			let trendChart = null;
-			let currentChartDate = getBeijingTime();
-			let currentTrendField = null;
-			let currentCalDate = getBeijingTime();
-			let collectionData = {}; // {YYYY-MM-DD: count}
-			let currentUser = null;
+        @media (max-width: 768px) {
+            .feature-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
 
-			// DOM Elements
-			const form = document.getElementById('dataForm');
-			const statusEl = document.getElementById('status');
-			const submitBtn = document.getElementById('submitBtn');
-			const syncBtn = document.getElementById('syncBtn');
-			const authBtn = document.getElementById('authBtn');
+            .feature-card {
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
 
-			// ====================================
-			// AUTHENTICATION
-			// ====================================
-			async function initAuth() {
-				// Check if user is already logged in
-				const { data: { session } } = await supabase.auth.getSession();
-				
-				if (session) {
-					currentUser = session.user;
-					statusEl.textContent = '✅ 已登录';
-					syncBtn.style.display = 'inline-block';
-					authBtn.style.display = 'none';
-					await loadCollectionHistory();
-				} else {
-					statusEl.textContent = '请登录以同步数据';
-					syncBtn.style.display = 'none';
-					authBtn.style.display = 'inline-block';
-				}
-			}
+<body>
+    <!-- Navigation Bar -->
+    <nav class="nav-bar">
+        <div class="nav-links">
+            <a href="index.html" class="nav-link active" data-page="home" data-lang="nav.home">🏠 首页</a>
+            <a href="calendar.html" class="nav-link" data-page="calendar" data-lang="nav.calendar">📅 采集日历</a>
+            <a href="collection.html" class="nav-link" data-page="collection" data-lang="nav.collection">📊 数据采集</a>
+            <a href="statistics.html" class="nav-link" data-page="statistics" data-lang="nav.statistics">📈 统计数量</a>
+            <a href="trends.html" class="nav-link" data-page="trends" data-lang="nav.trends">📉 趋势分析</a>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <button class="nav-link" id="authBtn" style="border: 1px solid white; cursor: pointer; display: none;">🔗
+                登录</button>
+            <button class="lang-switch" id="langSwitch" style="position: static;">EN</button>
+        </div>
+    </nav>
 
-		async function signIn() {
-			// Email/password login
-			const email = prompt('请输入邮箱:');
-			const password = prompt('请输入密码:');
-			
-			if (!email || !password) return;
-			
-			statusEl.textContent = '正在登录...';
-			
-			// Try to sign in first
-			const { data, error } = await supabase.auth.signInWithPassword({
-				email: email,
-				password: password
-			});
-			
-			if (error) {
-				// If user doesn't exist, try to sign up
-				statusEl.textContent = '正在注册...';
-				const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-					email: email,
-					password: password
-				});
-				
-				if (signUpError) {
-					statusEl.textContent = '❌ 注册失败: ' + signUpError.message;
-					return;
-				}
-				
-				// Check if session is available (email confirmation disabled)
-				if (signUpData.session && signUpData.user) {
-					currentUser = signUpData.user;
-					statusEl.textContent = '✅ 注册成功并已登录';
-					
-					syncBtn.style.display = 'inline-block';
-					authBtn.style.display = 'none';
-					await loadCollectionHistory();
-					await loadTodayData();
-				} else {
-					statusEl.textContent = '❌ 注册失败，请确保已禁用邮箱验证';
-					alert('请在 Supabase 控制台的 Authentication → Providers → Email 中禁用 "Confirm email" 选项');
-				}
-			} else {
-				// Successful login
-				currentUser = data.user;
-				statusEl.textContent = '✅ 登录成功';
-				
-				syncBtn.style.display = 'inline-block';
-				authBtn.style.display = 'none';
-				await loadCollectionHistory();
-				await loadTodayData();
-			}
-		}			// ====================================
-			// FORM GENERATION
-			// ====================================
-		function generateForm() {
-		// Clear existing form
-		form.innerHTML = '';
-		
-		indicators.forEach((indicator, index) => {
-			// Skip statistic indicators (not for manual collection)
-			if (indicator.isStatistic) {
-				return;
-			}
-			
-			const group = document.createElement('div');
-			group.className = 'indicator-group';
-			group.id = `group-${indicator.field}`;
-			
-			const label = document.createElement('div');
-			label.className = 'indicator-label';				// Create left side container for checkbox and name
-				const labelLeft = document.createElement('div');
-				labelLeft.className = 'indicator-label-left';
-				
-				// Create checkbox
-				const checkbox = document.createElement('input');
-				checkbox.type = 'checkbox';
-				checkbox.className = 'indicator-checkbox';
-				checkbox.id = `check-${indicator.field}`;
-				checkbox.addEventListener('change', (e) => handleCheckboxChange(e, indicator.field));
-				
-				const nameSpan = document.createElement('span');
-				nameSpan.className = 'indicator-name';
-				nameSpan.textContent = `${indicator.name} (${indicator.unit})`;
-				
-				labelLeft.appendChild(checkbox);
-				labelLeft.appendChild(nameSpan);
-				
-				const valueSpan = document.createElement('span');
-				valueSpan.className = 'indicator-value-display';
-				valueSpan.id = `value-${indicator.field}`;
-				valueSpan.textContent = indicator.defaultValue;
-				
-				label.appendChild(labelLeft);
-				label.appendChild(valueSpan);
-				
-				const sliderContainer = document.createElement('div');
-				sliderContainer.className = 'slider-container';
-				
-				const slider = document.createElement('input');
-				slider.type = 'range';
-				slider.name = indicator.field;
-				slider.min = indicator.min;
-				slider.max = indicator.max;
-				slider.step = indicator.step;
-				slider.value = indicator.defaultValue;
-				slider.id = `slider-${indicator.field}`;
-				slider.disabled = true; // Initially disabled
-				
-				slider.addEventListener('input', (e) => {
-					valueSpan.textContent = e.target.value;
-					updateCollectionProgress();
-				});
-				
-				sliderContainer.appendChild(slider);
-				group.appendChild(label);
-				group.appendChild(sliderContainer);
-				form.appendChild(group);
-			});
-		}
-		
-		function handleCheckboxChange(event, field) {
-			const checkbox = event.target;
-			
-			// If checking this checkbox, uncheck all others
-			if (checkbox.checked) {
-				// Uncheck all other checkboxes
-				document.querySelectorAll('.indicator-checkbox').forEach(cb => {
-					if (cb.id !== `check-${field}`) {
-						cb.checked = false;
-						const cbField = cb.id.replace('check-', '');
-						document.getElementById(`slider-${cbField}`).disabled = true;
-						document.getElementById(`group-${cbField}`).classList.remove('active');
-					}
-				});
-				
-				// Enable this slider
-				document.getElementById(`slider-${field}`).disabled = false;
-				document.getElementById(`group-${field}`).classList.add('active');
-			} else {
-				// Disable this slider
-				document.getElementById(`slider-${field}`).disabled = true;
-				document.getElementById(`group-${field}`).classList.remove('active');
-			}
-		}			// ====================================
-			// CALENDAR
-			// ====================================
-			function generateCalendar(year, month) {
-				const grid = document.getElementById('calendarGrid');
-				grid.innerHTML = '';
-				
-				const firstDay = new Date(year, month, 1);
-				const lastDay = new Date(year, month + 1, 0);
-				const daysInMonth = lastDay.getDate();
-				const startingDayOfWeek = firstDay.getDay();
-				
-				const monthNames = currentLang === 'zh'
-					? ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
-					: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-				const display = currentLang === 'zh'
-					? `${year}年${monthNames[month]}`
-					: `${monthNames[month]} ${year}`;
-				document.getElementById('currentCalMonth').textContent = display;
-				
-				const prevMonthDays = new Date(year, month, 0).getDate();
-				for (let i = startingDayOfWeek - 1; i >= 0; i--) {
-					const dayElement = document.createElement('div');
-					dayElement.className = 'calendar-day other-month';
-					dayElement.textContent = prevMonthDays - i;
-					grid.appendChild(dayElement);
-				}
-				
-				const today = getBeijingTime();
-				for (let day = 1; day <= daysInMonth; day++) {
-					const dayElement = document.createElement('div');
-					dayElement.className = 'calendar-day';
-					dayElement.textContent = day;
-					
-					if (year === today.getFullYear() && month === today.getMonth() && day === today.getDate()) {
-						dayElement.classList.add('today');
-					}
-					
-					const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-					if (collectionData[dateKey]) {
-						dayElement.classList.add('has-data');
-					}
-					
-					grid.appendChild(dayElement);
-				}
-				
-				const totalCells = startingDayOfWeek + daysInMonth;
-				const remainingCells = 7 - (totalCells % 7);
-				if (remainingCells < 7) {
-					for (let i = 1; i <= remainingCells; i++) {
-						const dayElement = document.createElement('div');
-						dayElement.className = 'calendar-day other-month';
-						dayElement.textContent = i;
-						grid.appendChild(dayElement);
-					}
-				}
-			}
+    <!-- Feature Cards -->
+    <div class="main-container" style="display: flex; align-items: center; min-height: 80vh;">
+        <div class="feature-grid" style="width: 100%;">
+            <!-- Calendar Card -->
+            <a href="calendar.html" class="feature-card">
+                <div class="cta-arrow">→</div>
+                <div class="feature-icon-wrapper">
+                    <div class="feature-icon">📅</div>
+                </div>
+                <h2 class="feature-title" data-lang="nav.calendar">采集日历</h2>
+                <p class="feature-description">
+                    <span data-lang="calendarDesc">查看和管理数据采集历史，追踪采集进度。</span>
+                </p>
+                <ul class="card-features">
+                    <li data-lang="feat.cal1">月视图数据概览</li>
+                    <li data-lang="feat.cal2">每日采集状态标记</li>
+                    <li data-lang="feat.cal3">快速跳转补录数据</li>
+                </ul>
+            </a>
 
-			document.getElementById('prevCalMonth').addEventListener('click', () => {
-				currentCalDate.setMonth(currentCalDate.getMonth() - 1);
-				generateCalendar(currentCalDate.getFullYear(), currentCalDate.getMonth());
-			});
+            <!-- Collection Card -->
+            <a href="collection.html" class="feature-card">
+                <div class="cta-arrow">→</div>
+                <div class="feature-icon-wrapper">
+                    <div class="feature-icon">📊</div>
+                </div>
+                <h2 class="feature-title" data-lang="nav.collection">数据采集</h2>
+                <p class="feature-description">
+                    <span data-lang="collectionDesc">记录植物生长、开花、结果等多项表型指标。</span>
+                </p>
+                <ul class="card-features">
+                    <li data-lang="feat.col1">滑块直观输入</li>
+                    <li data-lang="feat.col2">支持20+种表型指标</li>
+                    <li data-lang="feat.col3">CSV 一键导出</li>
+                </ul>
+            </a>
 
-			document.getElementById('nextCalMonth').addEventListener('click', () => {
-				currentCalDate.setMonth(currentCalDate.getMonth() + 1);
-				generateCalendar(currentCalDate.getFullYear(), currentCalDate.getMonth());
-			});
+            <!-- Statistics Card -->
+            <a href="statistics.html" class="feature-card">
+                <div class="cta-arrow">→</div>
+                <div class="feature-icon-wrapper">
+                    <div class="feature-icon">📈</div>
+                </div>
+                <h2 class="feature-title" data-lang="nav.statistics">统计数量</h2>
+                <p class="feature-description">
+                    <span data-lang="statisticsDesc">查看累积统计指标及关键数据汇总。</span>
+                </p>
+                <ul class="card-features">
+                    <li data-lang="feat.stat1">实时累计值计算</li>
+                    <li data-lang="feat.stat2">支持单/多头统计</li>
+                    <li data-lang="feat.stat3">采集总量监控</li>
+                </ul>
+            </a>
 
-			// ====================================
-			// CHART FUNCTIONS
-			// ====================================
-			async function initChart() {
-				const indicatorSelect = document.getElementById('indicatorSelect');
-				indicators.forEach((indicator) => {
-					const option = document.createElement('option');
-					option.value = indicator.field;
-					option.textContent = `${indicator.name} (${indicator.unit})`;
-					indicatorSelect.appendChild(option);
-				});
+            <!-- Trends Card -->
+            <a href="trends.html" class="feature-card">
+                <div class="cta-arrow">→</div>
+                <div class="feature-icon-wrapper">
+                    <div class="feature-icon">📉</div>
+                </div>
+                <h2 class="feature-title" data-lang="nav.trends">趋势分析</h2>
+                <p class="feature-description">
+                    <span data-lang="trendsDesc">可视化展示各项指标的时间趋势。</span>
+                </p>
+                <ul class="card-features">
+                    <li data-lang="feat.trend1">动态折线图展示</li>
+                    <li data-lang="feat.trend2">按月查看趋势</li>
+                    <li data-lang="feat.trend3">多指标自由切换</li>
+                </ul>
+            </a>
+        </div>
+    </div>
 
-			indicatorSelect.addEventListener('change', handleIndicatorChange);
-			document.getElementById('prevMonth').addEventListener('click', () => changeChartMonth(-1));
-			document.getElementById('nextMonth').addEventListener('click', () => changeChartMonth(1));
+    <script src="common.js?v=20251214"></script>
+    <script>
+        // Set active navigation
+        setActiveNav('home');
 
-			updateChartMonthDisplay();
-			indicatorSelect.value = 'growth_cm';
-			// Load trend data after authentication
-			const { data: { session } } = await supabase.auth.getSession();
-			if (session) {
-				loadTrendData('growth_cm');
-			}
-		}			function updateChartMonthDisplay() {
-				const monthNames = currentLang === 'zh' 
-					? ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
-					: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-				const display = currentLang === 'zh'
-					? `${currentChartDate.getFullYear()}年${monthNames[currentChartDate.getMonth()]}`
-					: `${monthNames[currentChartDate.getMonth()]} ${currentChartDate.getFullYear()}`;
-				document.getElementById('chartMonthDisplay').textContent = display;
-			}
-			
-			function updateChartIndicators() {
-				const indicatorSelect = document.getElementById('indicatorSelect');
-				const currentValue = indicatorSelect.value;
-				
-				// Clear existing options
-				indicatorSelect.innerHTML = '';
-				
-				// Add new options with current language
-				indicators.forEach((indicator) => {
-					const option = document.createElement('option');
-					option.value = indicator.field;
-					option.textContent = `${indicator.name} (${indicator.unit})`;
-					indicatorSelect.appendChild(option);
-				});
-				
-				// Restore selected value
-				if (currentValue) {
-					indicatorSelect.value = currentValue;
-				}
-			}
+        // Add translations for descriptions and features
+        translations.zh.calendarDesc = '查看和管理数据采集历史，追踪采集进度。';
+        translations.zh.collectionDesc = '记录植物生长、开花、结果等多项表型指标。';
+        translations.zh.statisticsDesc = '查看累积统计指标及关键数据汇总。';
+        translations.zh.trendsDesc = '可视化展示各项指标的时间趋势。';
 
-		async function changeChartMonth(direction) {
-			currentChartDate.setMonth(currentChartDate.getMonth() + direction);
-			updateChartMonthDisplay();
-			
-			const selectedField = document.getElementById('indicatorSelect').value;
-			if (selectedField) {
-				loadTrendData(selectedField);
-			}
-		}
+        translations.zh['feat.cal1'] = '月视图数据概览';
+        translations.zh['feat.cal2'] = '每日采集状态标记';
+        translations.zh['feat.cal3'] = '快速跳转补录数据';
 
-		// ====================================
-		// CALCULATE CUMULATIVE VALUE
-		// ====================================
-		async function calculateCumulativeValue(userId, endDate, sourceField) {
-			try {
-				// Query all data from beginning until the specified date
-				const { data, error } = await supabase
-					.from('plant_data')
-					.select('date, data')
-					.eq('user_id', userId)
-					.lte('date', endDate)
-					.order('date', { ascending: true });
-				
-				if (error) throw error;
-				
-				let cumulativeSum = 0;
-				if (data && data.length > 0) {
-					data.forEach(row => {
-						const value = row.data[sourceField];
-						if (value !== undefined && value !== null) {
-							cumulativeSum += parseFloat(value);
-						}
-					});
-				}
-				
-				return cumulativeSum;
-			} catch (error) {
-				console.error('Error calculating cumulative value:', error);
-				return 0;
-			}
-		}
+        translations.zh['feat.col1'] = '滑块直观输入';
+        translations.zh['feat.col2'] = '支持20+种表型指标';
+        translations.zh['feat.col3'] = 'CSV 一键导出';
 
-		async function handleIndicatorChange() {
-			const selectedField = document.getElementById('indicatorSelect').value;
-			if (selectedField) {
-				currentTrendField = selectedField;
-				await loadTrendData(selectedField);
-			} else {
-				currentTrendField = null;
-				showNoDataMessage();
-			}
-		}		async function loadTrendData(field) {
-			const { data: { session } } = await supabase.auth.getSession();
-			if (!session || !session.user) {
-				showNoDataMessage();
-				return;
-			}
-			
-			currentTrendField = field;
-			showLoading(true);
-			
-			const year = currentChartDate.getFullYear();
-			const month = currentChartDate.getMonth();
-			const startDate = `${year}-${String(month + 1).padStart(2, '0')}-01`;
-			const endDate = new Date(year, month + 1, 0);
-			const endDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(endDate.getDate()).padStart(2, '0')}`;
-			
-			try {
-				// Query data from Supabase
-				const { data, error } = await supabase
-					.from('plant_data')
-					.select('date, data')
-					.eq('user_id', session.user.id)
-					.gte('date', startDate)
-					.lte('date', endDateStr)
-					.order('date', { ascending: true });					if (error) throw error;
-					
-					// Prepare chart data
-					const daysInMonth = endDate.getDate();
-					const dates = [];
-					const values = [];
-					const dataMap = {};
-					
-				// Map existing data
-				if (data) {
-					data.forEach(row => {
-						const day = new Date(row.date).getDate();
-						dataMap[day] = row.data[field] || 0;
-					});
-				}
-				
-				// Check if this is a statistic indicator that needs cumulative calculation
-				const indicator = indicators.find(ind => ind.field === field);
-				const isStatistic = indicator && indicator.isStatistic;
-				
-				// Fill in all days
-				for (let day = 1; day <= daysInMonth; day++) {
-					dates.push(String(day));
-					
-					if (isStatistic) {
-						// For statistic indicators, calculate cumulative sum
-						// We need to get the corresponding weekly new value
-						let sourceField = '';
-						if (field === 'accum_grain_count') {
-							sourceField = 'new_grain_count';
-						} else if (field === 'total_harvest_grain_g') {
-							sourceField = 'new_harvest_grain_g';
-						}
-						
-						if (sourceField) {
-							// Calculate cumulative sum from beginning of time to current day
-							const currentDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-							const cumulativeValue = await calculateCumulativeValue(session.user.id, currentDate, sourceField);
-							values.push(cumulativeValue);
-						} else {
-							values.push(dataMap[day] !== undefined ? dataMap[day] : 0);
-						}
-					} else {
-						// For regular indicators, use the stored value
-						values.push(dataMap[day] !== undefined ? dataMap[day] : 0);
-					}
-				}					createTrendChart(dates, values, field);
-					showLoading(false);
-				} catch (error) {
-					console.error('Error loading trend data:', error);
-					statusEl.textContent = '❌ 加载趋势数据失败';
-					showLoading(false);
-					showNoDataMessage();
-				}
-			}
+        translations.zh['feat.stat1'] = '实时累计值计算';
+        translations.zh['feat.stat2'] = '支持单/多头统计';
+        translations.zh['feat.stat3'] = '采集总量监控';
 
-			function createTrendChart(dates, values, field) {
-				const ctx = document.getElementById('trendChart').getContext('2d');
-				const indicator = indicators.find(ind => ind.field === field);
-				
-				if (trendChart) {
-					trendChart.destroy();
-				}
-				
-				const isMobile = window.innerWidth <= 768;
-				const maxTicks = isMobile ? 10 : 31;
-				
-				trendChart = new Chart(ctx, {
-					type: 'line',
-					data: {
-						labels: dates,
-						datasets: [{
-							label: `${indicator.name} (${indicator.unit})`,
-							data: values,
-							borderColor: '#22c55e',
-							backgroundColor: 'rgba(34, 197, 94, 0.1)',
-							tension: 0.4,
-							fill: true,
-							pointRadius: 4,
-							pointHoverRadius: 6
-						}]
-					},
-					options: {
-						responsive: true,
-						maintainAspectRatio: false,
-						scales: {
-							y: {
-								beginAtZero: true,
-								title: {
-									display: true,
-									text: `${indicator.name} (${indicator.unit})`
-								}
-							},
-							x: {
-								title: {
-									display: true,
-									text: '日期'
-								},
-								ticks: {
-									maxTicksLimit: maxTicks
-								}
-							}
-						},
-						plugins: {
-							legend: {
-								display: false
-							}
-						}
-					}
-				});
-				
-				document.getElementById('trendChart').style.display = 'block';
-			}
+        translations.zh['feat.trend1'] = '动态折线图展示';
+        translations.zh['feat.trend2'] = '按月查看趋势';
+        translations.zh['feat.trend3'] = '多指标自由切换';
 
-			function showLoading(show) {
-				document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
-				document.getElementById('trendChart').style.display = show ? 'none' : 'block';
-				document.getElementById('noDataMessage').style.display = 'none';
-			}
+        translations.en.calendarDesc = 'Manage data history and track progress.';
+        translations.en.collectionDesc = 'Record plant growth, flowering and fruiting.';
+        translations.en.statisticsDesc = 'View cumulative statistics and key metrics.';
+        translations.en.trendsDesc = 'Visualize time trends of various indicators.';
 
-			function showNoDataMessage() {
-				document.getElementById('trendChart').style.display = 'none';
-				document.getElementById('loadingOverlay').style.display = 'none';
-				document.getElementById('noDataMessage').style.display = 'block';
-				
-				if (trendChart) {
-					trendChart.destroy();
-					trendChart = null;
-				}
-			}
+        translations.en['feat.cal1'] = 'Monthly Data Overview';
+        translations.en['feat.cal2'] = 'Daily Status Markers';
+        translations.en['feat.cal3'] = 'Quick Data Entry';
 
-		// ====================================
-		// LOAD TODAY'S DATA
-		// ====================================
-		async function loadTodayData() {
-			const { data: { session } } = await supabase.auth.getSession();
-			if (!session || !session.user) return;
-			
-			const today = getBeijingTime();
-			const dateKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-			
-			try {
-				const { data, error } = await supabase
-					.from('plant_data')
-					.select('data')
-					.eq('user_id', session.user.id)
-					.eq('date', dateKey)
-				.single();					if (error) {
-					// No data for today, initialize to null
-					console.log('No data for today, initializing to null');
-					initializeFormToNull();
-					updateCollectionProgress();
-					return;
-				}
-				
-				if (data && data.data) {
-					// Load the data into sliders
-					indicators.forEach(indicator => {
-						// Skip statistic indicators
-						if (indicator.isStatistic) {
-							return;
-						}
-						
-						const slider = document.getElementById(`slider-${indicator.field}`);
-						const valueDisplay = document.getElementById(`value-${indicator.field}`);
-						const value = data.data[indicator.field];
-						
-						if (value !== undefined && value !== null) {
-							slider.value = value;
-							valueDisplay.textContent = value;
-						} else {
-							// Initialize uncollected indicators to min value
-							slider.value = indicator.min;
-							valueDisplay.textContent = indicator.min;
-						}
-					});
-					
-					console.log('Loaded today\'s data');
-					updateCollectionProgress();
-					updateStatisticIndicators();
-				}
-			} catch (error) {
-				console.error('Error loading today\'s data:', error);
-				initializeFormToNull();
-				updateCollectionProgress();
-				updateStatisticIndicators();
-			}
-		}
-		
-	// Initialize all indicators to null (min value)
-	function initializeFormToNull() {
-		indicators.forEach(indicator => {
-			// Skip statistic indicators
-			if (indicator.isStatistic) {
-				return;
-			}
-			
-			const slider = document.getElementById(`slider-${indicator.field}`);
-			const valueDisplay = document.getElementById(`value-${indicator.field}`);
-			if (slider && valueDisplay) {
-				slider.value = indicator.min;
-				valueDisplay.textContent = indicator.min;
-			}
-		});
-	}		// Update collection progress display
-		function updateCollectionProgress() {
-			const progressEl = document.getElementById('collectionProgress');
-			if (!progressEl) return;
-			
-		let uncollected = 0;
-		let total = 0;
-		
-		indicators.forEach(indicator => {
-			// Skip statistic indicators
-			if (indicator.isStatistic) {
-				return;
-			}
-			
-			total++;
-			const slider = document.getElementById(`slider-${indicator.field}`);
-			
-			// Check if value is still at minimum (not collected)
-			if (slider && parseFloat(slider.value) === indicator.min) {
-				uncollected++;
-			}
-		});
-		
-		const collected = total - uncollected;			if (currentLang === 'zh') {
-				if (uncollected === 0) {
-					progressEl.innerHTML = `✅ 今日所有指标已采集完成 (${total}/${total})`;
-					progressEl.style.color = '#059669';
-				} else {
-					progressEl.innerHTML = `📊 还有 <strong>${uncollected}</strong> 个指标未采集 (${collected}/${total})`;
-					progressEl.style.color = '#047857';
-				}
-			} else {
-				if (uncollected === 0) {
-					progressEl.innerHTML = `✅ All indicators collected today (${total}/${total})`;
-					progressEl.style.color = '#059669';
-				} else {
-					progressEl.innerHTML = `📊 <strong>${uncollected}</strong> indicators not collected yet (${collected}/${total})`;
-					progressEl.style.color = '#047857';
-				}
-			}
-		}
+        translations.en['feat.col1'] = 'Intuitive Slider Input';
+        translations.en['feat.col2'] = '20+ Phenotypes';
+        translations.en['feat.col3'] = 'One-click CSV Export';
 
-		// ====================================
-		// UPDATE STATISTIC INDICATORS DISPLAY
-		// ====================================
-		async function updateStatisticIndicators() {
-			const { data: { session } } = await supabase.auth.getSession();
-			if (!session || !session.user) return;
-			
-			const today = getBeijingTime();
-			const dateKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-			
-			const statisticValuesEl = document.getElementById('statisticValues');
-			if (!statisticValuesEl) return;
-			
-			// Calculate cumulative values for each statistic indicator
-			const statisticIndicators = indicators.filter(ind => ind.isStatistic);
-			
-			let html = '';
-			for (const indicator of statisticIndicators) {
-				let sourceField = '';
-				if (indicator.field === 'accum_grain_count') {
-					sourceField = 'new_grain_count';
-				} else if (indicator.field === 'total_harvest_grain_g') {
-					sourceField = 'new_harvest_grain_g';
-				}
-				
-				if (sourceField) {
-					const cumulativeValue = await calculateCumulativeValue(session.user.id, dateKey, sourceField);
-					html += `
-						<div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: white; border-radius: 4px;">
-							<span style="color: #065f46; font-weight: 500;">${indicator.name}</span>
-							<span style="color: #047857; font-weight: 600; font-size: 16px;">${cumulativeValue.toFixed(indicator.step >= 1 ? 0 : 1)} ${indicator.unit}</span>
-						</div>
-					`;
-				}
-			}
-			
-			statisticValuesEl.innerHTML = html || '<div style="color: #6b7280; text-align: center; padding: 10px;">暂无数据</div>';
-		}
+        translations.en['feat.stat1'] = 'Real-time Calculation';
+        translations.en['feat.stat2'] = 'Single/Multi Head Stats';
+        translations.en['feat.stat3'] = 'Total Volume Monitor';
 
-		// ====================================
-		// LOAD COLLECTION HISTORY
-		// ====================================
-		async function loadCollectionHistory() {
-			const { data: { session } } = await supabase.auth.getSession();
-			if (!session || !session.user) return;
-			
-			try {
-				const { data, error } = await supabase
-					.from('plant_data')
-					.select('date')
-					.eq('user_id', session.user.id);					if (error) throw error;
-					
-					collectionData = {};
-					if (data) {
-						data.forEach(row => {
-							collectionData[row.date] = 1;
-						});
-					}
-					
-					generateCalendar(currentCalDate.getFullYear(), currentCalDate.getMonth());
-				} catch (error) {
-					console.error('Error loading collection history:', error);
-				}
-			}
+        translations.en['feat.trend1'] = 'Dynamic Line Charts';
+        translations.en['feat.trend2'] = 'Monthly Trend View';
+        translations.en['feat.trend3'] = 'Switch Indicators';
 
-			// ====================================
-			// DATA SYNC TO SUPABASE
-			// ====================================
-		async function syncToSupabase() {
-			// Get current session to ensure we have the latest user
-			const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-			
-			if (!session || !session.user) {
-				statusEl.textContent = '请先登录';
-				return false;
-			}
-			
-			const userId = session.user.id;
-			statusEl.textContent = '正在同步到云端...';
-			
-			const now = getBeijingTime();
-			const dateKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-			
-			// Collect form data
-			const formData = {};
-			indicators.forEach(indicator => {
-				// Skip statistic indicators
-				if (indicator.isStatistic) {
-					return;
-				}
-				
-				const slider = document.getElementById(`slider-${indicator.field}`);
-				if (slider) {
-					formData[indicator.field] = parseFloat(slider.value);
-				}
-			});
-			
-			try {
-				// Check if record exists (use maybeSingle instead of single to avoid error when no data)
-				const { data: existing, error: selectError } = await supabase
-					.from('plant_data')
-					.select('id')
-					.eq('user_id', userId)
-					.eq('date', dateKey)
-					.maybeSingle();
-				
-				// Ignore "not found" errors
-				if (selectError && selectError.code !== 'PGRST116') {
-					throw selectError;
-				}
-				
-				let result;
-				if (existing) {
-					// Update existing record
-					const { data, error } = await supabase
-						.from('plant_data')
-						.update({
-							data: formData,
-							updated_at: new Date().toISOString()
-						})
-						.eq('id', existing.id)
-						.select();
-					
-					if (error) throw error;
-					result = data;
-					console.log('Updated existing record');
-				} else {
-					// Insert new record
-					const { data, error } = await supabase
-						.from('plant_data')
-						.insert([{
-							user_id: userId,
-							date: dateKey,
-							data: formData,
-							created_at: new Date().toISOString(),
-							updated_at: new Date().toISOString()
-						}])
-						.select();
-					
-					if (error) throw error;
-				result = data;
-			}					statusEl.textContent = '✅ 成功同步到云端';
-				
-				// Update calendar
-				collectionData[dateKey] = 1;
-				generateCalendar(currentCalDate.getFullYear(), currentCalDate.getMonth());
-				
-				// Update statistic indicators
-				await updateStatisticIndicators();
-				
-				// Refresh trend chart if showing current month
-				if (currentTrendField) {
-					const uploadYear = now.getFullYear();
-					const uploadMonth = now.getMonth();
-					const chartYear = currentChartDate.getFullYear();
-					const chartMonth = currentChartDate.getMonth();
-					
-					if (uploadYear === chartYear && uploadMonth === chartMonth) {
-						await loadTrendData(currentTrendField);
-					}
-				}					return true;
-				} catch (error) {
-					console.error('Error syncing to Supabase:', error);
-					statusEl.textContent = '❌ 同步失败: ' + error.message;
-					return false;
-				}
-			}
+        // Update language display
+        updateLanguageDisplay();
+    </script>
+</body>
 
-			// ====================================
-			// EXPORT CSV
-			// ====================================
-			function buildCSV() {
-				const headers = [
-					'timestamp','growth_cm','stem_mm','leaf_count','leaf_length_cm','leaf_width_cm',
-					'potential_flower_count','current_flower_order','accum_ear_count','new_grain_count','accum_grain_count',
-					'yield_kg_m2','single_grain_g','total_harvest_ear_count','new_harvest_grain_g','total_harvest_grain_g',
-					'ear_weight_g','single_head_yield_g','brix','acidity','cracking_rate',
-					'irrigation_ml','reflux_ml','reflux_ec','reflux_ph'
-				];
-
-				const row = [getBeijingTime().toISOString()];
-				indicators.forEach(indicator => {
-					const slider = document.getElementById(`slider-${indicator.field}`);
-					row.push(slider.value);
-				});
-				
-				const csv = headers.join(',') + '\n' + row.join(',') + '\n';
-				return csv;
-			}
-
-			function exportCSV() {
-				const csv = buildCSV();
-				
-				const blob = new Blob([csv], {type: 'text/csv'});
-				const url = URL.createObjectURL(blob);
-				const a = document.createElement('a');
-				a.href = url;
-				a.download = 'data_' + getBeijingTime().toISOString().replace(/[:.]/g, '-') + '.csv';
-				document.body.appendChild(a);
-				a.click();
-				a.remove();
-				URL.revokeObjectURL(url);
-				
-				statusEl.textContent = 'CSV 已下载';
-			}
-
-			// ====================================
-			// EVENT LISTENERS
-			// ====================================
-			submitBtn.addEventListener('click', exportCSV);
-			syncBtn.addEventListener('click', syncToSupabase);
-			authBtn.addEventListener('click', signIn);
-
-			// ====================================
-			// INITIALIZATION
-			// ====================================
-			async function init() {
-				// Set up language switch button
-				document.getElementById('langSwitch').addEventListener('click', switchLanguage);
-				
-				generateForm();
-				updateWeekInfo();
-				generateCalendar(currentCalDate.getFullYear(), currentCalDate.getMonth());
-				await initChart();
-				await initAuth();
-				
-				// Load today's data if user is logged in
-				const { data: { session } } = await supabase.auth.getSession();
-				if (session) {
-					await loadTodayData();
-				}
-			}
-
-			// Start the app
-			init();
-		</script>
-	</body>
 </html>

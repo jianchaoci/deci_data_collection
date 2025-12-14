@@ -1,0 +1,894 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>📊 数据采集 - 得希表型采集系统</title>
+    <link rel="stylesheet" href="common.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .collection-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(5, 150, 105, 0.12);
+            border: 1px solid rgba(5, 150, 105, 0.15);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .indicator-group {
+            margin-bottom: 20px;
+            opacity: 0.5;
+            transition: opacity 0.2s ease;
+        }
+
+        .indicator-group.active {
+            opacity: 1;
+        }
+
+        .indicator-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .indicator-checkbox {
+            width: 18px;
+            height: 18px;
+            margin-right: 10px;
+            cursor: pointer;
+            accent-color: #10b981;
+        }
+
+        .indicator-name {
+            font-weight: 600;
+            color: #064e3b;
+            font-size: 0.95rem;
+            flex: 1;
+        }
+
+        .indicator-label-left {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .indicator-value-display {
+            font-weight: 700;
+            color: #065f46;
+            font-size: 0.95rem;
+        }
+
+        .slider-container {
+            position: relative;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: linear-gradient(to right, #d1fae5, #6ee7b7);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(5, 150, 105, 0.4);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(5, 150, 105, 0.4);
+        }
+
+        input[type="range"]:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        input[type="range"]:disabled::-webkit-slider-thumb {
+            cursor: not-allowed;
+            background: #9ca3af;
+        }
+
+        input[type="range"]:disabled::-moz-range-thumb {
+            cursor: not-allowed;
+            background: #9ca3af;
+        }
+
+        /* Style for collected indicators */
+        input[type="range"].collected {
+            /* Green to Indigo gradient for high contrast */
+            background: linear-gradient(to right, #10b981, #6366f1);
+            /* Stronger, slightly purple shadow */
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.6);
+        }
+
+        input[type="range"].collected::-webkit-slider-thumb {
+            background: #ffffff;
+            /* Indigo border to match the gradient end */
+            border: 2px solid #6366f1;
+            transform: scale(1.2);
+            box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
+        }
+
+        input[type="range"].collected::-moz-range-thumb {
+            background: #ffffff;
+            border: 2px solid #6366f1;
+            transform: scale(1.2);
+            box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
+        }
+
+        .progress-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            color: #047857;
+        }
+
+        .replicate-selector-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 10px;
+            border-radius: 12px;
+        }
+
+        .replicate-selector-container label {
+            font-weight: 600;
+            color: #065f46;
+        }
+
+        .replicate-select {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 2px solid #6ee7b7;
+            background: white;
+            color: #064e3b;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .replicate-select:focus {
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="nav-bar">
+        <div class="nav-links">
+            <a href="index.html" class="nav-link" data-page="home" data-lang="nav.home">🏠 首页</a>
+            <a href="calendar.html" class="nav-link" data-page="calendar" data-lang="nav.calendar">📅 采集日历</a>
+            <a href="collection.html" class="nav-link active" data-page="collection" data-lang="nav.collection">📊
+                数据采集</a>
+            <a href="statistics.html" class="nav-link" data-page="statistics" data-lang="nav.statistics">📈 统计数量</a>
+            <a href="trends.html" class="nav-link" data-page="trends" data-lang="nav.trends">📉 趋势分析</a>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <button class="nav-link" id="authBtn" style="border: 1px solid white; cursor: pointer; display: none;">🔗 登录</button>
+            <button class="lang-switch" id="langSwitch" style="position: static;">EN</button>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1 class="page-title" data-lang="dataCollection">📊 指标采集</h1>
+        <div class="action-buttons">
+            <button type="button" class="btn btn-primary" id="submitBtn" data-lang="exportBtn">📥 导出 CSV</button>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <div class="collection-card">
+            <div class="card-header-row"
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div style="display: flex; flex-direction: column;">
+                    <h2 class="section-title" style="margin-bottom: 5px;">
+                        <span data-lang="dataCollection">📊 指标采集</span> - <span id="currentReplicateDisplay">#1</span>
+                    </h2>
+                    <div id="collectionProgress" style="font-size: 0.9rem; color: #059669; font-weight: 500;"></div>
+                </div>
+
+                <!-- Replicate Selector INSIDE CARD -->
+                <div class="replicate-selector-container"
+                    style="margin: 0; padding: 5px 15px; background: rgba(16, 185, 129, 0.1);">
+                    <label for="replicateSelect" data-lang="selectReplicate" style="margin-right: 10px;">重复:</label>
+                    <select id="replicateSelect" class="replicate-select">
+                        <!-- Options 1-30 generated by JS -->
+                    </select>
+                </div>
+            </div>
+
+            <form id="dataForm">
+                <!-- Indicators will be dynamically generated here -->
+            </form>
+
+            <div class="form-actions" style="margin-top: 30px; text-align: center;">
+                <button type="button" class="btn btn-primary" id="saveDbBtn"
+                    style="background: linear-gradient(135deg, #10b981, #059669); font-size: 1.1rem; padding: 12px 30px;">
+                    ☁️ <span data-lang="saveToDb">提交到数据库</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="common.js?v=20251214"></script>
+    <script>
+        // Set active navigation
+        setActiveNav('collection');
+
+        // DOM Elements
+        const form = document.getElementById('dataForm');
+        const submitBtn = document.getElementById('submitBtn'); // Export CSV btn
+        const saveDbBtn = document.getElementById('saveDbBtn');
+        const replicateSelect = document.getElementById('replicateSelect');
+        const currentReplicateDisplay = document.getElementById('currentReplicateDisplay');
+
+        let indicators = getIndicators();
+        let currentReplicate = 1;
+        const TOTAL_REPLICATES = 30;
+
+        // Store data for all 30 replicates in memory (and localStorage)
+        // Structure: { 1: { growth_cm: 10, ... }, 2: { ... } }
+        let replicatesData = {};
+
+        // Add translations
+        translations.zh.selectReplicate = '重复:';
+        translations.zh.replicate = '样本';
+        translations.zh.saveToDb = '提交到数据库';
+        translations.zh.saving = '正在提交...';
+        translations.zh.saveSuccess = '提交成功！';
+        translations.zh.saveError = '提交失败';
+
+        translations.en.selectReplicate = 'Rep:';
+        translations.en.replicate = 'Sample';
+        translations.en.saveToDb = 'Submit to Database';
+        translations.en.saving = 'Submitting...';
+        translations.en.saveSuccess = 'Submitted Successfully!';
+        translations.en.saveError = 'Submission Failed';
+
+        // Initialize Data - 从数据库加载所有样本数据
+        async function initData() {
+            // 初始化所有样本，所有指标为null
+            for (let i = 1; i <= TOTAL_REPLICATES; i++) {
+                replicatesData[i] = {};
+                indicators.forEach(ind => {
+                    if (!ind.isStatistic && !ind.isConstant) {
+                        replicatesData[i][ind.field] = null;
+                    }
+                });
+            }
+
+            // 从数据库加载本周所有样本的数据（如果已登录）
+            if (currentUser && !currentUser.is_guest) {
+                try {
+                    const now = getBeijingTime();
+                    const year = now.getFullYear();
+                    const week = getWeekNumber(now);
+
+                    const { data, error } = await supabase
+                        .from('phenotype_records')
+                        .select('*')
+                        .eq('user_id', currentUser.id)
+                        .eq('year', year)
+                        .eq('week', week)
+                        .order('replicate_id', { ascending: true });
+
+                    if (error) {
+                        console.error('Error loading all replicates from database:', error);
+                    } else if (data && data.length > 0) {
+                        // 加载所有样本的数据
+                        data.forEach(row => {
+                            const repIndex = row.replicate_id;
+                            if (repIndex >= 1 && repIndex <= TOTAL_REPLICATES) {
+                                indicators.forEach(ind => {
+                                    if (!ind.isStatistic && !ind.isConstant) {
+                                        const value = row[ind.field];
+                                        // 数据库中有什么就是什么（null或值）
+                                        replicatesData[repIndex][ind.field] = (value !== null && value !== undefined) ? value : null;
+                                    }
+                                });
+                            }
+                        });
+                        console.log(`Loaded ${data.length} replicate records from database`);
+                    }
+                } catch (error) {
+                    console.error('Exception loading all replicates from database:', error);
+                }
+            }
+        }
+
+        // Save Data to LocalStorage
+        function saveData() {
+            const todayKey = `collection_data_${getBeijingTime().toISOString().split('T')[0]}`;
+            localStorage.setItem(todayKey, JSON.stringify(replicatesData));
+        }
+
+        // Generate Replicate Options
+        function generateReplicateOptions() {
+            replicateSelect.innerHTML = '';
+            const lang = translations[currentLang];
+            const repLabel = lang.replicate || '样本';
+
+            for (let i = 1; i <= TOTAL_REPLICATES; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = `${repLabel} #${i}`;
+                replicateSelect.appendChild(option);
+            }
+
+            replicateSelect.value = currentReplicate;
+
+            replicateSelect.addEventListener('change', async (e) => {
+                const newReplicate = parseInt(e.target.value);
+                
+                // 检查当前样本是否已开始采集但未完成
+                if (currentReplicate !== newReplicate) {
+                    const canSwitch = checkCanSwitchReplicate(currentReplicate);
+                    if (!canSwitch.allowed) {
+                        // 不允许切换，恢复选择
+                        replicateSelect.value = currentReplicate;
+                        alert(canSwitch.message);
+                        return;
+                    }
+                }
+                
+                currentReplicate = newReplicate;
+                currentReplicateDisplay.textContent = `#${currentReplicate}`;
+                await loadReplicateValues(currentReplicate);
+            });
+        }
+
+        // Generate form
+        function generateForm() {
+            form.innerHTML = '';
+
+            indicators.forEach((indicator, index) => {
+                if (indicator.isStatistic || indicator.isConstant) return;
+
+                const group = document.createElement('div');
+                group.className = 'indicator-group';
+                group.id = `group-${indicator.field}`;
+
+                const label = document.createElement('div');
+                label.className = 'indicator-label';
+
+                const labelLeft = document.createElement('div');
+                labelLeft.className = 'indicator-label-left';
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'indicator-checkbox';
+                checkbox.id = `check-${indicator.field}`;
+                checkbox.checked = false; // 强制初始为未选中
+                checkbox.addEventListener('change', (e) => handleCheckboxChange(e, indicator.field));
+
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'indicator-name';
+                nameSpan.textContent = `${indicator.name} (${indicator.unit})`;
+
+                labelLeft.appendChild(checkbox);
+                labelLeft.appendChild(nameSpan);
+
+                const valueSpan = document.createElement('span');
+                valueSpan.className = 'indicator-value-display';
+                valueSpan.id = `value-${indicator.field}`;
+                valueSpan.textContent = indicator.defaultValue;
+
+                label.appendChild(labelLeft);
+                label.appendChild(valueSpan);
+
+                const sliderContainer = document.createElement('div');
+                sliderContainer.className = 'slider-container';
+
+                const slider = document.createElement('input');
+                slider.type = 'range';
+                slider.id = `slider-${indicator.field}`;
+                slider.name = indicator.field;
+                slider.min = indicator.min;
+                slider.max = indicator.max;
+                slider.step = indicator.step;
+                slider.value = indicator.defaultValue;
+                slider.disabled = true; // 强制初始为禁用
+
+                slider.addEventListener('input', (e) => {
+                    const val = parseFloat(e.target.value);
+                    valueSpan.textContent = e.target.value;
+                    
+                    // 只有当checkbox勾选了才保存值，否则不计入采集
+                    const checkbox = document.getElementById(`check-${indicator.field}`);
+                    if (checkbox && checkbox.checked) {
+                        replicatesData[currentReplicate][indicator.field] = val;
+                        slider.classList.add('collected');
+                    } else {
+                        replicatesData[currentReplicate][indicator.field] = null;
+                        slider.classList.remove('collected');
+                    }
+                    
+                    saveData();
+                    updateCollectionProgress();
+                });
+
+                sliderContainer.appendChild(slider);
+                group.appendChild(label);
+                group.appendChild(sliderContainer);
+                form.appendChild(group);
+            });
+        }
+
+        // Load values for specific replicate from database
+        async function loadReplicateValues(repIndex) {
+            // 先重置所有checkbox和slider状态
+            indicators.forEach(indicator => {
+                if (indicator.isStatistic || indicator.isConstant) return;
+                
+                const checkbox = document.getElementById(`check-${indicator.field}`);
+                const slider = document.getElementById(`slider-${indicator.field}`);
+                const valueDisplay = document.getElementById(`value-${indicator.field}`);
+                const group = document.getElementById(`group-${indicator.field}`);
+                
+                if (checkbox) {
+                    checkbox.checked = false;
+                }
+                if (slider) {
+                    slider.disabled = true;
+                    slider.value = indicator.defaultValue;
+                }
+                if (valueDisplay) {
+                    valueDisplay.textContent = indicator.defaultValue;
+                }
+                if (group) {
+                    group.classList.remove('active');
+                }
+                if (slider) {
+                    slider.classList.remove('collected');
+                }
+            });
+
+            // 初始化数据为null
+            if (!replicatesData[repIndex]) {
+                replicatesData[repIndex] = {};
+            }
+            indicators.forEach(ind => {
+                if (!ind.isStatistic && !ind.isConstant) {
+                    replicatesData[repIndex][ind.field] = null;
+                }
+            });
+
+            // 从数据库加载数据（如果已登录）
+            if (currentUser && !currentUser.is_guest) {
+                try {
+                    const now = getBeijingTime();
+                    const todayStr = now.toISOString().split('T')[0];
+                    const year = now.getFullYear();
+                    const week = getWeekNumber(now);
+
+                    const { data, error } = await supabase
+                        .from('phenotype_records')
+                        .select('*')
+                        .eq('user_id', currentUser.id)
+                        .eq('year', year)
+                        .eq('week', week)
+                        .eq('replicate_id', repIndex)
+                        .single();
+
+                    if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+                        console.error('Error loading data from database:', error);
+                    } else if (data) {
+                        // 从数据库加载数据 - 不做任何值判断，数据库是什么就是什么
+                        indicators.forEach(indicator => {
+                            if (indicator.isStatistic || indicator.isConstant) return;
+
+                            const value = data[indicator.field];
+                            const slider = document.getElementById(`slider-${indicator.field}`);
+                            const valueDisplay = document.getElementById(`value-${indicator.field}`);
+
+                            if (value !== null && value !== undefined) {
+                                // 数据库中有值（不管是什么值，包括0）：保存并显示
+                                replicatesData[repIndex][indicator.field] = value;
+                                if (slider && valueDisplay) {
+                                    slider.value = value;
+                                    valueDisplay.textContent = value;
+                                    slider.classList.add('collected');
+                                }
+                            } else {
+                                // 数据库中是null：保持null
+                                replicatesData[repIndex][indicator.field] = null;
+                                if (slider && valueDisplay) {
+                                    slider.value = indicator.defaultValue;
+                                    valueDisplay.textContent = indicator.defaultValue;
+                                    slider.classList.remove('collected');
+                                }
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.error('Exception loading data from database:', error);
+                }
+            }
+
+            // 更新显示
+            indicators.forEach(indicator => {
+                if (indicator.isStatistic || indicator.isConstant) return;
+
+                const slider = document.getElementById(`slider-${indicator.field}`);
+                const valueDisplay = document.getElementById(`value-${indicator.field}`);
+                const value = replicatesData[repIndex][indicator.field];
+
+                if (slider && valueDisplay) {
+                    if (value !== null && value !== undefined) {
+                        // 显示已采集的值
+                        slider.value = value;
+                        valueDisplay.textContent = value;
+                        slider.classList.add('collected');
+                    } else {
+                        // 显示默认值
+                        slider.value = indicator.defaultValue;
+                        valueDisplay.textContent = indicator.defaultValue;
+                        slider.classList.remove('collected');
+                    }
+                }
+            });
+
+            updateCollectionProgress();
+        }
+
+        // Check if can switch to another replicate
+        function checkCanSwitchReplicate(repIndex) {
+            const totalIndicators = indicators.filter(ind => !ind.isStatistic && !ind.isConstant).length;
+            const currentData = replicatesData[repIndex] || {};
+            let nullCount = 0;
+
+            // 统计当前样本中有多少个null值
+            indicators.forEach(ind => {
+                if (!ind.isStatistic && !ind.isConstant) {
+                    const value = currentData[ind.field];
+                    if (value === null || value === undefined) {
+                        nullCount++;
+                    }
+                }
+            });
+
+            // 如果有null值（未完成采集），不允许切换
+            if (nullCount > 0 && nullCount < totalIndicators) {
+                // 部分采集了，有null值，不允许切换
+                const collectedCount = totalIndicators - nullCount;
+                const message = currentLang === 'zh' 
+                    ? `❌ 无法切换样本！\n\n样本 #${repIndex} 未完成采集，还有 ${nullCount} 项指标为空。\n\n已采集：${collectedCount}/${totalIndicators}\n\n请完成所有指标后再切换。`
+                    : `❌ Cannot switch sample!\n\nSample #${repIndex} is incomplete, ${nullCount} indicators are null.\n\nCollected: ${collectedCount}/${totalIndicators}\n\nPlease complete all indicators before switching.`;
+                return { allowed: false, message: message };
+            }
+
+            return { allowed: true, message: '' };
+        }
+
+        function handleCheckboxChange(event, field) {
+            const checkbox = event.target;
+
+            if (checkbox.checked) {
+                // 勾选时：启用滑块，保存当前滑块的值
+                document.querySelectorAll('.indicator-checkbox').forEach(cb => {
+                    if (cb.id !== `check-${field}`) {
+                        cb.checked = false;
+                        const cbField = cb.id.replace('check-', '');
+                        document.getElementById(`slider-${cbField}`).disabled = true;
+                        document.getElementById(`group-${cbField}`).classList.remove('active');
+                    }
+                });
+
+                const slider = document.getElementById(`slider-${field}`);
+                slider.disabled = false;
+                document.getElementById(`group-${field}`).classList.add('active');
+                
+                // 保存当前滑块的值
+                const val = parseFloat(slider.value);
+                replicatesData[currentReplicate][field] = val;
+                slider.classList.add('collected');
+            } else {
+                // 取消勾选时：禁用滑块，设置为null（未采集）
+                const slider = document.getElementById(`slider-${field}`);
+                slider.disabled = true;
+                document.getElementById(`group-${field}`).classList.remove('active');
+                
+                replicatesData[currentReplicate][field] = null;
+                slider.classList.remove('collected');
+            }
+            
+            saveData();
+            updateCollectionProgress();
+        }
+
+        // Update collection progress (For current replicate)
+        function updateCollectionProgress() {
+            // 统计当前样本已采集数据的指标数量
+            let collectedInRep = 0;
+            const totalIndicators = indicators.filter(ind => !ind.isStatistic && !ind.isConstant).length;
+            const currentData = replicatesData[currentReplicate] || {};
+
+            indicators.forEach(ind => {
+                if (!ind.isStatistic && !ind.isConstant) {
+                    const value = currentData[ind.field];
+                    // 简单判断：值不为null且不为undefined = 已采集
+                    if (value !== null && value !== undefined) {
+                        collectedInRep++;
+                    }
+                }
+            });
+
+            // 计算所有样本中有多少个完成采集
+            let completeCount = 0;
+            
+            for (let i = 1; i <= TOTAL_REPLICATES; i++) {
+                const repData = replicatesData[i];
+                let collected = 0;
+                
+                indicators.forEach(ind => {
+                    if (!ind.isStatistic && !ind.isConstant) {
+                        const value = repData[ind.field];
+                        // 简单判断：值不为null且不为undefined = 已采集
+                        if (value !== null && value !== undefined) {
+                            collected++;
+                        }
+                    }
+                });
+                
+                if (collected === totalIndicators) {
+                    completeCount++;
+                }
+            }
+
+            const progressEl = document.getElementById('collectionProgress');
+            const lang = translations[currentLang];
+
+            let statusText = '';
+            if (currentLang === 'zh') {
+                statusText = `已完成样本 ${completeCount}/${TOTAL_REPLICATES}, 当前样本采集 ${collectedInRep}/${totalIndicators}`;
+            } else {
+                statusText = `Completed Samples ${completeCount}/${TOTAL_REPLICATES}, Current ${collectedInRep}/${totalIndicators}`;
+            }
+
+            progressEl.textContent = statusText;
+        }
+
+        // Export CSV
+        function buildCSV() {
+            // Columns: Year, Week, Date, Replicate_ID, Field1, Field2...
+            const headers = ['Year', 'Week', 'Date', 'Replicate_ID'];
+            const fields = [];
+
+            indicators.forEach(ind => {
+                if (!ind.isStatistic && !ind.isConstant) {
+                    headers.push(ind.field);
+                    fields.push(ind.field);
+                }
+            });
+
+            let csvContent = headers.join(',') + '\n';
+            const now = getBeijingTime();
+            const year = now.getFullYear();
+            const week = getWeekNumber(now);
+            const dateStr = now.toISOString().split('T')[0];
+
+            // Iterate all replicates
+            for (let i = 1; i <= TOTAL_REPLICATES; i++) {
+                const data = replicatesData[i];
+                // Row structure matching database: Year, Week, Date, Replicate_ID...
+                const row = [year, week, dateStr, i];
+
+                fields.forEach(field => {
+                    row.push(data[field] !== undefined ? data[field] : '');
+                });
+
+                csvContent += row.join(',') + '\n';
+            }
+
+            return csvContent;
+        }
+
+        function exportCSV() {
+            const csv = buildCSV();
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'phenotype_data_' + getBeijingTime().toISOString().replace(/[:.]/g, '-') + '.csv';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        }
+
+        // Save to Database
+        async function saveToDatabase() {
+            if (!currentUser || currentUser.is_guest) {
+                alert(currentLang === 'zh' ? '请先登录' : 'Please login first');
+                return;
+            }
+
+            // 只验证当前样本是否完成采集
+            const totalIndicators = indicators.filter(ind => !ind.isStatistic && !ind.isConstant).length;
+            const currentData = replicatesData[currentReplicate];
+            const uncollectedIndicators = [];
+            let collectedCount = 0;
+            
+            indicators.forEach(ind => {
+                if (!ind.isStatistic && !ind.isConstant) {
+                    if (currentData[ind.field] === null || currentData[ind.field] === undefined) {
+                        uncollectedIndicators.push(ind.name);
+                    } else {
+                        collectedCount++;
+                    }
+                }
+            });
+            
+            // 如果当前样本有未采集的指标，阻止提交
+            if (uncollectedIndicators.length > 0) {
+                let message = '';
+                if (currentLang === 'zh') {
+                    message = `❌ 提交失败！\n\n样本 #${currentReplicate} 有 ${uncollectedIndicators.length} 项指标未采集：\n\n`;
+                    message += uncollectedIndicators.map((name, i) => `${i + 1}. ${name}`).join('\n');
+                    message += `\n\n请完成所有指标的采集后再提交。`;
+                } else {
+                    message = `❌ Submission Failed!\n\nSample #${currentReplicate} has ${uncollectedIndicators.length} uncollected indicators:\n\n`;
+                    message += uncollectedIndicators.map((name, i) => `${i + 1}. ${name}`).join('\n');
+                    message += `\n\nPlease complete all indicators before submitting.`;
+                }
+                alert(message);
+                return;
+            }
+
+            const lang = translations[currentLang];
+            const originalText = saveDbBtn.innerHTML;
+            saveDbBtn.disabled = true;
+            saveDbBtn.innerHTML = `⏳ ${lang.saving}`;
+
+            try {
+                console.log('Starting submission to Supabase...');
+                const now = getBeijingTime();
+                const todayStr = now.toISOString().split('T')[0];
+                const year = now.getFullYear();
+                const week = getWeekNumber(now); // from common.js
+                console.log(`Submitting for Year: ${year}, Week: ${week}, Date: ${todayStr}`);
+
+                // Prepare rows for bulk upsert
+                const rows = [];
+
+                // Iterate through replicates 1 to 30
+                for (let i = 1; i <= TOTAL_REPLICATES; i++) {
+                    const repData = replicatesData[i];
+
+                    const row = {
+                        user_id: currentUser.id,
+                        year: year,
+                        week: week,
+                        date: todayStr,
+                        replicate_id: i,
+                    };
+
+                    // Flatten traits into columns
+                    // 简单处理：null就是null，有值就是值（不做任何判断）
+                    indicators.forEach(ind => {
+                        if (!ind.isStatistic && !ind.isConstant) {
+                            const value = repData[ind.field];
+                            // 数据是什么就提交什么（包括0值）
+                            row[ind.field] = (value !== null && value !== undefined) ? value : null;
+                        }
+                    });
+
+                    rows.push(row);
+                }
+
+                console.log(`Prepared ${rows.length} rows for upsert.`);
+
+                // Call Supabase Upsert
+                // Target table: phenotype_records
+                const { error, data } = await supabase
+                    .from('phenotype_records')
+                    .upsert(rows, { onConflict: 'user_id, year, week, replicate_id' })
+                    .select();
+
+                if (error) {
+                    console.error('Supabase Error:', error);
+                    throw error;
+                }
+
+                console.log('Supabase submission successful:', data);
+
+                // 计算总体采集进度
+                let totalCompleted = 0;
+                for (let i = 1; i <= TOTAL_REPLICATES; i++) {
+                    const repData = replicatesData[i];
+                    let isComplete = true;
+                    
+                    for (const ind of indicators) {
+                        if (!ind.isStatistic && !ind.isConstant) {
+                            if (repData[ind.field] === null || repData[ind.field] === undefined) {
+                                isComplete = false;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if (isComplete) {
+                        totalCompleted++;
+                    }
+                }
+
+                // 显示提交成功消息和采集进度
+                let successMessage = '';
+                if (currentLang === 'zh') {
+                    successMessage = `✅ 提交成功！\n\n当前采集进度：${totalCompleted} / ${TOTAL_REPLICATES} 个样本已完成`;
+                } else {
+                    successMessage = `✅ Submitted Successfully!\n\nProgress: ${totalCompleted} / ${TOTAL_REPLICATES} samples completed`;
+                }
+                alert(successMessage);
+
+                saveDbBtn.innerHTML = `✅ ${lang.saveSuccess}`;
+                setTimeout(() => {
+                    saveDbBtn.innerHTML = originalText;
+                    saveDbBtn.disabled = false;
+                }, 2000);
+
+            } catch (error) {
+                console.error('Save failed details:', error);
+                let checkTableMsg = '';
+                if (error.code === '42P01') { // undefined_table
+                    checkTableMsg = '\n(错误：表不存在，请运行 SQL 脚本)';
+                } else if (error.code === '42501') { // permission_denied
+                    checkTableMsg = '\n(错误：权限拒绝，请检查登录状态或 RLS 策略)';
+                }
+                saveDbBtn.innerHTML = `❌ ${lang.saveError}: ${error.message}${checkTableMsg}`;
+                setTimeout(() => {
+                    saveDbBtn.innerHTML = originalText;
+                    saveDbBtn.disabled = false;
+                }, 5000);
+            }
+        }
+
+        // Event listeners
+        submitBtn.addEventListener('click', exportCSV);
+        saveDbBtn.addEventListener('click', saveToDatabase);
+
+        // Initialize
+        async function init() {
+            await initAuth(); // Ensure auth loaded for submit check
+            await initData(); // 等待从数据库加载所有样本数据
+            generateReplicateOptions();
+            generateForm();
+            await loadReplicateValues(1); // Load Rep 1 by default
+            updateCollectionProgress(); // 初始化时更新进度
+        }
+
+        init();
+    </script>
+</body>
+
+</html>
