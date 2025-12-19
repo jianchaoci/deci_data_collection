@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>🌱 欢迎 - 得希表型采集系统</title>
-    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="common.css?v=fix1">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         .welcome-container {
@@ -207,7 +207,7 @@
         </div>
     </div>
 
-    <script src="common.js?v=20251214"></script>
+    <script src="common.js?v=fix1"></script>
     <script>
         // Add translations
         translations.zh.welcomeTitle = '欢迎登录';
@@ -297,17 +297,17 @@
                 }, 1000);
             } catch (error) {
                 console.error('Login error:', error);
-                
+
                 // 更友好的错误提示
                 let errorMsg = lang.loginError;
                 if (error.message.includes('Invalid login credentials') || error.message.includes('Invalid credentials')) {
-                    errorMsg = currentLang === 'zh' 
-                        ? '❌ 登录失败：邮箱或密码错误。如果这是首次使用，请先点击"注册新账号"' 
+                    errorMsg = currentLang === 'zh'
+                        ? '❌ 登录失败：邮箱或密码错误。如果这是首次使用，请先点击"注册新账号"'
                         : '❌ Login failed: Invalid email or password. If this is your first time, please click "Register New Account" first';
                 } else {
                     errorMsg = lang.loginError + ': ' + error.message;
                 }
-                
+
                 showMessage(errorMsg, false);
                 loginBtn.disabled = false;
                 loginBtn.textContent = lang.loginBtn;

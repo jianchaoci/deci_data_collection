@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>📈 统计数量 - 得希表型采集系统</title>
-    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="common.css?v=fix1">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         .statistics-card {
@@ -69,7 +69,8 @@
             <a href="trends.html" class="nav-link" data-page="trends" data-lang="nav.trends">📉 趋势分析</a>
         </div>
         <div style="display: flex; gap: 10px; align-items: center;">
-            <button class="nav-link" id="authBtn" style="border: 1px solid white; cursor: pointer; display: none;">🔗 登录</button>
+            <button class="nav-link" id="authBtn" style="border: 1px solid white; cursor: pointer; display: none;">🔗
+                登录</button>
             <button class="lang-switch" id="langSwitch" style="position: static;">EN</button>
         </div>
     </nav>
@@ -90,26 +91,26 @@
                         <span data-lang="greenhouse_area_m2">温室面积</span> (m²)
                         <span id="areaLockIcon" style="margin-left: 8px; display: none;">🔒</span>
                     </label>
-                    <input type="number" id="greenhouseAreaInput" 
-                           style="width: 100%; padding: 10px; border: 2px solid #6ee7b7; border-radius: 8px; font-size: 1rem;"
-                           placeholder="0" step="0.1" min="0">
+                    <input type="number" id="greenhouseAreaInput"
+                        style="width: 100%; padding: 10px; border: 2px solid #6ee7b7; border-radius: 8px; font-size: 1rem;"
+                        placeholder="0" step="0.1" min="0">
                 </div>
                 <div class="stat-item" style="flex-direction: column; align-items: flex-start;">
                     <label class="stat-label" style="margin-bottom: 8px;">
                         <span data-lang="dripper_count">滴箭个数</span>
                         <span id="dripperLockIcon" style="margin-left: 8px; display: none;">🔒</span>
                     </label>
-                    <input type="number" id="dripperCountInput" 
-                           style="width: 100%; padding: 10px; border: 2px solid #6ee7b7; border-radius: 8px; font-size: 1rem;"
-                           placeholder="0" step="1" min="0">
+                    <input type="number" id="dripperCountInput"
+                        style="width: 100%; padding: 10px; border: 2px solid #6ee7b7; border-radius: 8px; font-size: 1rem;"
+                        placeholder="0" step="1" min="0">
                 </div>
                 <div style="display: flex; gap: 10px;">
-                    <button id="saveConfigBtn" class="btn btn-primary" 
-                            style="flex: 1; background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 12px 24px; border: none; border-radius: 10px; cursor: pointer; font-size: 1rem; font-weight: 600;">
+                    <button id="saveConfigBtn" class="btn btn-primary"
+                        style="flex: 1; background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 12px 24px; border: none; border-radius: 10px; cursor: pointer; font-size: 1rem; font-weight: 600;">
                         💾 <span data-lang="saveConfig">保存配置</span>
                     </button>
-                    <button id="unlockConfigBtn" class="btn btn-secondary" 
-                            style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 12px 24px; border: none; border-radius: 10px; cursor: pointer; font-size: 1rem; font-weight: 600; display: none;">
+                    <button id="unlockConfigBtn" class="btn btn-secondary"
+                        style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 12px 24px; border: none; border-radius: 10px; cursor: pointer; font-size: 1rem; font-weight: 600; display: none;">
                         🔓 <span data-lang="unlockConfig">解锁修改</span>
                     </button>
                 </div>
@@ -125,7 +126,7 @@
         </div>
     </div>
 
-    <script src="common.js?v=20251214"></script>
+    <script src="common.js?v=fix1"></script>
     <script>
         // Set active navigation
         setActiveNav('statistics');
@@ -139,7 +140,7 @@
         translations.zh.enterPassword = '请输入管理员密码';
         translations.zh.wrongPassword = '密码错误';
         translations.zh.configLocked = '配置已锁定，点击"解锁修改"来修改';
-        
+
         translations.en.configParams = 'Configuration Parameters';
         translations.en.saveConfig = 'Save Configuration';
         translations.en.configSaved = 'Configuration Saved';
@@ -150,17 +151,17 @@
         translations.en.configLocked = 'Configuration locked, click "Unlock to Edit" to modify';
 
         let indicators = getIndicators();
-        
+
         const greenhouseAreaInput = document.getElementById('greenhouseAreaInput');
         const dripperCountInput = document.getElementById('dripperCountInput');
         const saveConfigBtn = document.getElementById('saveConfigBtn');
         const unlockConfigBtn = document.getElementById('unlockConfigBtn');
         const areaLockIcon = document.getElementById('areaLockIcon');
         const dripperLockIcon = document.getElementById('dripperLockIcon');
-        
+
         // 管理员密码 (实际应用中应该从服务器验证)
         const ADMIN_PASSWORD = 'admin123';
-        
+
         let isConfigLocked = false;
 
         // 检查配置是否已保存并锁定
@@ -168,7 +169,7 @@
             const savedArea = localStorage.getItem('greenhouse_area_m2');
             const savedDripper = localStorage.getItem('dripper_count');
             const isLocked = localStorage.getItem('config_locked') === 'true';
-            
+
             if (isLocked && (savedArea || savedDripper)) {
                 lockConfig();
             }
@@ -183,10 +184,10 @@
             unlockConfigBtn.style.display = 'block';
             areaLockIcon.style.display = 'inline';
             dripperLockIcon.style.display = 'inline';
-            
+
             greenhouseAreaInput.style.background = '#f3f4f6';
             dripperCountInput.style.background = '#f3f4f6';
-            
+
             localStorage.setItem('config_locked', 'true');
         }
 
@@ -199,10 +200,10 @@
             unlockConfigBtn.style.display = 'none';
             areaLockIcon.style.display = 'none';
             dripperLockIcon.style.display = 'none';
-            
+
             greenhouseAreaInput.style.background = 'white';
             dripperCountInput.style.background = 'white';
-            
+
             localStorage.setItem('config_locked', 'false');
         }
 
@@ -211,10 +212,10 @@
             // 从localStorage加载
             const savedArea = localStorage.getItem('greenhouse_area_m2');
             const savedDripper = localStorage.getItem('dripper_count');
-            
+
             if (savedArea) greenhouseAreaInput.value = savedArea;
             if (savedDripper) dripperCountInput.value = savedDripper;
-            
+
             checkConfigLock();
         }
 
@@ -225,46 +226,46 @@
                 alert(lang.configLocked);
                 return;
             }
-            
+
             const area = parseFloat(greenhouseAreaInput.value) || 0;
             const dripper = parseInt(dripperCountInput.value) || 0;
-            
+
             // 保存到localStorage
             localStorage.setItem('greenhouse_area_m2', area);
             localStorage.setItem('dripper_count', dripper);
-            
+
             const lang = translations[currentLang];
             const originalText = saveConfigBtn.innerHTML;
             saveConfigBtn.innerHTML = `✅ ${lang.configSaved}`;
             saveConfigBtn.disabled = true;
-            
+
             setTimeout(() => {
                 saveConfigBtn.innerHTML = originalText;
                 saveConfigBtn.disabled = false;
-                
+
                 // 保存后自动锁定
                 lockConfig();
             }, 2000);
-            
+
             // 重新计算统计指标
             await updateStatisticIndicators();
         }
-        
+
         // 解锁按钮事件
         async function handleUnlock() {
             const lang = translations[currentLang];
             const password = prompt(lang.enterPassword);
-            
+
             if (password === ADMIN_PASSWORD) {
                 unlockConfig();
             } else if (password !== null) {
                 alert(lang.wrongPassword);
             }
         }
-        
+
         saveConfigBtn.addEventListener('click', saveConfig);
         unlockConfigBtn.addEventListener('click', handleUnlock);
-        
+
         // 阻止锁定状态下的输入
         [greenhouseAreaInput, dripperCountInput].forEach(input => {
             input.addEventListener('focus', () => {
@@ -349,40 +350,40 @@
                 if (weekData && weekData.length > 0) {
                     // 本周新增坐果数平均值
                     const newGrainCounts = weekData.map(r => r.new_grain_count).filter(v => v !== null && v !== undefined);
-                    const avgNewGrainCount = newGrainCounts.length > 0 
-                        ? newGrainCounts.reduce((a, b) => a + b, 0) / newGrainCounts.length 
+                    const avgNewGrainCount = newGrainCounts.length > 0
+                        ? newGrainCounts.reduce((a, b) => a + b, 0) / newGrainCounts.length
                         : 0;
 
                     // 本周产量平均值
                     const weeklyYields = weekData.map(r => r.weekly_yield_kg).filter(v => v !== null && v !== undefined);
-                    const avgWeeklyYield = weeklyYields.length > 0 
-                        ? weeklyYields.reduce((a, b) => a + b, 0) / weeklyYields.length 
+                    const avgWeeklyYield = weeklyYields.length > 0
+                        ? weeklyYields.reduce((a, b) => a + b, 0) / weeklyYields.length
                         : 0;
 
                     // 本周单穗重平均值
                     const earWeights = weekData.map(r => r.ear_weight_g).filter(v => v !== null && v !== undefined);
-                    const avgEarWeight = earWeights.length > 0 
-                        ? earWeights.reduce((a, b) => a + b, 0) / earWeights.length 
+                    const avgEarWeight = earWeights.length > 0
+                        ? earWeights.reduce((a, b) => a + b, 0) / earWeights.length
                         : 0;
 
                     // 本周采收果穗数平均值
                     const harvestCounts = weekData.map(r => r.new_harvest_grain_count).filter(v => v !== null && v !== undefined);
-                    const avgHarvestCount = harvestCounts.length > 0 
-                        ? harvestCounts.reduce((a, b) => a + b, 0) / harvestCounts.length 
+                    const avgHarvestCount = harvestCounts.length > 0
+                        ? harvestCounts.reduce((a, b) => a + b, 0) / harvestCounts.length
                         : 0;
 
                     // 累积计算
-                    const prevAccumGrainCount = historyStats && historyStats.length > 0 
-                        ? (historyStats[0].accum_grain_count || 0) 
+                    const prevAccumGrainCount = historyStats && historyStats.length > 0
+                        ? (historyStats[0].accum_grain_count || 0)
                         : 0;
-                    const prevTotalYield = historyStats && historyStats.length > 0 
-                        ? (historyStats[0].total_yield_kg || 0) 
+                    const prevTotalYield = historyStats && historyStats.length > 0
+                        ? (historyStats[0].total_yield_kg || 0)
                         : 0;
-                    const prevTotalHarvestEar = historyStats && historyStats.length > 0 
-                        ? (historyStats[0].total_harvest_ear_count || 0) 
+                    const prevTotalHarvestEar = historyStats && historyStats.length > 0
+                        ? (historyStats[0].total_harvest_ear_count || 0)
                         : 0;
-                    const prevSingleHeadYield = historyStats && historyStats.length > 0 
-                        ? (historyStats[0].single_head_yield_g || 0) 
+                    const prevSingleHeadYield = historyStats && historyStats.length > 0
+                        ? (historyStats[0].single_head_yield_g || 0)
                         : 0;
 
                     stats.accum_grain_count = prevAccumGrainCount + avgNewGrainCount;
@@ -391,14 +392,14 @@
                     stats.single_head_yield_g = prevSingleHeadYield + avgEarWeight;
 
                     // 计算单位产量
-                    stats.unit_yield = stats.greenhouse_area_m2 > 0 
-                        ? stats.total_yield_kg / stats.greenhouse_area_m2 
+                    stats.unit_yield = stats.greenhouse_area_m2 > 0
+                        ? stats.total_yield_kg / stats.greenhouse_area_m2
                         : 0;
 
                     // 计算回液比例
                     const dripperCount = parseFloat(localStorage.getItem('dripper_count')) || 1;
-                    const validRefluxData = weekData.filter(r => 
-                        r.irrigation_ml !== null && r.irrigation_ml > 0 && 
+                    const validRefluxData = weekData.filter(r =>
+                        r.irrigation_ml !== null && r.irrigation_ml > 0 &&
                         r.reflux_ml !== null
                     );
                     if (validRefluxData.length > 0) {
@@ -481,10 +482,10 @@
             }
 
             let html = '';
-            
+
             for (const indicator of statisticIndicators) {
                 let value = 0;
-                
+
                 // 从统计数据或localStorage读取值
                 if (indicator.field === 'greenhouse_area_m2') {
                     value = parseFloat(localStorage.getItem('greenhouse_area_m2')) || 0;

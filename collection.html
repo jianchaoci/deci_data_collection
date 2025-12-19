@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>📊 数据采集 - 得希表型采集系统</title>
-    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="common.css?v=fix1">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         .collection-card {
@@ -192,7 +192,8 @@
             <a href="trends.html" class="nav-link" data-page="trends" data-lang="nav.trends">📉 趋势分析</a>
         </div>
         <div style="display: flex; gap: 10px; align-items: center;">
-            <button class="nav-link" id="authBtn" style="border: 1px solid white; cursor: pointer; display: none;">🔗 登录</button>
+            <button class="nav-link" id="authBtn" style="border: 1px solid white; cursor: pointer; display: none;">🔗
+                登录</button>
             <button class="lang-switch" id="langSwitch" style="position: static;">EN</button>
         </div>
     </nav>
@@ -240,7 +241,7 @@
         </div>
     </div>
 
-    <script src="common.js?v=20251214"></script>
+    <script src="common.js?v=fix1"></script>
     <script>
         // Set active navigation
         setActiveNav('collection');
@@ -349,7 +350,7 @@
 
             replicateSelect.addEventListener('change', async (e) => {
                 const newReplicate = parseInt(e.target.value);
-                
+
                 // 检查当前样本是否已开始采集但未完成
                 if (currentReplicate !== newReplicate) {
                     const canSwitch = checkCanSwitchReplicate(currentReplicate);
@@ -360,7 +361,7 @@
                         return;
                     }
                 }
-                
+
                 currentReplicate = newReplicate;
                 currentReplicateDisplay.textContent = `#${currentReplicate}`;
                 await loadReplicateValues(currentReplicate);
@@ -422,7 +423,7 @@
                 slider.addEventListener('input', (e) => {
                     const val = parseFloat(e.target.value);
                     valueSpan.textContent = e.target.value;
-                    
+
                     // 只有当checkbox勾选了才保存值，否则不计入采集
                     const checkbox = document.getElementById(`check-${indicator.field}`);
                     if (checkbox && checkbox.checked) {
@@ -432,7 +433,7 @@
                         replicatesData[currentReplicate][indicator.field] = null;
                         slider.classList.remove('collected');
                     }
-                    
+
                     saveData();
                     updateCollectionProgress();
                 });
@@ -449,12 +450,12 @@
             // 先重置所有checkbox和slider状态
             indicators.forEach(indicator => {
                 if (indicator.isStatistic || indicator.isConstant) return;
-                
+
                 const checkbox = document.getElementById(`check-${indicator.field}`);
                 const slider = document.getElementById(`slider-${indicator.field}`);
                 const valueDisplay = document.getElementById(`value-${indicator.field}`);
                 const group = document.getElementById(`group-${indicator.field}`);
-                
+
                 if (checkbox) {
                     checkbox.checked = false;
                 }
@@ -581,7 +582,7 @@
             if (nullCount > 0 && nullCount < totalIndicators) {
                 // 部分采集了，有null值，不允许切换
                 const collectedCount = totalIndicators - nullCount;
-                const message = currentLang === 'zh' 
+                const message = currentLang === 'zh'
                     ? `❌ 无法切换样本！\n\n样本 #${repIndex} 未完成采集，还有 ${nullCount} 项指标为空。\n\n已采集：${collectedCount}/${totalIndicators}\n\n请完成所有指标后再切换。`
                     : `❌ Cannot switch sample!\n\nSample #${repIndex} is incomplete, ${nullCount} indicators are null.\n\nCollected: ${collectedCount}/${totalIndicators}\n\nPlease complete all indicators before switching.`;
                 return { allowed: false, message: message };
@@ -607,7 +608,7 @@
                 const slider = document.getElementById(`slider-${field}`);
                 slider.disabled = false;
                 document.getElementById(`group-${field}`).classList.add('active');
-                
+
                 // 保存当前滑块的值
                 const val = parseFloat(slider.value);
                 replicatesData[currentReplicate][field] = val;
@@ -617,11 +618,11 @@
                 const slider = document.getElementById(`slider-${field}`);
                 slider.disabled = true;
                 document.getElementById(`group-${field}`).classList.remove('active');
-                
+
                 replicatesData[currentReplicate][field] = null;
                 slider.classList.remove('collected');
             }
-            
+
             saveData();
             updateCollectionProgress();
         }
@@ -645,11 +646,11 @@
 
             // 计算所有样本中有多少个完成采集
             let completeCount = 0;
-            
+
             for (let i = 1; i <= TOTAL_REPLICATES; i++) {
                 const repData = replicatesData[i];
                 let collected = 0;
-                
+
                 indicators.forEach(ind => {
                     if (!ind.isStatistic && !ind.isConstant) {
                         const value = repData[ind.field];
@@ -659,7 +660,7 @@
                         }
                     }
                 });
-                
+
                 if (collected === totalIndicators) {
                     completeCount++;
                 }
@@ -738,7 +739,7 @@
             const currentData = replicatesData[currentReplicate];
             const uncollectedIndicators = [];
             let collectedCount = 0;
-            
+
             indicators.forEach(ind => {
                 if (!ind.isStatistic && !ind.isConstant) {
                     if (currentData[ind.field] === null || currentData[ind.field] === undefined) {
@@ -748,7 +749,7 @@
                     }
                 }
             });
-            
+
             // 如果当前样本有未采集的指标，阻止提交
             if (uncollectedIndicators.length > 0) {
                 let message = '';
@@ -827,7 +828,7 @@
                 for (let i = 1; i <= TOTAL_REPLICATES; i++) {
                     const repData = replicatesData[i];
                     let isComplete = true;
-                    
+
                     for (const ind of indicators) {
                         if (!ind.isStatistic && !ind.isConstant) {
                             if (repData[ind.field] === null || repData[ind.field] === undefined) {
@@ -836,7 +837,7 @@
                             }
                         }
                     }
-                    
+
                     if (isComplete) {
                         totalCompleted++;
                     }

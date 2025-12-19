@@ -3,17 +3,25 @@
 // ====================================
 
 // Supabase Configuration
-const SUPABASE_URL = 'https://dompuruxntwvzqfnhufe.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_BAt1IGtGXbf99aB3wcnuxQ_5l91ZrVI';
+var SUPABASE_URL = 'https://dompuruxntwvzqfnhufe.supabase.co';
+var SUPABASE_ANON_KEY = 'sb_publishable_BAt1IGtGXbf99aB3wcnuxQ_5l91ZrVI';
 
 // Initialize Supabase client
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Check if client is already initialized (has .from method) to prevent re-initialization error
+if (!window.supabase || typeof window.supabase.from !== 'function') {
+	if (window.supabase && window.supabase.createClient) {
+		// Overwrite the global supabase object (from CDN factory) with the initialized client
+		window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+	} else {
+		console.error('Supabase CDN script not loaded or createClient not found.');
+	}
+}
 
 
 // Language Configuration
-let currentLang = localStorage.getItem('language') || 'zh';
+var currentLang = localStorage.getItem('language') || 'zh';
 
-const translations = {
+var translations = {
 	zh: {
 		title: '🌱 得希表型采集系统',
 		subtitle: '使用本系统记录和管理植物表型数据，助力精准农业研究与分析。',
@@ -133,7 +141,7 @@ const translations = {
 };
 
 // Indicators Configuration
-const indicatorsConfig = [
+var indicatorsConfig = [
 	// 测量指标
 	{ field: 'growth_cm', unit: 'cm', unitEn: 'cm', min: 5, max: 40, step: 0.1, defaultValue: 5 },
 	{ field: 'stem_mm', unit: 'mm', unitEn: 'mm', min: 2, max: 15, step: 0.1, defaultValue: 2 },
@@ -242,7 +250,7 @@ function updateLanguageDisplay() {
 }
 
 // Global user state
-let currentUser = null;
+var currentUser = null;
 
 // Authentication functions
 async function initAuth() {
@@ -303,7 +311,7 @@ async function signIn() {
 
 	if (error) {
 		if (statusEl) statusEl.textContent = '正在注册...';
-		
+
 		const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
 			email: email,
 			password: password
@@ -577,14 +585,9 @@ function updateUserDisplay() {
 		// Let's stick to [Lang] [Avatar] as avatar is more "Menu" like.
 		// In my code I appendChild langSwitch to userArea. 
 		// If I append container to userArea, it goes AFTER langSwitch.
-		// Let's try appending it to userArea, so it becomes the last item.
-		userArea.appendChild(container);
-
-		// If we want [Lang] [Avatar], ensure Lang is first.
-		// Check where langSwitch is. If it's already there, container goes after.
-		// If we want [Avatar] [Lang], allow container to be inserted before.
 		// Let's do: [Lang] ...... [Avatar].
 		// Actually, let's keep it simple: Just append. It will be the right-most item.
+		userArea.appendChild(container);
 
 	} else {
 		// Not Logged In - Show login button

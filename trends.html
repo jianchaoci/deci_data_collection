@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>📉 趋势分析 - 得希表型采集系统</title>
-    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="common.css?v=fix1">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -215,7 +215,8 @@
             <a href="trends.html" class="nav-link active" data-page="trends" data-lang="nav.trends">📉 趋势分析</a>
         </div>
         <div style="display: flex; gap: 10px; align-items: center;">
-            <button class="nav-link" id="authBtn" style="border: 1px solid white; cursor: pointer; display: none;">🔗 登录</button>
+            <button class="nav-link" id="authBtn" style="border: 1px solid white; cursor: pointer; display: none;">🔗
+                登录</button>
             <button class="lang-switch" id="langSwitch" style="position: static;">EN</button>
         </div>
     </nav>
@@ -254,7 +255,7 @@
         </div>
     </div>
 
-    <script src="common.js?v=20251214"></script>
+    <script src="common.js?v=fix1"></script>
     <script>
         // Set active navigation
         setActiveNav('trends');
@@ -383,22 +384,22 @@
         function processDataForField(field) {
             // 查找指标配置
             const indicator = indicators.find(ind => ind.field === field);
-            
+
             // 判断是否为统计指标
             const isStatistic = indicator && (indicator.isStatistic || indicator.isConstant);
-            
+
             const labels = [];
             const values = [];
-            
+
             if (isStatistic) {
                 // 统计指标：直接从 weekly_statistics 读取（已经是每周一个值）
                 const weekValues = new Array(54).fill(null);
-                
+
                 if (yearDataCache.statistics) {
                     yearDataCache.statistics.forEach(row => {
                         const week = row.week;
                         let val = row[field];
-                        
+
                         if (val !== undefined && val !== null && week >= 1 && week <= 53) {
                             val = parseFloat(val);
                             if (!isNaN(val)) {
@@ -407,7 +408,7 @@
                         }
                     });
                 }
-                
+
                 // 转换为图表数组
                 for (let w = 1; w <= 53; w++) {
                     labels.push(w);
@@ -416,12 +417,12 @@
             } else {
                 // 采集指标：从 phenotype_records 计算每周平均值
                 const weekData = new Array(54).fill(null).map(() => ({ count: 0, sum: 0 }));
-                
+
                 if (yearDataCache.phenotype) {
                     yearDataCache.phenotype.forEach(row => {
                         const week = row.week;
                         let val = row[field];
-                        
+
                         if (val !== undefined && val !== null) {
                             val = parseFloat(val);
                             if (!isNaN(val) && week >= 1 && week <= 53) {
@@ -431,7 +432,7 @@
                         }
                     });
                 }
-                
+
                 // 转换为图表数组
                 for (let w = 1; w <= 53; w++) {
                     labels.push(w);
