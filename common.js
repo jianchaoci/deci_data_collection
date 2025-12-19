@@ -230,7 +230,12 @@ function updateLanguageDisplay() {
 		const keys = key.split('.');
 		let value = lang;
 		for (const k of keys) {
-			value = value[k];
+			if (value && value[k] !== undefined) {
+				value = value[k];
+			} else {
+				value = undefined;
+				break;
+			}
 		}
 		if (value) {
 			// Preserve emojis
