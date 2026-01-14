@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试 - 数据采集</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+        }
+
+        .section-card {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .section-header {
+            background: #ecfdf5;
+            padding: 15px 20px;
+            font-weight: 600;
+            color: #065f46;
+            cursor: pointer;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .section-content {
+            padding: 20px;
+        }
+
+        .indicator-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+        }
+
+        .indicator-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+        }
+
+        button {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #059669;
+        }
+
+        .debug {
+            background: #1f2937;
+            color: #10b981;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🌱 数据采集测试页面</h1>
+        <p>这是一个简化的测试页面，用于验证数据采集功能。</p>
+
+        <div id="statusDiv" style="background: #fef3c7; padding: 10px; border-radius: 8px; margin-bottom: 20px;">
+            状态：正在初始化...
+        </div>
+
+        <div id="weeklySection" class="section-card">
+            <div class="section-header">📊 每周数据 (Weekly Data)</div>
+            <div id="weeklyContent" class="section-content"></div>
+        </div>
+
+        <div id="dailySection" class="section-card">
+            <div class="section-header">📅 每日数据 (Daily Data)</div>
+            <div id="dailyContent" class="section-content"></div>
+        </div>
+
+        <button onclick="saveData()">💾 保存数据</button>
+
+        <div class="debug" id="debugLog"></div>
+    </div>
+
+    <script>
+        const debugLog = document.getElementById('debugLog');
+        const statusDiv = document.getElementById('statusDiv');
+
+        function log(msg) {
+            console.log(msg);
+            debugLog.innerHTML += `<div>${new Date().toLocaleTimeString()}: ${msg}</div>`;
+            debugLog.scrollTop = debugLog.scrollHeight;
+        }
+
+        function updateStatus(msg, color = '#fef3c7') {
+            statusDiv.innerHTML = msg;
+            statusDiv.style.background = color;
+        }
+
+        // 简化的指标配置
+        const testIndicators = [
+            // 每周指标
+            { field: 'growth_cm', name: '株高', unit: 'cm', min: 0, max: 100, step: 0.1, defaultValue: 10, frequency: 'weekly' },
+            { field: 'stem_mm', name: '茎粗', unit: 'mm', min: 0, max: 30, step: 0.1, defaultValue: 5, frequency: 'weekly' },
+            { field: 'leaf_count', name: '叶片数', unit: '个', min: 0, max: 25, step: 1, defaultValue: 5, frequency: 'weekly' },
+
+            // 每日指标  
+            { field: 'irrigation_ml', name: '灌溉量', unit: 'ml', min: 0, max: 3000, step: 10, defaultValue: 0, frequency: 'daily' },
+            { field: 'daily_yield_kg', name: '日产量', unit: 'kg', min: 0, max: 30, step: 0.01, defaultValue: 0, frequency: 'daily' },
+            { field: 'harvest_ear_count', name: '采收果穗数', unit: '个', min: 0, max: 60, step: 1, defaultValue: 0, frequency: 'daily' }
+        ];
+
+        const collectedData = {};
+
+        function renderIndicator(ind, container) {
+            const item = document.createElement('div');
+            item.className = 'indicator-item';
+            item.innerHTML = `
+                <div class="indicator-label">
+                    <span><strong>${ind.name}</strong> (${ind.unit})</span>
+                    <span id="value-${ind.field}">${ind.defaultValue}</span>
+                </div>
+                <input type="range" 
+                       id="slider-${ind.field}"
+                       min="${ind.min}" 
+                       max="${ind.max}" 
+                       step="${ind.step}" 
+                       value="${ind.defaultValue}"
+                       oninput="updateValue('${ind.field}', this.value)">
+            `;
+            container.appendChild(item);
+            collectedData[ind.field] = ind.defaultValue;
+        }
+
+        function updateValue(field, value) {
+            document.getElementById(`value-${field}`).textContent = value;
+            collectedData[field] = parseFloat(value);
+            log(`已更新 ${field} = ${value}`);
+        }
+
+        function saveData() {
+            log('保存数据: ' + JSON.stringify(collectedData, null, 2));
+            updateStatus('✅ 数据已保存（仅保存到内存用于测试）', '#d1fae5');
+            alert('数据已保存！\n' + JSON.stringify(collectedData, null, 2));
+        }
+
+        // 初始化
+        function init() {
+            try {
+                log('开始初始化测试页面...');
+
+                const weeklyContent = document.getElementById('weeklyContent');
+                const dailyContent = document.getElementById('dailyContent');
+
+                const weeklyInds = testIndicators.filter(ind => ind.frequency === 'weekly');
+                const dailyInds = testIndicators.filter(ind => ind.frequency === 'daily');
+
+                log(`找到 ${weeklyInds.length} 个每周指标`);
+                log(`找到 ${dailyInds.length} 个每日指标`);
+
+                weeklyInds.forEach(ind => renderIndicator(ind, weeklyContent));
+                dailyInds.forEach(ind => renderIndicator(ind, dailyContent));
+
+                updateStatus(`✅ 初始化完成！共 ${testIndicators.length} 个指标`, '#d1fae5');
+                log('初始化完成！');
+            } catch (e) {
+                log('错误: ' + e.message);
+                updateStatus('❌ 初始化失败: ' + e.message, '#fee2e2');
+            }
+        }
+
+        // 页面加载后立即初始化
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    </script>
+</body>
+
+</html>

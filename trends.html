@@ -337,24 +337,34 @@
         }
 
         // Fetch Data for the whole year
-        // 从两个表获取数据：phenotype_records（采集数据）和 weekly_statistics（统计数据）
+        // 从三个表获取数据：weekly_phenotypes, daily_phenotypes 和 weekly_statistics
         async function fetchYearData() {
             if (!currentUser || currentUser.is_guest) return;
 
             showLoading(true);
 
             try {
-                // 1. 获取采集数据（原始样本数据）
-                const { data: phenotypeData, error: phenotypeError } = await supabase
-                    .from('phenotype_records')
+                // 1. 获取周采集数据
+                const { data: weeklyData, error: weeklyError } = await supabase
+                    .from('weekly_phenotypes')
                     .select('*')
                     .eq('user_id', currentUser.id)
                     .eq('year', currentChartYear)
                     .order('week', { ascending: true });
 
-                if (phenotypeError) throw phenotypeError;
+                if (weeklyError) throw weeklyError;
 
-                // 2. 获取统计数据（每周汇总数据）
+                // 2. 获取日采集数据
+                const { data: dailyData, error: dailyError } = await supabase
+                    .from('daily_phenotypes')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .eq('year', currentChartYear)
+                    .order('week', { ascending: true });
+
+                if (dailyError) throw dailyError;
+
+                // 3. 获取统计数据（每周汇总数据）
                 const { data: statisticsData, error: statisticsError } = await supabase
                     .from('weekly_statistics')
                     .select('*')
@@ -366,14 +376,15 @@
                     console.warn('No statistics data found:', statisticsError);
                 }
 
-                // 合并数据：phenotype_records 用于采集指标，weekly_statistics 用于统计指标
+                // Cache data
                 yearDataCache = {
-                    phenotype: phenotypeData || [],
+                    weekly: weeklyData || [],
+                    daily: dailyData || [],
                     statistics: statisticsData || []
                 };
             } catch (error) {
                 console.error('Error fetching data:', error);
-                yearDataCache = { phenotype: [], statistics: [] };
+                yearDataCache = { weekly: [], daily: [], statistics: [] };
             } finally {
                 showLoading(false);
             }
@@ -384,45 +395,48 @@
         function processDataForField(field) {
             // 查找指标配置
             const indicator = indicators.find(ind => ind.field === field);
+            if (!indicator) return { labels: [], values: [] };
 
             // 判断是否为统计指标
-            const isStatistic = indicator && (indicator.isStatistic || indicator.isConstant);
+            const isStatistic = indicator.isStatistic || indicator.isConstant;
+            const frequency = indicator.frequency || 'weekly';
 
             const labels = [];
             const values = [];
 
-            if (isStatistic) {
-                // 统计指标：直接从 weekly_statistics 读取（已经是每周一个值）
-                const weekValues = new Array(54).fill(null);
+            // Helper to prepare chart data from weekly aggregated values
+            const prepareChartData = (weekValues) => {
+                const ls = [];
+                const vs = [];
+                for (let w = 1; w <= 53; w++) {
+                    ls.push(w);
+                    vs.push(weekValues[w]);
+                }
+                return { labels: ls, values: vs };
+            };
 
+            if (isStatistic) {
+                // 统计指标：直接从 weekly_statistics 读取
+                const weekValues = new Array(54).fill(null);
                 if (yearDataCache.statistics) {
                     yearDataCache.statistics.forEach(row => {
                         const week = row.week;
                         let val = row[field];
-
                         if (val !== undefined && val !== null && week >= 1 && week <= 53) {
                             val = parseFloat(val);
-                            if (!isNaN(val)) {
-                                weekValues[week] = val;
-                            }
+                            if (!isNaN(val)) weekValues[week] = val;
                         }
                     });
                 }
+                return prepareChartData(weekValues);
 
-                // 转换为图表数组
-                for (let w = 1; w <= 53; w++) {
-                    labels.push(w);
-                    values.push(weekValues[w]);
-                }
-            } else {
-                // 采集指标：从 phenotype_records 计算每周平均值
+            } else if (frequency === 'weekly') {
+                // 周采集指标：从 weekly_phenotypes 计算每周平均值
                 const weekData = new Array(54).fill(null).map(() => ({ count: 0, sum: 0 }));
-
-                if (yearDataCache.phenotype) {
-                    yearDataCache.phenotype.forEach(row => {
+                if (yearDataCache.weekly) {
+                    yearDataCache.weekly.forEach(row => {
                         const week = row.week;
                         let val = row[field];
-
                         if (val !== undefined && val !== null) {
                             val = parseFloat(val);
                             if (!isNaN(val) && week >= 1 && week <= 53) {
@@ -433,15 +447,48 @@
                     });
                 }
 
-                // 转换为图表数组
+                // Calculate averages
+                const weekValues = new Array(54).fill(null);
                 for (let w = 1; w <= 53; w++) {
-                    labels.push(w);
                     if (weekData[w].count > 0) {
-                        values.push(weekData[w].sum / weekData[w].count);
-                    } else {
-                        values.push(null);
+                        weekValues[w] = weekData[w].sum / weekData[w].count;
                     }
                 }
+                return prepareChartData(weekValues);
+
+            } else if (frequency === 'daily') {
+                // 日采集指标：从 daily_phenotypes 计算每周平均值
+                // 注意：这里是所有天的平均值，还是需要先算每天的平均再算每周？
+                // 简单起见，计算该周所有 daily 记录的平均值 (Average of all daily records in that week)
+                // This averages across days AND replicates simultaneously.
+                // E.g. Irrigation EC: Average of (Day1Rep1, Day1Rep2... Day2Rep1...)
+
+                const weekData = new Array(54).fill(null).map(() => ({ count: 0, sum: 0 }));
+                if (yearDataCache.daily) {
+                    yearDataCache.daily.forEach(row => {
+                        const week = row.week; // We added 'week' column to daily_phenotypes
+                        let val = row[field];
+                        if (val !== undefined && val !== null) {
+                            val = parseFloat(val);
+                            if (!isNaN(val) && week >= 1 && week <= 53) {
+                                weekData[week].sum += val;
+                                weekData[week].count++;
+                            }
+                        }
+                    });
+                }
+
+                // Calculate averages
+                const weekValues = new Array(54).fill(null);
+                for (let w = 1; w <= 53; w++) {
+                    // For Accumulated/Sum fields like Yield, we might want Average Daily Yield per Replicate?
+                    // But here we are just showing "Trend of Daily Yield".
+                    // "Daily Yield" unit is "kg/day". Showing the average daily yield over the week makes sense.
+                    if (weekData[w].count > 0) {
+                        weekValues[w] = weekData[w].sum / weekData[w].count;
+                    }
+                }
+                return prepareChartData(weekValues);
             }
 
             return { labels, values };

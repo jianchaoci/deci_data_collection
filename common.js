@@ -3,8 +3,8 @@
 // ====================================
 
 // Supabase Configuration
-var SUPABASE_URL = 'https://dompuruxntwvzqfnhufe.supabase.co';
-var SUPABASE_ANON_KEY = 'sb_publishable_BAt1IGtGXbf99aB3wcnuxQ_5l91ZrVI';
+var SUPABASE_URL = 'https://umizxrezhpbtwklkvxoi.supabase.co';
+var SUPABASE_ANON_KEY = 'sb_publishable_0AbdgkDqaOW9CTeOZF8sKw_lVxmBs2Q';
 
 // Initialize Supabase client
 // Check if client is already initialized (has .from method) to prevent re-initialization error
@@ -12,6 +12,7 @@ if (!window.supabase || typeof window.supabase.from !== 'function') {
 	if (window.supabase && window.supabase.createClient) {
 		// Overwrite the global supabase object (from CDN factory) with the initialized client
 		window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+		console.log('✅ Supabase Client Initialized with URL:', SUPABASE_URL);
 	} else {
 		console.error('Supabase CDN script not loaded or createClient not found.');
 	}
@@ -55,29 +56,44 @@ var translations = {
 			leaf_count: '叶片总数',
 			leaf_length_cm: '叶长',
 			leaf_width_cm: '叶宽',
-			potential_flower_count: '潜力开花数',
+			potential_flower_count: '潜力开花数', // 隐藏项
+
+			// 每周填报指标
 			current_flower_order: '当前开花序数',
-			accum_ear_count: '单头累计坐果穗数',
+			accum_fruit_ear_count: '单头累计坐果穗数',
 			new_grain_count: '本周单头新增坐果数',
-			weekly_yield_kg: '单周产量',
+			weekly_harvest_count: '本周单头采收果粒数',
 			single_grain_g: '单粒果重',
-			new_harvest_grain_count: '本周单头采收果粒数',
 			ear_weight_g: '单穗重',
-			brix: '可溶性固形物',
+			single_head_yield_g: '单头产量',
+			brix: '可溶性固形物（糖）',
 			acidity: '酸度',
-			cracking_rate: '裂果率',
-			irrigation_ml: '灌溉量',
+
+			// 每日填报指标
+			irrigation_ml: '灌溉量', // 加回第一位
 			reflux_ml: '回液量',
 			dripper_count: '滴箭个数',
+			reflux_ratio: '回液比例',
 			reflux_ec: '回液EC值',
 			reflux_ph: '回液pH值',
-			accum_grain_count: '单头累计坐果粒数',
+			irrigation_ec: '灌溉EC',
+			irrigation_ph: '灌溉pH',
+			daily_yield_kg: '每天产量',
+			weekly_yield_kg: '单周产量',
 			total_yield_kg: '总产量',
 			greenhouse_area_m2: '温室面积',
 			unit_yield: '单位产量',
-			total_harvest_ear_count: '单头总采收果穗数',
-			single_head_yield_g: '单头产量',
-			reflux_ratio: '回液比例'
+			damage_amount: '报损量',
+
+			// 隐藏或保留的其他指标翻译 - 移到这里统一管理
+			accum_ear_count: '年头累计总用穗数', // 隐藏项
+			harvest_ear_count: '采收果穗数', // 隐藏项
+			cracking_rate: '裂果率', // 隐藏项
+			accum_grain_count: '单头累计坐果粒数', // 隐藏项
+			total_harvest_ear_count: '单头总采收果穗数', // 隐藏项
+
+			weekly_header: '📅 每周采集数据 (Weekly)',
+			daily_header: '☀️ 每天采集数据 (Daily)'
 		}
 	},
 	en: {
@@ -115,11 +131,11 @@ var translations = {
 			leaf_width_cm: 'Leaf Width',
 			potential_flower_count: 'Potential Flower Count',
 			current_flower_order: 'Current Flowering Order',
-			accum_ear_count: 'Accumulated Fruit Clusters',
+			accum_fruit_ear_count: 'Accumulated Fruit Clusters', // New field
 			new_grain_count: 'Weekly New Fruit Count',
 			weekly_yield_kg: 'Weekly Yield',
 			single_grain_g: 'Single Fruit Weight',
-			new_harvest_grain_count: 'Weekly Harvest Count',
+			harvest_ear_count: 'Weekly Harvest Ear Count',
 			ear_weight_g: 'Cluster Weight',
 			brix: 'Soluble Solids',
 			acidity: 'Acidity',
@@ -135,43 +151,85 @@ var translations = {
 			unit_yield: 'Unit Yield',
 			total_harvest_ear_count: 'Total Harvest Clusters',
 			single_head_yield_g: 'Single Head Yield',
-			reflux_ratio: 'Reflux Ratio'
+			reflux_ratio: 'Reflux Ratio',
+			irrigation_ec: 'Irrigation EC',
+			irrigation_ph: 'Irrigation pH',
+			daily_yield_kg: 'Daily Yield',
+			weekly_header: '📅 Weekly Data',
+			daily_header: '☀️ Daily Data'
 		}
 	}
 };
 
 // Indicators Configuration
+// Indicators Configuration
+// Indicators Configuration
 var indicatorsConfig = [
-	// 测量指标
-	{ field: 'growth_cm', unit: 'cm', unitEn: 'cm', min: 5, max: 40, step: 0.1, defaultValue: 5 },
-	{ field: 'stem_mm', unit: 'mm', unitEn: 'mm', min: 2, max: 15, step: 0.1, defaultValue: 2 },
-	{ field: 'leaf_count', unit: '个', unitEn: 'pcs', min: 5, max: 23, step: 1, defaultValue: 5 },
-	{ field: 'leaf_length_cm', unit: 'cm', unitEn: 'cm', min: 20, max: 60, step: 0.1, defaultValue: 20 },
-	{ field: 'leaf_width_cm', unit: 'cm', unitEn: 'cm', min: 5, max: 60, step: 0.1, defaultValue: 5 },
-	{ field: 'potential_flower_count', unit: '串', unitEn: 'clusters', min: 8, max: 18, step: 1, defaultValue: 8 },
-	{ field: 'current_flower_order', unit: '串', unitEn: 'order', min: 1, max: 60, step: 1, defaultValue: 1 },
-	{ field: 'accum_ear_count', unit: '个', unitEn: 'pcs', min: 1, max: 60, step: 1, defaultValue: 1 },
-	{ field: 'new_grain_count', unit: '个', unitEn: 'pcs', min: 1, max: 30, step: 1, defaultValue: 1 },
-	{ field: 'weekly_yield_kg', unit: 'kg', unitEn: 'kg', min: 0, max: 300, step: 0.1, defaultValue: 0 },
-	{ field: 'single_grain_g', unit: 'g', unitEn: 'g', min: 5, max: 25, step: 0.1, defaultValue: 5 },
-	{ field: 'new_harvest_grain_count', unit: 'g', unitEn: 'pcs', min: 1, max: 720, step: 1, defaultValue: 1 },
-	{ field: 'ear_weight_g', unit: 'g', unitEn: 'g', min: 50, max: 280, step: 1, defaultValue: 50 },
-	{ field: 'brix', unit: '', unitEn: '', min: 4, max: 13, step: 0.1, defaultValue: 4 },
-	{ field: 'acidity', unit: '', unitEn: '', min: 0, max: 60, step: 0.1, defaultValue: 0 },
-	{ field: 'cracking_rate', unit: '%', unitEn: '%', min: 0, max: 60, step: 0.1, defaultValue: 0 },
-	{ field: 'irrigation_ml', unit: 'ml', unitEn: 'ml', min: 0, max: 3000, step: 10, defaultValue: 0 },
-	{ field: 'reflux_ml', unit: 'ml', unitEn: 'ml', min: 0, max: 8000, step: 10, defaultValue: 0 },
-	{ field: 'dripper_count', unit: '个', unitEn: 'pcs', min: 0, max: 100, step: 1, defaultValue: 0, isConstant: true },
-	{ field: 'reflux_ec', unit: 'mS/cm', unitEn: 'mS/cm', min: 3, max: 9, step: 0.1, defaultValue: 3 },
-	{ field: 'reflux_ph', unit: '', unitEn: '', min: 4, max: 9, step: 0.1, defaultValue: 4 },
-	// 计算指标 (用于统计页面)
-	{ field: 'accum_grain_count', unit: '个', unitEn: 'pcs', min: 1, max: 720, step: 1, defaultValue: 1, isStatistic: true },
-	{ field: 'total_yield_kg', unit: 'kg', unitEn: 'kg', min: 0, max: 10000, step: 0.1, defaultValue: 0, isStatistic: true },
-	{ field: 'greenhouse_area_m2', unit: 'm²', unitEn: 'm²', min: 0, max: 10000, step: 0.1, defaultValue: 0, isConstant: true },
-	{ field: 'unit_yield', unit: 'kg/m²', unitEn: 'kg/m²', min: 0, max: 100, step: 0.01, defaultValue: 0, isStatistic: true },
-	{ field: 'total_harvest_ear_count', unit: '个', unitEn: 'pcs', min: 1, max: 60, step: 1, defaultValue: 1, isStatistic: true },
-	{ field: 'single_head_yield_g', unit: 'g', unitEn: 'g', min: 0, max: 18000, step: 10, defaultValue: 0, isStatistic: true },
-	{ field: 'reflux_ratio', unit: '%', unitEn: '%', min: 0, max: 100, step: 0.1, defaultValue: 0, isStatistic: true }
+	// --- Weekly Indicators (每周需填报) ---
+	// 基础生长指标 (保留)
+	{ field: 'growth_cm', unit: 'cm', unitEn: 'cm', min: 5, max: 150, step: 0.1, defaultValue: 5, frequency: 'weekly' },
+	{ field: 'stem_mm', unit: 'mm', unitEn: 'mm', min: 2, max: 15, step: 0.1, defaultValue: 2, frequency: 'weekly' },
+	{ field: 'leaf_count', unit: '个', unitEn: 'pcs', min: 5, max: 23, step: 1, defaultValue: 5, frequency: 'weekly' },
+	{ field: 'leaf_length_cm', unit: 'cm', unitEn: 'cm', min: 20, max: 60, step: 0.1, defaultValue: 20, frequency: 'weekly' },
+	{ field: 'leaf_width_cm', unit: 'cm', unitEn: 'cm', min: 5, max: 60, step: 0.1, defaultValue: 5, frequency: 'weekly' },
+
+	// 用户最新 9 项顺序:
+	// 1. 当前开花序数 [0-60]
+	{ field: 'current_flower_order', unit: '串', unitEn: 'order', min: 0, max: 60, step: 1, defaultValue: 3, frequency: 'weekly' },
+	// 2. 单头累计坐果穗数 [0-60]
+	{ field: 'accum_fruit_ear_count', unit: '个', unitEn: 'pcs', min: 0, max: 60, step: 1, defaultValue: 0, frequency: 'weekly' },
+	// 3. 本周单头新增坐果数 [0-30]
+	{ field: 'new_grain_count', unit: '个', unitEn: 'pcs', min: 0, max: 30, step: 1, defaultValue: 0, frequency: 'weekly' },
+	// 4. 本周单头采收果粒数 [0-720] (注意：原 weekly_harvest_count 改名)
+	{ field: 'weekly_harvest_count', unit: '个', unitEn: 'pcs', min: 0, max: 720, step: 1, defaultValue: 0, frequency: 'weekly' },
+	// 5. 单粒果重 [0-300]
+	{ field: 'single_grain_g', unit: 'g', unitEn: 'g', min: 0, max: 300, step: 0.1, defaultValue: 5, frequency: 'weekly' },
+	// 6. 单穗重 [0-280]
+	{ field: 'ear_weight_g', unit: 'g', unitEn: 'g', min: 0, max: 280, step: 1, defaultValue: 0, frequency: 'weekly' },
+	// 7. 单头产量 [无限制]
+	{ field: 'single_head_yield_g', unit: 'g', unitEn: 'g', min: 0, max: 10000, step: 10, defaultValue: 0, frequency: 'weekly' },
+	// 8. 可溶性固形物（糖）[0-13]
+	{ field: 'brix', unit: '-', unitEn: '-', min: 0, max: 13, step: 0.1, defaultValue: 4, frequency: 'weekly' },
+	// 9. 酸度 [无限制]
+	{ field: 'acidity', unit: '-', unitEn: '-', min: 0, max: 100, step: 0.1, defaultValue: 0, frequency: 'weekly' },
+
+	// 累计数据/被移除数据 (隐藏)
+	{ field: 'potential_flower_count', unit: '串', unitEn: 'clusters', min: 0, max: 18, step: 1, defaultValue: 8, isStatistic: true, frequency: 'weekly' },
+	{ field: 'accum_ear_count', unit: '个', unitEn: 'pcs', min: 0, max: 60, step: 1, defaultValue: 0, isStatistic: true, frequency: 'weekly' }, // 年头累计 (旧的累计)
+	{ field: 'grain_count_stat', unit: '个', unitEn: 'pcs', min: 0, max: 720, step: 1, defaultValue: 0, isStatistic: true, frequency: 'weekly' },
+	{ field: 'total_harvest_count', unit: '个', unitEn: 'pcs', min: 0, max: 60, step: 1, defaultValue: 0, isStatistic: true, frequency: 'weekly' }, // 这次被用户移除了，设为隐藏
+	{ field: 'total_yield_stat', unit: 'g', unitEn: 'g', min: 0, max: 10000, step: 1, defaultValue: 0, isStatistic: true, frequency: 'weekly' },
+
+	// --- Daily Indicators (每天需填报) ---
+	// 0. 灌溉量 [0-3000] (用户要求加回第一位)
+	{ field: 'irrigation_ml', unit: 'ml', unitEn: 'ml', min: 0, max: 3000, step: 10, defaultValue: 0, frequency: 'daily' },
+	// 1. 回液量 (天) [0-8000]
+	{ field: 'reflux_ml', unit: 'ml', unitEn: 'ml', min: 0, max: 8000, step: 10, defaultValue: 0, frequency: 'daily' },
+	// 2. 滴箭个数 [无限制]
+	{ field: 'dripper_count', unit: '个', unitEn: 'pcs', min: 0, max: 1000, step: 1, defaultValue: 0, frequency: 'daily' },
+	// 3. 回液比例 [0-70]
+	{ field: 'reflux_ratio', unit: '%', unitEn: '%', min: 0, max: 70, step: 0.1, defaultValue: 0, frequency: 'daily' },
+	// 4. 回液EC值 [3-9]
+	{ field: 'reflux_ec', unit: 'mS/cm', unitEn: 'mS/cm', min: 3, max: 9, step: 0.1, defaultValue: 3, frequency: 'daily' },
+	// 5. 回液pH值 [4-9]
+	{ field: 'reflux_ph', unit: '-', unitEn: '-', min: 4, max: 9, step: 0.1, defaultValue: 4, frequency: 'daily' },
+	// 6. 灌溉EC (天) [1-5]
+	{ field: 'irrigation_ec', unit: 'mS/cm', unitEn: 'mS/cm', min: 1, max: 5, step: 0.1, defaultValue: 2, frequency: 'daily' },
+	// 7. 灌溉pH (天) [4-9]
+	{ field: 'irrigation_ph', unit: '-', unitEn: '-', min: 4, max: 9, step: 0.1, defaultValue: 6, frequency: 'daily' },
+	// 8. 每天产量 (天)
+	{ field: 'daily_yield_kg', unit: 'kg', unitEn: 'kg', min: 0, max: 10000, step: 0.1, defaultValue: 0, frequency: 'daily' },
+	// 9. 单周产量 (天) - 原 weekly statistic, 现 daily input
+	{ field: 'weekly_yield_kg', unit: 'kg', unitEn: 'kg', min: 0, max: 10000, step: 0.1, defaultValue: 0, frequency: 'daily' },
+	// 10. 总产量 (天) - 原 statistic, 现 daily input
+	{ field: 'total_yield_kg', unit: 'kg', unitEn: 'kg', min: 0, max: 50000, step: 0.1, defaultValue: 0, frequency: 'daily' },
+	// 11. 温室面积 - 原 constant, 现 daily input
+	{ field: 'greenhouse_area_m2', unit: 'm²', unitEn: 'm²', min: 0, max: 10000, step: 0.1, defaultValue: 0, frequency: 'daily' },
+	// 12. 单位产量 (天) - 原 statistic, 现 daily input
+	{ field: 'unit_yield', unit: 'kg/m²', unitEn: 'kg/m²', min: 0, max: 1000, step: 0.01, defaultValue: 0, frequency: 'daily' },
+	// 13. 报损量 (新)
+	{ field: 'damage_amount', unit: 'kg', unitEn: 'kg', min: 0, max: 1000, step: 0.1, defaultValue: 0, frequency: 'daily' },
+
 ];
 
 // Get indicators with current language
@@ -551,20 +609,17 @@ function updateUserDisplay() {
 
 		logoutOption.onclick = async (e) => {
 			e.stopPropagation();
-			if (confirm('确定要退出登录吗？\nAre you sure you want to logout?')) {
-				try {
-					await supabase.auth.signOut();
-				} catch (err) {
-					console.error('SignOut error:', err);
-				} finally {
-					// Force clear Supabase token to prevent loop
-					// Key format: sb-<project_id>-auth-token
-					// Project ID extracted from SUPABASE_URL: dompuruxntwvzqfnhufe
-					localStorage.removeItem('sb-dompuruxntwvzqfnhufe-auth-token');
-					localStorage.removeItem('guest_mode');
-					window.location.href = 'welcome.html';
-				}
+			// 直接登出，不询问
+			try {
+				await supabase.auth.signOut();
+			} catch (err) {
+				console.error('SignOut error:', err);
 			}
+			// 强制清除所有认证相关的 localStorage
+			localStorage.removeItem('sb-umizxrezhpbtwklkvxoi-auth-token');
+			localStorage.removeItem('guest_mode');
+			localStorage.clear(); // 清除所有本地存储
+			window.location.href = 'welcome.html';
 		};
 		dropdown.appendChild(logoutOption);
 		container.appendChild(dropdown);

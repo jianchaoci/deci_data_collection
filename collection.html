@@ -13,169 +13,161 @@
             border-radius: 20px;
             padding: 30px;
             box-shadow: 0 8px 32px rgba(5, 150, 105, 0.12);
-            border: 1px solid rgba(5, 150, 105, 0.15);
-            max-width: 900px;
-            margin: 0 auto;
         }
 
-        .indicator-group {
+        .section-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
             margin-bottom: 20px;
-            opacity: 0.5;
-            transition: opacity 0.2s ease;
+            overflow: hidden;
         }
 
-        .indicator-group.active {
-            opacity: 1;
+        .section-header {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #065f46;
+            border-bottom: 2px solid #10b981;
         }
 
-        .indicator-label {
+        .section-content {
+            padding: 20px;
+        }
+
+        /* 隐藏数字输入框的箭头 */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .input-item {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
+            flex-direction: column;
+            position: relative;
         }
 
-        .indicator-checkbox {
+        .input-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+
+        .input-checkbox {
             width: 18px;
             height: 18px;
-            margin-right: 10px;
             cursor: pointer;
             accent-color: #10b981;
         }
 
-        .indicator-name {
-            font-weight: 600;
-            color: #064e3b;
-            font-size: 0.95rem;
+        .input-label {
+            font-size: 0.9rem;
+            color: #374151;
+            font-weight: 500;
             flex: 1;
         }
 
-        .indicator-label-left {
-            display: flex;
-            align-items: center;
-            flex: 1;
+        .input-range {
+            font-size: 0.75rem;
+            color: #6b7280;
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            white-space: nowrap;
         }
 
-        .indicator-value-display {
-            font-weight: 700;
-            color: #065f46;
-            font-size: 0.95rem;
-        }
-
-        .slider-container {
-            position: relative;
-        }
-
-        input[type="range"] {
-            width: 100%;
-            height: 8px;
-            border-radius: 5px;
-            background: linear-gradient(to right, #d1fae5, #6ee7b7);
-            outline: none;
-            -webkit-appearance: none;
-            appearance: none;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #10b981, #059669);
-            cursor: pointer;
-            box-shadow: 0 2px 6px rgba(5, 150, 105, 0.4);
-        }
-
-        input[type="range"]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #10b981, #059669);
-            cursor: pointer;
-            border: none;
-            box-shadow: 0 2px 6px rgba(5, 150, 105, 0.4);
-        }
-
-        input[type="range"]:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-
-        input[type="range"]:disabled::-webkit-slider-thumb {
-            cursor: not-allowed;
-            background: #9ca3af;
-        }
-
-        input[type="range"]:disabled::-moz-range-thumb {
-            cursor: not-allowed;
-            background: #9ca3af;
-        }
-
-        /* Style for collected indicators */
-        input[type="range"].collected {
-            /* Green to Indigo gradient for high contrast */
-            background: linear-gradient(to right, #10b981, #6366f1);
-            /* Stronger, slightly purple shadow */
-            box-shadow: 0 0 15px rgba(99, 102, 241, 0.6);
-        }
-
-        input[type="range"].collected::-webkit-slider-thumb {
-            background: #ffffff;
-            /* Indigo border to match the gradient end */
-            border: 2px solid #6366f1;
-            transform: scale(1.2);
-            box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
-        }
-
-        input[type="range"].collected::-moz-range-thumb {
-            background: #ffffff;
-            border: 2px solid #6366f1;
-            transform: scale(1.2);
-            box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
-        }
-
-        .progress-info {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(16, 185, 129, 0.1);
-            border-radius: 10px;
-            text-align: center;
-            font-weight: 600;
-            color: #047857;
-        }
-
-        .replicate-selector-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin: 20px 0;
-            background: rgba(255, 255, 255, 0.3);
-            padding: 10px;
-            border-radius: 12px;
-        }
-
-        .replicate-selector-container label {
-            font-weight: 600;
-            color: #065f46;
-        }
-
-        .replicate-select {
-            padding: 8px 16px;
+        .input-field {
+            padding: 10px 12px;
+            border: 2px solid #d1d5db;
             border-radius: 8px;
-            border: 2px solid #6ee7b7;
-            background: white;
-            color: #064e3b;
-            font-weight: 600;
             font-size: 1rem;
-            cursor: pointer;
-            outline: none;
+            transition: all 0.2s;
+            background-color: #fff;
         }
 
-        .replicate-select:focus {
+        /* 未选中/锁定状态：灰色 */
+        .input-field:disabled {
+            background: #e5e7eb;
+            /* 更深的灰 */
+            cursor: not-allowed;
+            color: #6b7280;
+            border-color: #d1d5db;
+        }
+
+        /* 选中/活动状态 */
+        .input-field:not(:disabled) {
+            background: #fff;
             border-color: #10b981;
+            box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.1);
+        }
+
+        /* 输入了值的状态（通过 JS 添加 class） */
+        .input-field.has-value {
+            background: #ecfdf5;
+            /* 淡绿色背景表示有值 */
+            color: #064e3b;
+            font-weight: 600;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #059669;
             box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+
+        .input-field.error {
+            border-color: #ef4444 !important;
+            background: #fef2f2 !important;
+            color: #dc2626 !important;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .replicate-selector {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.05);
+            border-radius: 10px;
+        }
+
+        .replicate-selector select {
+            padding: 10px 15px;
+            border: 2px solid #10b981;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-left: 10px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -184,711 +176,529 @@
     <!-- Navigation Bar -->
     <nav class="nav-bar">
         <div class="nav-links">
-            <a href="index.html" class="nav-link" data-page="home" data-lang="nav.home">🏠 首页</a>
-            <a href="calendar.html" class="nav-link" data-page="calendar" data-lang="nav.calendar">📅 采集日历</a>
-            <a href="collection.html" class="nav-link active" data-page="collection" data-lang="nav.collection">📊
-                数据采集</a>
-            <a href="statistics.html" class="nav-link" data-page="statistics" data-lang="nav.statistics">📈 统计数量</a>
-            <a href="trends.html" class="nav-link" data-page="trends" data-lang="nav.trends">📉 趋势分析</a>
+            <a href="index.html" class="nav-link" data-page="home">🏠 首页</a>
+            <a href="calendar.html" class="nav-link" data-page="calendar">📅 采集日历</a>
+            <a href="collection.html" class="nav-link" data-page="collection">📊 数据采集</a>
+            <a href="statistics.html" class="nav-link" data-page="statistics">📈 统计分析</a>
+            <a href="trends.html" class="nav-link" data-page="trends">📉 趋势分析</a>
         </div>
-        <div style="display: flex; gap: 10px; align-items: center;">
-            <button class="nav-link" id="authBtn" style="border: 1px solid white; cursor: pointer; display: none;">🔗
-                登录</button>
-            <button class="lang-switch" id="langSwitch" style="position: static;">EN</button>
+        <div class="user-area">
+            <button class="lang-switch" id="langSwitch">🌐 EN</button>
         </div>
     </nav>
-
-    <!-- Page Header -->
-    <div class="page-header">
-        <h1 class="page-title" data-lang="dataCollection">📊 指标采集</h1>
-        <div class="action-buttons">
-            <button type="button" class="btn btn-primary" id="submitBtn" data-lang="exportBtn">📥 导出 CSV</button>
-        </div>
-    </div>
 
     <!-- Main Container -->
     <div class="main-container">
         <div class="collection-card">
-            <div class="card-header-row"
-                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <div style="display: flex; flex-direction: column;">
-                    <h2 class="section-title" style="margin-bottom: 5px;">
-                        <span data-lang="dataCollection">📊 指标采集</span> - <span id="currentReplicateDisplay">#1</span>
-                    </h2>
-                    <div id="collectionProgress" style="font-size: 0.9rem; color: #059669; font-weight: 500;"></div>
-                </div>
+            <h2 style="color: #047857; margin-bottom: 20px;">🌱 表型数据采集</h2>
 
-                <!-- Replicate Selector INSIDE CARD -->
-                <div class="replicate-selector-container"
-                    style="margin: 0; padding: 5px 15px; background: rgba(16, 185, 129, 0.1);">
-                    <label for="replicateSelect" data-lang="selectReplicate" style="margin-right: 10px;">重复:</label>
-                    <select id="replicateSelect" class="replicate-select">
-                        <!-- Options 1-30 generated by JS -->
-                    </select>
+            <!-- Replicate Selector -->
+            <div class="replicate-selector">
+                <label style="font-weight: 600; color: #065f46;">
+                    选择样本:
+                    <select id="replicateSelect"></select>
+                    <button id="addReplicateBtn" class="btn-primary"
+                        style="margin-left: 10px; padding: 5px 12px; font-size: 1.2rem;">+</button>
+                </label>
+            </div>
+
+            <!-- Weekly Data Section -->
+            <div class="section-card">
+                <div class="section-header">📊 每周数据 (Weekly Data)</div>
+                <div class="section-content">
+                    <div class="input-group" id="weeklyInputs"></div>
                 </div>
             </div>
 
-            <form id="dataForm">
-                <!-- Indicators will be dynamically generated here -->
-            </form>
-
-            <div class="form-actions" style="margin-top: 30px; text-align: center;">
-                <button type="button" class="btn btn-primary" id="saveDbBtn"
-                    style="background: linear-gradient(135deg, #10b981, #059669); font-size: 1.1rem; padding: 12px 30px;">
-                    ☁️ <span data-lang="saveToDb">提交到数据库</span>
-                </button>
+            <!-- Daily Data Section -->
+            <div class="section-card">
+                <div class="section-header">📅 每日数据 (Daily Data)</div>
+                <div class="section-content">
+                    <div class="input-group" id="dailyInputs"></div>
+                </div>
             </div>
+
+            <!-- Submit Button -->
+            <button class="btn-primary" id="saveBtn">💾 保存数据到数据库</button>
+
+            <!-- ... -->
+
         </div>
     </div>
 
-    <script src="common.js?v=fix1"></script>
+    <script src="common.js?v=fix25"></script>
     <script>
-        // Set active navigation
         setActiveNav('collection');
 
-        // DOM Elements
-        const form = document.getElementById('dataForm');
-        const submitBtn = document.getElementById('submitBtn'); // Export CSV btn
-        const saveDbBtn = document.getElementById('saveDbBtn');
-        const replicateSelect = document.getElementById('replicateSelect');
-        const currentReplicateDisplay = document.getElementById('currentReplicateDisplay');
+        // 绑定添加按钮事件
+        document.addEventListener('DOMContentLoaded', function () {
+            const addBtn = document.getElementById('addReplicateBtn');
+            if (addBtn) {
+                addBtn.onclick = function (e) {
+                    e.preventDefault();
+                    maxReplicateId++;
 
-        let indicators = getIndicators();
+                    collectionData[maxReplicateId] = {}; // 初始化数据结构
+
+                    // 添加选项到下拉菜单
+                    const select = document.getElementById('replicateSelect');
+                    const option = document.createElement('option');
+                    option.value = maxReplicateId;
+                    option.textContent = `样本 #${maxReplicateId}`;
+                    select.appendChild(option);
+
+                    // 自动切换到新样本
+                    select.value = maxReplicateId;
+                    currentReplicate = maxReplicateId;
+                    loadReplicateData(currentReplicate);
+                };
+            }
+        });
+
+        // 获取指标配置
+        let indicators = [];
+        try {
+            indicators = getIndicators();
+            // 强制移除所有默认值，确保输入框为空
+            indicators.forEach(ind => delete ind.defaultValue);
+            console.log('加载了', indicators.length, '个指标');
+        } catch (e) {
+            console.error('加载指标失败:', e);
+            alert('配置文件加载失败，请刷新页面');
+        }
+
+        // 动态样本管理
+        let maxReplicateId = 1;
         let currentReplicate = 1;
-        const TOTAL_REPLICATES = 30;
+        let collectionData = {};
 
-        // Store data for all 30 replicates in memory (and localStorage)
-        // Structure: { 1: { growth_cm: 10, ... }, 2: { ... } }
-        let replicatesData = {};
-
-        // Add translations
-        translations.zh.selectReplicate = '重复:';
-        translations.zh.replicate = '样本';
-        translations.zh.saveToDb = '提交到数据库';
-        translations.zh.saving = '正在提交...';
-        translations.zh.saveSuccess = '提交成功！';
-        translations.zh.saveError = '提交失败';
-
-        translations.en.selectReplicate = 'Rep:';
-        translations.en.replicate = 'Sample';
-        translations.en.saveToDb = 'Submit to Database';
-        translations.en.saving = 'Submitting...';
-        translations.en.saveSuccess = 'Submitted Successfully!';
-        translations.en.saveError = 'Submission Failed';
-
-        // Initialize Data - 从数据库加载所有样本数据
-        async function initData() {
-            // 初始化所有样本，所有指标为null
-            for (let i = 1; i <= TOTAL_REPLICATES; i++) {
-                replicatesData[i] = {};
-                indicators.forEach(ind => {
-                    if (!ind.isStatistic && !ind.isConstant) {
-                        replicatesData[i][ind.field] = null;
-                    }
-                });
-            }
-
-            // 从数据库加载本周所有样本的数据（如果已登录）
-            if (currentUser && !currentUser.is_guest) {
-                try {
-                    const now = getBeijingTime();
-                    const year = now.getFullYear();
-                    const week = getWeekNumber(now);
-
-                    const { data, error } = await supabase
-                        .from('phenotype_records')
-                        .select('*')
-                        .eq('user_id', currentUser.id)
-                        .eq('year', year)
-                        .eq('week', week)
-                        .order('replicate_id', { ascending: true });
-
-                    if (error) {
-                        console.error('Error loading all replicates from database:', error);
-                    } else if (data && data.length > 0) {
-                        // 加载所有样本的数据
-                        data.forEach(row => {
-                            const repIndex = row.replicate_id;
-                            if (repIndex >= 1 && repIndex <= TOTAL_REPLICATES) {
-                                indicators.forEach(ind => {
-                                    if (!ind.isStatistic && !ind.isConstant) {
-                                        const value = row[ind.field];
-                                        // 数据库中有什么就是什么（null或值）
-                                        replicatesData[repIndex][ind.field] = (value !== null && value !== undefined) ? value : null;
-                                    }
-                                });
-                            }
-                        });
-                        console.log(`Loaded ${data.length} replicate records from database`);
-                    }
-                } catch (error) {
-                    console.error('Exception loading all replicates from database:', error);
-                }
-            }
+        // 初始化数据结构 (默认只有1个)
+        function initDataStructure() {
+            collectionData[1] = {}; // 初始只有样本 #1
         }
 
-        // Save Data to LocalStorage
-        function saveData() {
-            const todayKey = `collection_data_${getBeijingTime().toISOString().split('T')[0]}`;
-            localStorage.setItem(todayKey, JSON.stringify(replicatesData));
-        }
+        // 生成样本选择器
+        function generateReplicateSelector() {
+            const select = document.getElementById('replicateSelect');
+            select.innerHTML = '';
 
-        // Generate Replicate Options
-        function generateReplicateOptions() {
-            replicateSelect.innerHTML = '';
-            const lang = translations[currentLang];
-            const repLabel = lang.replicate || '样本';
-
-            for (let i = 1; i <= TOTAL_REPLICATES; i++) {
+            // 根据当前最大ID生成选项
+            for (let i = 1; i <= maxReplicateId; i++) {
                 const option = document.createElement('option');
                 option.value = i;
-                option.textContent = `${repLabel} #${i}`;
-                replicateSelect.appendChild(option);
+                option.textContent = `样本 #${i}`;
+                select.appendChild(option);
             }
 
-            replicateSelect.value = currentReplicate;
+            select.value = currentReplicate;
 
-            replicateSelect.addEventListener('change', async (e) => {
-                const newReplicate = parseInt(e.target.value);
+            // 切换样本事件
+            select.onchange = function () {
+                currentReplicate = parseInt(this.value);
+                loadReplicateData(currentReplicate);
+            };
 
-                // 检查当前样本是否已开始采集但未完成
-                if (currentReplicate !== newReplicate) {
-                    const canSwitch = checkCanSwitchReplicate(currentReplicate);
-                    if (!canSwitch.allowed) {
-                        // 不允许切换，恢复选择
-                        replicateSelect.value = currentReplicate;
-                        alert(canSwitch.message);
-                        return;
-                    }
-                }
-
-                currentReplicate = newReplicate;
-                currentReplicateDisplay.textContent = `#${currentReplicate}`;
-                await loadReplicateValues(currentReplicate);
-            });
+            // 添加按钮事件 (只绑定一次，或者在 init 里绑定)
+            // 这里我们放在 generate 外面更合适，或者确保 update 时不重复绑定
+            // 为简单起见，我们将在 init() 中统一绑定事件
         }
 
-        // Generate form
-        function generateForm() {
-            form.innerHTML = '';
+        // 生成输入框
+        function generateInputFields() {
+            const weeklyContainer = document.getElementById('weeklyInputs');
+            const dailyContainer = document.getElementById('dailyInputs');
 
-            indicators.forEach((indicator, index) => {
-                if (indicator.isStatistic || indicator.isConstant) return;
+            weeklyContainer.innerHTML = '';
+            dailyContainer.innerHTML = '';
 
-                const group = document.createElement('div');
-                group.className = 'indicator-group';
-                group.id = `group-${indicator.field}`;
+            indicators.forEach(ind => {
+                if (ind.isStatistic || ind.isConstant) return;
 
-                const label = document.createElement('div');
-                label.className = 'indicator-label';
+                const container = ind.frequency === 'weekly' ? weeklyContainer : dailyContainer;
 
-                const labelLeft = document.createElement('div');
-                labelLeft.className = 'indicator-label-left';
+                const item = document.createElement('div');
+                item.className = 'input-item';
 
+                // 创建头部（checkbox + label + range）
+                const header = document.createElement('div');
+                header.className = 'input-header';
+
+                // Checkbox
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
-                checkbox.className = 'indicator-checkbox';
-                checkbox.id = `check-${indicator.field}`;
-                checkbox.checked = false; // 强制初始为未选中
-                checkbox.addEventListener('change', (e) => handleCheckboxChange(e, indicator.field));
+                checkbox.className = 'input-checkbox';
+                checkbox.id = `check-${ind.field}`;
 
-                const nameSpan = document.createElement('span');
-                nameSpan.className = 'indicator-name';
-                nameSpan.textContent = `${indicator.name} (${indicator.unit})`;
+                // Label
+                const label = document.createElement('span');
+                label.className = 'input-label';
+                label.textContent = `${ind.name} (${ind.unit})`;
 
-                labelLeft.appendChild(checkbox);
-                labelLeft.appendChild(nameSpan);
+                // Range display
+                const rangeSpan = document.createElement('span');
+                rangeSpan.className = 'input-range';
+                rangeSpan.textContent = `[${ind.min}-${ind.max}]`;
 
-                const valueSpan = document.createElement('span');
-                valueSpan.className = 'indicator-value-display';
-                valueSpan.id = `value-${indicator.field}`;
-                valueSpan.textContent = indicator.defaultValue;
+                header.appendChild(checkbox);
+                header.appendChild(label);
+                header.appendChild(rangeSpan);
 
-                label.appendChild(labelLeft);
-                label.appendChild(valueSpan);
+                // Input field
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.className = 'input-field';
+                input.id = `input-${ind.field}`;
+                input.placeholder = `点击左侧复选框解锁输入`;
+                input.min = ind.min;
+                input.max = ind.max;
+                input.step = ind.step;
+                input.disabled = true; // 初始禁用
 
-                const sliderContainer = document.createElement('div');
-                sliderContainer.className = 'slider-container';
-
-                const slider = document.createElement('input');
-                slider.type = 'range';
-                slider.id = `slider-${indicator.field}`;
-                slider.name = indicator.field;
-                slider.min = indicator.min;
-                slider.max = indicator.max;
-                slider.step = indicator.step;
-                slider.value = indicator.defaultValue;
-                slider.disabled = true; // 强制初始为禁用
-
-                slider.addEventListener('input', (e) => {
-                    const val = parseFloat(e.target.value);
-                    valueSpan.textContent = e.target.value;
-
-                    // 只有当checkbox勾选了才保存值，否则不计入采集
-                    const checkbox = document.getElementById(`check-${indicator.field}`);
-                    if (checkbox && checkbox.checked) {
-                        replicatesData[currentReplicate][indicator.field] = val;
-                        slider.classList.add('collected');
-                    } else {
-                        replicatesData[currentReplicate][indicator.field] = null;
-                        slider.classList.remove('collected');
-                    }
-
-                    saveData();
-                    updateCollectionProgress();
-                });
-
-                sliderContainer.appendChild(slider);
-                group.appendChild(label);
-                group.appendChild(sliderContainer);
-                form.appendChild(group);
-            });
-        }
-
-        // Load values for specific replicate from database
-        async function loadReplicateValues(repIndex) {
-            // 先重置所有checkbox和slider状态
-            indicators.forEach(indicator => {
-                if (indicator.isStatistic || indicator.isConstant) return;
-
-                const checkbox = document.getElementById(`check-${indicator.field}`);
-                const slider = document.getElementById(`slider-${indicator.field}`);
-                const valueDisplay = document.getElementById(`value-${indicator.field}`);
-                const group = document.getElementById(`group-${indicator.field}`);
-
-                if (checkbox) {
-                    checkbox.checked = false;
-                }
-                if (slider) {
-                    slider.disabled = true;
-                    slider.value = indicator.defaultValue;
-                }
-                if (valueDisplay) {
-                    valueDisplay.textContent = indicator.defaultValue;
-                }
-                if (group) {
-                    group.classList.remove('active');
-                }
-                if (slider) {
-                    slider.classList.remove('collected');
-                }
-            });
-
-            // 初始化数据为null
-            if (!replicatesData[repIndex]) {
-                replicatesData[repIndex] = {};
-            }
-            indicators.forEach(ind => {
-                if (!ind.isStatistic && !ind.isConstant) {
-                    replicatesData[repIndex][ind.field] = null;
-                }
-            });
-
-            // 从数据库加载数据（如果已登录）
-            if (currentUser && !currentUser.is_guest) {
-                try {
-                    const now = getBeijingTime();
-                    const todayStr = now.toISOString().split('T')[0];
-                    const year = now.getFullYear();
-                    const week = getWeekNumber(now);
-
-                    const { data, error } = await supabase
-                        .from('phenotype_records')
-                        .select('*')
-                        .eq('user_id', currentUser.id)
-                        .eq('year', year)
-                        .eq('week', week)
-                        .eq('replicate_id', repIndex)
-                        .single();
-
-                    if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
-                        console.error('Error loading data from database:', error);
-                    } else if (data) {
-                        // 从数据库加载数据 - 不做任何值判断，数据库是什么就是什么
-                        indicators.forEach(indicator => {
-                            if (indicator.isStatistic || indicator.isConstant) return;
-
-                            const value = data[indicator.field];
-                            const slider = document.getElementById(`slider-${indicator.field}`);
-                            const valueDisplay = document.getElementById(`value-${indicator.field}`);
-
-                            if (value !== null && value !== undefined) {
-                                // 数据库中有值（不管是什么值，包括0）：保存并显示
-                                replicatesData[repIndex][indicator.field] = value;
-                                if (slider && valueDisplay) {
-                                    slider.value = value;
-                                    valueDisplay.textContent = value;
-                                    slider.classList.add('collected');
-                                }
-                            } else {
-                                // 数据库中是null：保持null
-                                replicatesData[repIndex][indicator.field] = null;
-                                if (slider && valueDisplay) {
-                                    slider.value = indicator.defaultValue;
-                                    valueDisplay.textContent = indicator.defaultValue;
-                                    slider.classList.remove('collected');
+                // Checkbox 控制输入框的启用/禁用
+                checkbox.onchange = function () {
+                    if (this.checked) {
+                        // 互斥逻辑：选中当前时，取消其他所有的选中状态
+                        const allCheckboxes = document.querySelectorAll('.input-checkbox');
+                        allCheckboxes.forEach(cb => {
+                            if (cb !== this && cb.checked) {
+                                cb.checked = false;
+                                // 触发 change 事件或手动执行禁用逻辑
+                                // 由于手动改变 checked 不会触发 onchange，我们需要手动禁用对应的 input
+                                const otherInputId = cb.id.replace('check-', 'input-');
+                                const otherInput = document.getElementById(otherInputId);
+                                if (otherInput) {
+                                    otherInput.disabled = true;
+                                    otherInput.placeholder = `已锁定`;
+                                    otherInput.classList.remove('active-input'); // 可选：移除高亮样式
                                 }
                             }
                         });
-                    }
-                } catch (error) {
-                    console.error('Exception loading data from database:', error);
-                }
-            }
 
-            // 更新显示
-            indicators.forEach(indicator => {
-                if (indicator.isStatistic || indicator.isConstant) return;
+                        // 启用当前
+                        input.disabled = false;
+                        input.placeholder = `请输入 ${ind.min} 到 ${ind.max} 之间的值`;
 
-                const slider = document.getElementById(`slider-${indicator.field}`);
-                const valueDisplay = document.getElementById(`value-${indicator.field}`);
-                const value = replicatesData[repIndex][indicator.field];
+                        // 自动聚焦
+                        setTimeout(() => input.focus(), 10);
 
-                if (slider && valueDisplay) {
-                    if (value !== null && value !== undefined) {
-                        // 显示已采集的值
-                        slider.value = value;
-                        valueDisplay.textContent = value;
-                        slider.classList.add('collected');
                     } else {
-                        // 显示默认值
-                        slider.value = indicator.defaultValue;
-                        valueDisplay.textContent = indicator.defaultValue;
-                        slider.classList.remove('collected');
-                    }
-                }
-            });
+                        // 锁定当前
+                        input.disabled = true;
+                        input.placeholder = `无数据 (点击解锁)`;
+                        input.classList.remove('error');
 
-            updateCollectionProgress();
-        }
-
-        // Check if can switch to another replicate
-        function checkCanSwitchReplicate(repIndex) {
-            const totalIndicators = indicators.filter(ind => !ind.isStatistic && !ind.isConstant).length;
-            const currentData = replicatesData[repIndex] || {};
-            let nullCount = 0;
-
-            // 统计当前样本中有多少个null值
-            indicators.forEach(ind => {
-                if (!ind.isStatistic && !ind.isConstant) {
-                    const value = currentData[ind.field];
-                    if (value === null || value === undefined) {
-                        nullCount++;
-                    }
-                }
-            });
-
-            // 如果有null值（未完成采集），不允许切换
-            if (nullCount > 0 && nullCount < totalIndicators) {
-                // 部分采集了，有null值，不允许切换
-                const collectedCount = totalIndicators - nullCount;
-                const message = currentLang === 'zh'
-                    ? `❌ 无法切换样本！\n\n样本 #${repIndex} 未完成采集，还有 ${nullCount} 项指标为空。\n\n已采集：${collectedCount}/${totalIndicators}\n\n请完成所有指标后再切换。`
-                    : `❌ Cannot switch sample!\n\nSample #${repIndex} is incomplete, ${nullCount} indicators are null.\n\nCollected: ${collectedCount}/${totalIndicators}\n\nPlease complete all indicators before switching.`;
-                return { allowed: false, message: message };
-            }
-
-            return { allowed: true, message: '' };
-        }
-
-        function handleCheckboxChange(event, field) {
-            const checkbox = event.target;
-
-            if (checkbox.checked) {
-                // 勾选时：启用滑块，保存当前滑块的值
-                document.querySelectorAll('.indicator-checkbox').forEach(cb => {
-                    if (cb.id !== `check-${field}`) {
-                        cb.checked = false;
-                        const cbField = cb.id.replace('check-', '');
-                        document.getElementById(`slider-${cbField}`).disabled = true;
-                        document.getElementById(`group-${cbField}`).classList.remove('active');
-                    }
-                });
-
-                const slider = document.getElementById(`slider-${field}`);
-                slider.disabled = false;
-                document.getElementById(`group-${field}`).classList.add('active');
-
-                // 保存当前滑块的值
-                const val = parseFloat(slider.value);
-                replicatesData[currentReplicate][field] = val;
-                slider.classList.add('collected');
-            } else {
-                // 取消勾选时：禁用滑块，设置为null（未采集）
-                const slider = document.getElementById(`slider-${field}`);
-                slider.disabled = true;
-                document.getElementById(`group-${field}`).classList.remove('active');
-
-                replicatesData[currentReplicate][field] = null;
-                slider.classList.remove('collected');
-            }
-
-            saveData();
-            updateCollectionProgress();
-        }
-
-        // Update collection progress (For current replicate)
-        function updateCollectionProgress() {
-            // 统计当前样本已采集数据的指标数量
-            let collectedInRep = 0;
-            const totalIndicators = indicators.filter(ind => !ind.isStatistic && !ind.isConstant).length;
-            const currentData = replicatesData[currentReplicate] || {};
-
-            indicators.forEach(ind => {
-                if (!ind.isStatistic && !ind.isConstant) {
-                    const value = currentData[ind.field];
-                    // 简单判断：值不为null且不为undefined = 已采集
-                    if (value !== null && value !== undefined) {
-                        collectedInRep++;
-                    }
-                }
-            });
-
-            // 计算所有样本中有多少个完成采集
-            let completeCount = 0;
-
-            for (let i = 1; i <= TOTAL_REPLICATES; i++) {
-                const repData = replicatesData[i];
-                let collected = 0;
-
-                indicators.forEach(ind => {
-                    if (!ind.isStatistic && !ind.isConstant) {
-                        const value = repData[ind.field];
-                        // 简单判断：值不为null且不为undefined = 已采集
-                        if (value !== null && value !== undefined) {
-                            collected++;
+                        // 如果只是单纯点击取消，且内容为空，是否要清空数据？
+                        // 原逻辑保留：如果是空值，collectionData 设为 null
+                        if (input.value === '') {
+                            collectionData[currentReplicate][ind.field] = null;
+                            input.classList.remove('has-value');
                         }
                     }
-                });
+                };
 
-                if (collected === totalIndicators) {
-                    completeCount++;
-                }
-            }
+                // 输入验证
+                input.oninput = function () {
+                    const val = parseFloat(this.value);
 
-            const progressEl = document.getElementById('collectionProgress');
-            const lang = translations[currentLang];
+                    if (isNaN(val)) {
+                        // 空值
+                        this.classList.remove('has-value');
+                        collectionData[currentReplicate][ind.field] = null;
+                        this.classList.remove('error');
+                        return;
+                    }
 
-            let statusText = '';
-            if (currentLang === 'zh') {
-                statusText = `已完成样本 ${completeCount}/${TOTAL_REPLICATES}, 当前样本采集 ${collectedInRep}/${totalIndicators}`;
-            } else {
-                statusText = `Completed Samples ${completeCount}/${TOTAL_REPLICATES}, Current ${collectedInRep}/${totalIndicators}`;
-            }
+                    // 有值
+                    this.classList.add('has-value');
 
-            progressEl.textContent = statusText;
+                    // 检查范围
+                    // 检查范围
+                    if (val < ind.min || val > ind.max) {
+                        this.classList.add('error');
+                    } else {
+                        this.classList.remove('error');
+                    }
+                    // 核心修改：无论是否error，都保存值！
+                    collectionData[currentReplicate][ind.field] = val;
+                };
+
+                // 移除弹窗
+                input.onblur = function () { };
+
+                item.appendChild(header);
+                item.appendChild(input);
+                container.appendChild(item);
+            });
         }
 
-        // Export CSV
-        function buildCSV() {
-            // Columns: Year, Week, Date, Replicate_ID, Field1, Field2...
-            const headers = ['Year', 'Week', 'Date', 'Replicate_ID'];
-            const fields = [];
-
+        // 加载样本数据
+        function loadReplicateData(repId) {
             indicators.forEach(ind => {
-                if (!ind.isStatistic && !ind.isConstant) {
-                    headers.push(ind.field);
-                    fields.push(ind.field);
+                if (ind.isStatistic || ind.isConstant) return;
+
+                const input = document.getElementById(`input-${ind.field}`);
+                const checkbox = document.getElementById(`check-${ind.field}`);
+
+                if (input && checkbox) {
+                    const value = collectionData[repId][ind.field];
+
+                    if (value !== null && value !== undefined) {
+                        // 有数据：勾选 checkbox，启用输入框，填充值
+                        checkbox.checked = true;
+                        input.disabled = false;
+                        input.value = value;
+                        input.placeholder = `请输入 ${ind.min} 到 ${ind.max} 之间的值`;
+                        input.classList.add('has-value');
+                        // 验证范围
+                        if (value < ind.min || value > ind.max) {
+                            input.classList.add('error');
+                        } else {
+                            input.classList.remove('error');
+                        }
+                    } else {
+                        // 无数据：取消勾选，禁用输入框，清空值
+                        checkbox.checked = false;
+                        input.disabled = true;
+                        input.value = '';
+                        input.placeholder = `点击左侧复选框解锁输入`;
+                        input.classList.remove('has-value');
+                        input.classList.remove('error');
+                    }
                 }
             });
-
-            let csvContent = headers.join(',') + '\n';
-            const now = getBeijingTime();
-            const year = now.getFullYear();
-            const week = getWeekNumber(now);
-            const dateStr = now.toISOString().split('T')[0];
-
-            // Iterate all replicates
-            for (let i = 1; i <= TOTAL_REPLICATES; i++) {
-                const data = replicatesData[i];
-                // Row structure matching database: Year, Week, Date, Replicate_ID...
-                const row = [year, week, dateStr, i];
-
-                fields.forEach(field => {
-                    row.push(data[field] !== undefined ? data[field] : '');
-                });
-
-                csvContent += row.join(',') + '\n';
-            }
-
-            return csvContent;
         }
 
-        function exportCSV() {
-            const csv = buildCSV();
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'phenotype_data_' + getBeijingTime().toISOString().replace(/[:.]/g, '-') + '.csv';
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            URL.revokeObjectURL(url);
-        }
-
-        // Save to Database
+        // 保存到数据库
         async function saveToDatabase() {
             if (!currentUser || currentUser.is_guest) {
-                alert(currentLang === 'zh' ? '请先登录' : 'Please login first');
+                alert('请先登录');
                 return;
             }
 
-            // 只验证当前样本是否完成采集
-            const totalIndicators = indicators.filter(ind => !ind.isStatistic && !ind.isConstant).length;
-            const currentData = replicatesData[currentReplicate];
-            const uncollectedIndicators = [];
-            let collectedCount = 0;
-
-            indicators.forEach(ind => {
-                if (!ind.isStatistic && !ind.isConstant) {
-                    if (currentData[ind.field] === null || currentData[ind.field] === undefined) {
-                        uncollectedIndicators.push(ind.name);
-                    } else {
-                        collectedCount++;
-                    }
-                }
-            });
-
-            // 如果当前样本有未采集的指标，阻止提交
-            if (uncollectedIndicators.length > 0) {
-                let message = '';
-                if (currentLang === 'zh') {
-                    message = `❌ 提交失败！\n\n样本 #${currentReplicate} 有 ${uncollectedIndicators.length} 项指标未采集：\n\n`;
-                    message += uncollectedIndicators.map((name, i) => `${i + 1}. ${name}`).join('\n');
-                    message += `\n\n请完成所有指标的采集后再提交。`;
-                } else {
-                    message = `❌ Submission Failed!\n\nSample #${currentReplicate} has ${uncollectedIndicators.length} uncollected indicators:\n\n`;
-                    message += uncollectedIndicators.map((name, i) => `${i + 1}. ${name}`).join('\n');
-                    message += `\n\nPlease complete all indicators before submitting.`;
-                }
-                alert(message);
-                return;
-            }
-
-            const lang = translations[currentLang];
-            const originalText = saveDbBtn.innerHTML;
-            saveDbBtn.disabled = true;
-            saveDbBtn.innerHTML = `⏳ ${lang.saving}`;
+            const btn = document.getElementById('saveBtn');
+            const originalText = btn.textContent;
+            btn.textContent = '⏳ 正在保存...';
+            btn.disabled = true;
 
             try {
-                console.log('Starting submission to Supabase...');
                 const now = getBeijingTime();
-                const todayStr = now.toISOString().split('T')[0];
                 const year = now.getFullYear();
-                const week = getWeekNumber(now); // from common.js
-                console.log(`Submitting for Year: ${year}, Week: ${week}, Date: ${todayStr}`);
+                const week = getWeekNumber(now);
+                const date = now.toISOString().split('T')[0];
 
-                // Prepare rows for bulk upsert
-                const rows = [];
+                const weeklyData = {
+                    user_id: currentUser.id,
+                    year: year,
+                    week: week,
+                    replicate_id: currentReplicate
+                };
 
-                // Iterate through replicates 1 to 30
-                for (let i = 1; i <= TOTAL_REPLICATES; i++) {
-                    const repData = replicatesData[i];
+                const dailyData = {
+                    user_id: currentUser.id,
+                    date: date,
+                    year: year,
+                    week: week,
+                    replicate_id: currentReplicate
+                };
 
-                    const row = {
-                        user_id: currentUser.id,
-                        year: year,
-                        week: week,
-                        date: todayStr,
-                        replicate_id: i,
-                    };
+                // 收集数据
+                const currentData = collectionData[currentReplicate];
+                indicators.forEach(ind => {
+                    if (ind.isStatistic || ind.isConstant) return;
 
-                    // Flatten traits into columns
-                    // 简单处理：null就是null，有值就是值（不做任何判断）
-                    indicators.forEach(ind => {
-                        if (!ind.isStatistic && !ind.isConstant) {
-                            const value = repData[ind.field];
-                            // 数据是什么就提交什么（包括0值）
-                            row[ind.field] = (value !== null && value !== undefined) ? value : null;
+                    const value = currentData[ind.field];
+                    if (value !== null && value !== undefined) {
+                        // 获取中文名称作为数据库列名
+                        // 强制使用 'zh' 中文配置，无论当前语言如何
+                        const cnName = translations['zh'].indicators[ind.field];
+
+                        if (!cnName) {
+                            console.warn(`未找到指标 ${ind.field} 的中文翻译，将跳过保存`);
+                            return;
                         }
-                    });
 
-                    rows.push(row);
-                }
-
-                console.log(`Prepared ${rows.length} rows for upsert.`);
-
-                // Call Supabase Upsert
-                // Target table: phenotype_records
-                const { error, data } = await supabase
-                    .from('phenotype_records')
-                    .upsert(rows, { onConflict: 'user_id, year, week, replicate_id' })
-                    .select();
-
-                if (error) {
-                    console.error('Supabase Error:', error);
-                    throw error;
-                }
-
-                console.log('Supabase submission successful:', data);
-
-                // 计算总体采集进度
-                let totalCompleted = 0;
-                for (let i = 1; i <= TOTAL_REPLICATES; i++) {
-                    const repData = replicatesData[i];
-                    let isComplete = true;
-
-                    for (const ind of indicators) {
-                        if (!ind.isStatistic && !ind.isConstant) {
-                            if (repData[ind.field] === null || repData[ind.field] === undefined) {
-                                isComplete = false;
-                                break;
-                            }
+                        if (ind.frequency === 'weekly') {
+                            weeklyData[cnName] = value;
+                        } else {
+                            dailyData[cnName] = value;
                         }
                     }
+                });
 
-                    if (isComplete) {
-                        totalCompleted++;
-                    }
+                // 并行保存
+                const [weeklyResult, dailyResult] = await Promise.all([
+                    supabase.from('weekly_phenotypes').upsert(weeklyData, {
+                        onConflict: 'user_id, year, week, replicate_id'
+                    }),
+                    supabase.from('daily_phenotypes').upsert(dailyData, {
+                        onConflict: 'user_id, date, replicate_id'
+                    })
+                ]);
+
+                if (weeklyResult.error) {
+                    throw new Error('周数据保存失败: ' + weeklyResult.error.message);
+                }
+                if (dailyResult.error) {
+                    throw new Error('日数据保存失败: ' + dailyResult.error.message);
                 }
 
-                // 显示提交成功消息和采集进度
-                let successMessage = '';
-                if (currentLang === 'zh') {
-                    successMessage = `✅ 提交成功！\n\n当前采集进度：${totalCompleted} / ${TOTAL_REPLICATES} 个样本已完成`;
-                } else {
-                    successMessage = `✅ Submitted Successfully!\n\nProgress: ${totalCompleted} / ${TOTAL_REPLICATES} samples completed`;
-                }
-                alert(successMessage);
+                btn.textContent = '✅ 保存成功！';
+                alert('✅ 数据已成功保存到数据库！');
 
-                saveDbBtn.innerHTML = `✅ ${lang.saveSuccess}`;
                 setTimeout(() => {
-                    saveDbBtn.innerHTML = originalText;
-                    saveDbBtn.disabled = false;
+                    btn.textContent = originalText;
+                    btn.disabled = false;
                 }, 2000);
 
             } catch (error) {
-                console.error('Save failed details:', error);
-                let checkTableMsg = '';
-                if (error.code === '42P01') { // undefined_table
-                    checkTableMsg = '\n(错误：表不存在，请运行 SQL 脚本)';
-                } else if (error.code === '42501') { // permission_denied
-                    checkTableMsg = '\n(错误：权限拒绝，请检查登录状态或 RLS 策略)';
-                }
-                saveDbBtn.innerHTML = `❌ ${lang.saveError}: ${error.message}${checkTableMsg}`;
-                setTimeout(() => {
-                    saveDbBtn.innerHTML = originalText;
-                    saveDbBtn.disabled = false;
-                }, 5000);
+                console.error('保存失败:', error);
+                alert('❌ 保存失败: ' + error.message);
+                btn.textContent = originalText;
+                btn.disabled = false;
             }
         }
 
-        // Event listeners
-        submitBtn.addEventListener('click', exportCSV);
-        saveDbBtn.addEventListener('click', saveToDatabase);
+        // 从数据库加载数据
+        async function loadFromDatabase() {
+            if (!currentUser || currentUser.is_guest) {
+                console.log('游客模式，跳过数据加载');
+                return;
+            }
 
-        // Initialize
-        async function init() {
-            await initAuth(); // Ensure auth loaded for submit check
-            await initData(); // 等待从数据库加载所有样本数据
-            generateReplicateOptions();
-            generateForm();
-            await loadReplicateValues(1); // Load Rep 1 by default
-            updateCollectionProgress(); // 初始化时更新进度
+            try {
+                const now = getBeijingTime();
+                const year = now.getFullYear();
+                const week = getWeekNumber(now);
+                const date = now.toISOString().split('T')[0];
+
+                const [weeklyResult, dailyResult] = await Promise.all([
+                    supabase.from('weekly_phenotypes')
+                        .select('*')
+                        .eq('user_id', currentUser.id)
+                        .eq('year', year)
+                        .eq('week', week),
+                    supabase.from('daily_phenotypes')
+                        .select('*')
+                        .eq('user_id', currentUser.id)
+                        .eq('date', date)
+                ]);
+
+                // 找出最大 Replicate ID 以恢复样本列表
+                let dbMaxRepId = 1;
+
+                if (weeklyResult.data) {
+                    weeklyResult.data.forEach(row => {
+                        if (row.replicate_id > dbMaxRepId) dbMaxRepId = row.replicate_id;
+                    });
+                }
+                if (dailyResult.data) {
+                    dailyResult.data.forEach(row => {
+                        if (row.replicate_id > dbMaxRepId) dbMaxRepId = row.replicate_id;
+                    });
+                }
+
+                // 如果数据库中有更多样本，自动扩展
+                if (dbMaxRepId > maxReplicateId) {
+                    console.log(`从数据库恢复样本列表: 最大ID ${dbMaxRepId}`);
+                    // 补全缺失的数据结构
+                    for (let i = maxReplicateId + 1; i <= dbMaxRepId; i++) {
+                        collectionData[i] = {};
+                    }
+                    maxReplicateId = dbMaxRepId;
+                    // 重建下拉菜单
+                    generateReplicateSelector();
+                }
+
+                if (!weeklyResult.error && weeklyResult.data) {
+                    weeklyResult.data.forEach(row => {
+                        const repId = row.replicate_id;
+                        // 确保结构存在（理论上上面已经处理了，但为了安全）
+                        if (!collectionData[repId]) collectionData[repId] = {};
+
+                        if (collectionData[repId]) {
+                            indicators.forEach(ind => {
+                                if (ind.frequency === 'weekly') {
+                                    // 修正：数据库列名已变为中文，需通过翻译映射获取
+                                    // 强制使用 'zh' 配置
+                                    const cnName = translations['zh'].indicators[ind.field];
+                                    // 尝试获取值（处理可能的大小写或Trim问题，虽然理论上应完全匹配）
+                                    const val = row[cnName];
+                                    if (val !== undefined && val !== null) {
+                                        collectionData[repId][ind.field] = val;
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+
+                if (!dailyResult.error && dailyResult.data) {
+                    dailyResult.data.forEach(row => {
+                        const repId = row.replicate_id;
+                        if (!collectionData[repId]) collectionData[repId] = {};
+
+                        if (collectionData[repId]) {
+                            indicators.forEach(ind => {
+                                if (ind.frequency === 'daily') {
+                                    // 修正：使用中文列名读取
+                                    const cnName = translations['zh'].indicators[ind.field];
+                                    const val = row[cnName];
+                                    if (val !== undefined && val !== null) {
+                                        collectionData[repId][ind.field] = val;
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+
+                console.log('数据加载完成');
+                // 刷新当前视图
+                loadReplicateData(currentReplicate);
+
+            } catch (error) {
+                console.error('数据加载失败:', error);
+            }
         }
 
-        init();
+        // 事件监听
+        document.getElementById('saveBtn').onclick = saveToDatabase;
+
+        // 初始化应用
+        async function init() {
+            try {
+                console.log('开始初始化...');
+
+                await initAuth();
+                console.log('认证完成');
+
+                initDataStructure();
+                console.log('数据结构初始化完成');
+
+                generateReplicateSelector();
+                console.log('样本选择器生成完成');
+
+                generateInputFields();
+                console.log('输入框生成完成');
+
+                await loadFromDatabase();
+                console.log('数据库数据加载完成');
+
+                loadReplicateData(currentReplicate);
+                console.log('初始化完成！');
+
+            } catch (error) {
+                console.error('初始化失败:', error);
+                alert('初始化失败: ' + error.message);
+            }
+        }
+
+        // 启动应用
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
     </script>
 </body>
 
