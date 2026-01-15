@@ -1,4 +1,4 @@
--- 1. 删除旧表（如果存在）
+-- 1. 删除旧表（警告：数据将清空）
 DROP TABLE IF EXISTS public.weekly_phenotypes;
 DROP TABLE IF EXISTS public.daily_phenotypes;
 
@@ -11,7 +11,7 @@ CREATE TABLE public.weekly_phenotypes (
     week INTEGER NOT NULL,
     replicate_id INTEGER NOT NULL,
     
-    -- 中文指标列 (数值类型，允许为空)
+    -- 手动填报指标 + 自动计算指标
     "生长量" NUMERIC,
     "茎粗" NUMERIC,
     "叶片总数" NUMERIC,
@@ -20,13 +20,14 @@ CREATE TABLE public.weekly_phenotypes (
     
     "当前开花序数" NUMERIC,
     "单头累计坐果穗数" NUMERIC,
-    "单头累计坐果粒数" NUMERIC,
+    "单头累计坐果粒数" NUMERIC, -- 自动计算: SUM(本周单头新增坐果数)
     "本周单头新增坐果数" NUMERIC,
+    "单头总采收果穗数" NUMERIC, -- 暂时作为手动填报项 (如果需要自动计算请后续修改)
     "本周单头采收果粒数" NUMERIC,
     
     "单粒果重" NUMERIC,
     "单穗重" NUMERIC,
-    "单头产量" NUMERIC,
+    "单头产量" NUMERIC, -- 自动计算: SUM(单穗重)
     "可溶性固形物（糖）" NUMERIC,
     "酸度" NUMERIC,
     
@@ -52,7 +53,6 @@ CREATE TABLE public.daily_phenotypes (
     "回液pH值" NUMERIC,
     "灌溉EC" NUMERIC,
     "灌溉pH" NUMERIC,
-    
     "每天产量" NUMERIC,
     "单周产量" NUMERIC,
     "总产量" NUMERIC,
@@ -63,11 +63,11 @@ CREATE TABLE public.daily_phenotypes (
     CONSTRAINT daily_phenotypes_unique UNIQUE (user_id, date, replicate_id)
 );
 
--- 4. 开启行级安全策略 (RLS)
+-- 4. 开启 RLS
 ALTER TABLE public.weekly_phenotypes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.daily_phenotypes ENABLE ROW LEVEL SECURITY;
 
--- 5. 创建通用读写策略 (允许所有登录用户读写)
+-- 5. 创建通用读写策略
 CREATE POLICY "Allow authenticated users to select weekly" ON public.weekly_phenotypes FOR SELECT USING (auth.role() = 'authenticated');
 CREATE POLICY "Allow authenticated users to insert weekly" ON public.weekly_phenotypes FOR INSERT WITH CHECK (auth.role() = 'authenticated');
 CREATE POLICY "Allow authenticated users to update weekly" ON public.weekly_phenotypes FOR UPDATE USING (auth.role() = 'authenticated');
@@ -77,3 +77,41 @@ CREATE POLICY "Allow authenticated users to select daily" ON public.daily_phenot
 CREATE POLICY "Allow authenticated users to insert daily" ON public.daily_phenotypes FOR INSERT WITH CHECK (auth.role() = 'authenticated');
 CREATE POLICY "Allow authenticated users to update daily" ON public.daily_phenotypes FOR UPDATE USING (auth.role() = 'authenticated');
 CREATE POLICY "Allow authenticated users to delete daily" ON public.daily_phenotypes FOR DELETE USING (auth.role() = 'authenticated');
+
+-- 6. 创建触发器函数：自动计算累积指标
+CREATE OR REPLACE FUNCTION update_weekly_calculations()
+RETURNS TRIGGER AS $$
+DECLARE
+    accum_grain NUMERIC;
+    accum_yield NUMERIC;
+BEGIN
+    -- 计算 单头累计坐果粒数 = SUM(本周单头新增坐果数)
+    SELECT COALESCE(SUM("本周单头新增坐果数"), 0)
+    INTO accum_grain
+    FROM public.weekly_phenotypes
+    WHERE user_id = NEW.user_id
+      AND replicate_id = NEW.replicate_id
+      AND (year < NEW.year OR (year = NEW.year AND week < NEW.week));
+    
+    NEW."单头累计坐果粒数" := accum_grain + COALESCE(NEW."本周单头新增坐果数", 0);
+
+    -- 计算 单头产量 = SUM(单穗重)
+    SELECT COALESCE(SUM("单穗重"), 0)
+    INTO accum_yield
+    FROM public.weekly_phenotypes
+    WHERE user_id = NEW.user_id
+      AND replicate_id = NEW.replicate_id
+      AND (year < NEW.year OR (year = NEW.year AND week < NEW.week));
+      
+    NEW."单头产量" := accum_yield + COALESCE(NEW."单穗重", 0);
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 7. 绑定触发器
+CREATE TRIGGER trigger_update_weekly_calc
+BEFORE INSERT OR UPDATE
+ON public.weekly_phenotypes
+FOR EACH ROW
+EXECUTE FUNCTION update_weekly_calculations();

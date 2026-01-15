@@ -61,7 +61,9 @@ var translations = {
 			// 每周填报指标
 			current_flower_order: '当前开花序数',
 			accum_fruit_ear_count: '单头累计坐果穗数',
+			accum_grain_count: '单头累计坐果粒数',
 			new_grain_count: '本周单头新增坐果数',
+			total_harvest_ear_count: '单头总采收果穗数',
 			weekly_harvest_count: '本周单头采收果粒数',
 			single_grain_g: '单粒果重',
 			ear_weight_g: '单穗重',
@@ -173,33 +175,35 @@ var indicatorsConfig = [
 	{ field: 'leaf_length_cm', unit: 'cm', unitEn: 'cm', min: 20, max: 60, step: 0.1, defaultValue: 20, frequency: 'weekly' },
 	{ field: 'leaf_width_cm', unit: 'cm', unitEn: 'cm', min: 5, max: 60, step: 0.1, defaultValue: 5, frequency: 'weekly' },
 
-	// 用户最新 9 项顺序:
 	// 1. 当前开花序数 [0-60]
 	{ field: 'current_flower_order', unit: '串', unitEn: 'order', min: 0, max: 60, step: 1, defaultValue: 3, frequency: 'weekly' },
 	// 2. 单头累计坐果穗数 [0-60]
 	{ field: 'accum_fruit_ear_count', unit: '个', unitEn: 'pcs', min: 0, max: 60, step: 1, defaultValue: 0, frequency: 'weekly' },
-	// 3. 本周单头新增坐果数 [0-30]
+	// 3. 单头累计坐果粒数 (自动计算) [只读/统计]
+	{ field: 'accum_grain_count', unit: '个', unitEn: 'pcs', min: 0, max: 10000, step: 1, isStatistic: true, frequency: 'weekly' },
+	// 4. 本周单头新增坐果数 [0-30]
 	{ field: 'new_grain_count', unit: '个', unitEn: 'pcs', min: 0, max: 30, step: 1, defaultValue: 0, frequency: 'weekly' },
-	// 4. 本周单头采收果粒数 [0-720] (注意：原 weekly_harvest_count 改名)
+	// 5. 单头总采收果穗数 [0-60]
+	{ field: 'total_harvest_ear_count', unit: '个', unitEn: 'pcs', min: 0, max: 60, step: 1, defaultValue: 0, frequency: 'weekly' },
+	// 6. 本周单头采收果粒数 [0-720]
 	{ field: 'weekly_harvest_count', unit: '个', unitEn: 'pcs', min: 0, max: 720, step: 1, defaultValue: 0, frequency: 'weekly' },
-	// 5. 单粒果重 [0-300]
+	// 7. 单粒果重 [0-300]
 	{ field: 'single_grain_g', unit: 'g', unitEn: 'g', min: 0, max: 300, step: 0.1, defaultValue: 5, frequency: 'weekly' },
-	// 6. 单穗重 [0-280]
+	// 8. 单穗重 [0-280]
 	{ field: 'ear_weight_g', unit: 'g', unitEn: 'g', min: 0, max: 280, step: 1, defaultValue: 0, frequency: 'weekly' },
-	// 7. 单头产量 - 自动计算字段 (由数据库触发器计算: SUM(单穗重) 累计)
-	{ field: 'single_head_yield_g', unit: 'g', unitEn: 'g', min: 0, max: 100000, step: 10, defaultValue: 0, isStatistic: true, frequency: 'weekly' },
-	// 8. 可溶性固形物（糖）[0-13]
+	// 9. 单头产量 (自动计算) [只读/统计]
+	{ field: 'single_head_yield_g', unit: 'g', unitEn: 'g', min: 0, max: 100000, step: 10, isStatistic: true, frequency: 'weekly' },
+	// 10. 可溶性固形物（糖）[0-13]
 	{ field: 'brix', unit: '-', unitEn: '-', min: 0, max: 13, step: 0.1, defaultValue: 4, frequency: 'weekly' },
-	// 9. 酸度 [无限制]
+	// 11. 酸度 [无限制]
 	{ field: 'acidity', unit: '-', unitEn: '-', min: 0, max: 100, step: 0.1, defaultValue: 0, frequency: 'weekly' },
 
 	// 累计数据/被移除数据 (隐藏)
 	{ field: 'potential_flower_count', unit: '串', unitEn: 'clusters', min: 0, max: 18, step: 1, defaultValue: 8, isStatistic: true, frequency: 'weekly' },
-	{ field: 'accum_ear_count', unit: '个', unitEn: 'pcs', min: 0, max: 60, step: 1, defaultValue: 0, isStatistic: true, frequency: 'weekly' }, // 年头累计 (旧的累计)
+	{ field: 'accum_ear_count', unit: '个', unitEn: 'pcs', min: 0, max: 60, step: 1, defaultValue: 0, isStatistic: true, frequency: 'weekly' },
 	{ field: 'grain_count_stat', unit: '个', unitEn: 'pcs', min: 0, max: 720, step: 1, defaultValue: 0, isStatistic: true, frequency: 'weekly' },
-	{ field: 'total_harvest_count', unit: '个', unitEn: 'pcs', min: 0, max: 60, step: 1, defaultValue: 0, isStatistic: true, frequency: 'weekly' }, // 这次被用户移除了，设为隐藏
+	{ field: 'total_harvest_count', unit: '个', unitEn: 'pcs', min: 0, max: 60, step: 1, defaultValue: 0, isStatistic: true, frequency: 'weekly' },
 	{ field: 'total_yield_stat', unit: 'g', unitEn: 'g', min: 0, max: 10000, step: 1, defaultValue: 0, isStatistic: true, frequency: 'weekly' },
-	{ field: 'accum_grain_count', unit: '个', unitEn: 'pcs', min: 0, max: 2000, step: 1, defaultValue: 0, isStatistic: true, frequency: 'weekly' }, // 新增: 单头累计坐果粒数 (自动计算)
 
 	// --- Daily Indicators (每天需填报) ---
 	// 0. 灌溉量 [0-3000] (用户要求加回第一位)
