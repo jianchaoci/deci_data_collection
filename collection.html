@@ -501,6 +501,9 @@
                     replicate_id: currentReplicate
                 };
 
+                // 注意: "单头累计坐果粒数" 由 Supabase 数据库触发器自动计算
+                // 前端只需提交原始测量值，无需在此处计算
+
                 // 收集数据
                 const currentData = collectionData[currentReplicate];
                 indicators.forEach(ind => {

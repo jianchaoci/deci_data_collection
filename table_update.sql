@@ -20,6 +20,7 @@ CREATE TABLE public.weekly_phenotypes (
     
     "当前开花序数" NUMERIC,
     "单头累计坐果穗数" NUMERIC,
+    "单头累计坐果粒数" NUMERIC,
     "本周单头新增坐果数" NUMERIC,
     "本周单头采收果粒数" NUMERIC,
     

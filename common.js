@@ -186,8 +186,8 @@ var indicatorsConfig = [
 	{ field: 'single_grain_g', unit: 'g', unitEn: 'g', min: 0, max: 300, step: 0.1, defaultValue: 5, frequency: 'weekly' },
 	// 6. 单穗重 [0-280]
 	{ field: 'ear_weight_g', unit: 'g', unitEn: 'g', min: 0, max: 280, step: 1, defaultValue: 0, frequency: 'weekly' },
-	// 7. 单头产量 [无限制]
-	{ field: 'single_head_yield_g', unit: 'g', unitEn: 'g', min: 0, max: 10000, step: 10, defaultValue: 0, frequency: 'weekly' },
+	// 7. 单头产量 - 自动计算字段 (由数据库触发器计算: SUM(单穗重) 累计)
+	{ field: 'single_head_yield_g', unit: 'g', unitEn: 'g', min: 0, max: 100000, step: 10, defaultValue: 0, isStatistic: true, frequency: 'weekly' },
 	// 8. 可溶性固形物（糖）[0-13]
 	{ field: 'brix', unit: '-', unitEn: '-', min: 0, max: 13, step: 0.1, defaultValue: 4, frequency: 'weekly' },
 	// 9. 酸度 [无限制]
@@ -199,6 +199,7 @@ var indicatorsConfig = [
 	{ field: 'grain_count_stat', unit: '个', unitEn: 'pcs', min: 0, max: 720, step: 1, defaultValue: 0, isStatistic: true, frequency: 'weekly' },
 	{ field: 'total_harvest_count', unit: '个', unitEn: 'pcs', min: 0, max: 60, step: 1, defaultValue: 0, isStatistic: true, frequency: 'weekly' }, // 这次被用户移除了，设为隐藏
 	{ field: 'total_yield_stat', unit: 'g', unitEn: 'g', min: 0, max: 10000, step: 1, defaultValue: 0, isStatistic: true, frequency: 'weekly' },
+	{ field: 'accum_grain_count', unit: '个', unitEn: 'pcs', min: 0, max: 2000, step: 1, defaultValue: 0, isStatistic: true, frequency: 'weekly' }, // 新增: 单头累计坐果粒数 (自动计算)
 
 	// --- Daily Indicators (每天需填报) ---
 	// 0. 灌溉量 [0-3000] (用户要求加回第一位)
