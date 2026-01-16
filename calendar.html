@@ -7,115 +7,81 @@
     <title>📅 采集日历 - 得希表型采集系统</title>
     <link rel="stylesheet" href="common.css?v=fix1">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .calendar-card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 8px 32px rgba(5, 150, 105, 0.12);
-            border: 1px solid rgba(5, 150, 105, 0.15);
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.92) 100%);
+            border-radius: var(--radius-2xl, 32px);
+            padding: 36px;
+            box-shadow: var(--shadow-lg, 0 10px 25px rgba(0, 0, 0, 0.05), 0 20px 40px rgba(16, 185, 129, 0.1));
+            border: 1px solid rgba(255, 255, 255, 0.7);
             max-width: 1000px;
             margin: 0 auto;
+            backdrop-filter: blur(20px);
+            min-height: 600px;
+            /* Ensure height for chart */
         }
 
         .calendar-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         .month-nav {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 16px;
         }
 
         .month-nav button {
-            background: none;
-            border: none;
-            font-size: 1.2rem;
-            color: #059669;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            font-size: 1rem;
+            color: var(--color-primary-600, #059669);
             cursor: pointer;
-            padding: 5px 10px;
-            border-radius: 8px;
-            transition: all 0.2s ease;
+            padding: 10px 18px;
+            border-radius: var(--radius-xl, 24px);
+            transition: var(--transition-normal, 250ms cubic-bezier(0.4, 0, 0.2, 1));
+            font-weight: 600;
         }
 
         .month-nav button:hover {
-            background: #ecfdf5;
+            background: linear-gradient(135deg, var(--color-primary-500, #10b981), var(--color-primary-600, #059669));
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md, 0 4px 6px rgba(0, 0, 0, 0.04), 0 10px 15px rgba(16, 185, 129, 0.12));
         }
 
         .current-date {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: 700;
-            color: #064e3b;
+            color: var(--color-primary-800, #064e3b);
+            background: linear-gradient(135deg, var(--color-primary-700, #047857), var(--color-primary-500, #10b981));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            min-width: 180px;
+            text-align: center;
         }
 
-        .weeks-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-            gap: 15px;
-        }
-
-        .week-item {
-            aspect-ratio: 1;
-            border-radius: 12px;
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            color: #374151;
-            transition: all 0.2s ease;
+        /* Chart Container */
+        .chart-container {
             position: relative;
-        }
-
-        .week-item.has-data {
-            background: #d1fae5;
-            border-color: #6ee7b7;
-            color: #065f46;
-            box-shadow: 0 2px 4px rgba(5, 150, 105, 0.1);
-        }
-
-        .week-item.current-week {
-            border: 2px solid #10b981;
-        }
-
-        .week-label {
-            font-size: 0.8rem;
-            color: #9ca3af;
-            margin-bottom: 4px;
-        }
-
-        .week-item.has-data .week-label {
-            color: #059669;
-        }
-
-        .week-number {
-            font-size: 1.5rem;
-        }
-
-        .status-indicator {
-            width: 8px;
-            height: 8px;
-            background: #10b981;
-            border-radius: 50%;
-            margin-top: 5px;
-            opacity: 0;
-        }
-
-        .week-item.has-data .status-indicator {
-            opacity: 1;
+            height: 450px;
+            width: 100%;
         }
 
         .loading-placeholder {
             text-align: center;
-            padding: 40px;
-            color: #6b7280;
-            grid-column: 1 / -1;
+            padding: 50px 20px;
+            color: var(--color-neutral-500, #737373);
+            font-size: 1rem;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
     </style>
 </head>
@@ -124,38 +90,31 @@
     <!-- Navigation Bar -->
     <nav class="nav-bar">
         <div class="nav-links">
-            <a href="index.html" class="nav-link" data-page="home" data-lang="nav.home">🏠 首页</a>
-            <a href="calendar.html" class="nav-link active" data-page="calendar" data-lang="nav.calendar">📅 采集日历</a>
-            <a href="collection.html" class="nav-link" data-page="collection" data-lang="nav.collection">📊 数据采集</a>
-            <a href="statistics.html" class="nav-link" data-page="statistics" data-lang="nav.statistics">📈 统计数量</a>
-            <a href="trends.html" class="nav-link" data-page="trends" data-lang="nav.trends">📉 趋势分析</a>
+            <a href="index.html" class="nav-link">🏠 首页</a>
+            <a href="calendar.html" class="nav-link" data-page="calendar">📅 采集日历</a>
+            <a href="collection.html" class="nav-link" data-page="collection">📊 数据采集</a>
+            <a href="trends.html" class="nav-link" data-page="trends">📈 统计分析</a>
         </div>
-        <div style="display: flex; gap: 10px; align-items: center;">
-            <button class="nav-link" id="authBtn" style="border: 1px solid white; cursor: pointer; display: none;">🔗
-                登录</button>
-            <button class="lang-switch" id="langSwitch" style="position: static;">EN</button>
+        <div class="user-area" id="navUserArea" style="display: flex; gap: 10px; align-items: center;">
+            <button class="lang-switch" id="langSwitch" style="display: none;">🌐 EN</button>
         </div>
     </nav>
 
-    <!-- Page Header -->
-    <div class="page-header">
-        <h1 class="page-title" data-lang="calendarTitle">📅 采集日历</h1>
-        <p class="page-subtitle" data-lang="calendarSubtitle">查看和管理数据采集历史，追踪每日采集进度</p>
-    </div>
 
     <!-- Main Container -->
     <div class="main-container">
         <div class="calendar-card">
             <div class="calendar-header">
                 <div class="month-nav">
-                    <button id="prevYear">◀ <span data-lang="prevYear">去年</span></button>
-                    <span class="current-date" id="currentYearDisplay">2025</span>
-                    <button id="nextYear"><span data-lang="nextYear">明年</span> ▶</button>
+                    <button id="prevMonth">◀ <span data-lang="prevMonth">上月</span></button>
+                    <span class="current-date" id="currentDateDisplay">2026年 01月</span>
+                    <button id="nextMonth"><span data-lang="nextMonth">下月</span> ▶</button>
                 </div>
             </div>
 
-            <div class="weeks-grid" id="weeksGrid">
-                <div class="loading-placeholder" data-lang="loading">加载中...</div>
+            <div class="chart-container" id="chartWrapper">
+                <canvas id="calendarChart"></canvas>
+                <div class="loading-placeholder" id="loadingIndicator" data-lang="loading">加载中...</div>
             </div>
         </div>
     </div>
@@ -165,132 +124,242 @@
         // Set active navigation
         setActiveNav('calendar');
 
-        // Add translations
-        translations.zh.prevYear = '去年';
-        translations.zh.nextYear = '明年';
-        translations.zh.week = '周';
+        // Add specific translations for this page
+        translations.zh.prevMonth = '上月';
+        translations.zh.nextMonth = '下月';
+        translations.zh.dailyLabel = '日采集 (Daily)';
+        translations.zh.weeklyLabel = '周采集 (Weekly)';
 
-        translations.en.prevYear = 'Prev Year';
-        translations.en.nextYear = 'Next Year';
-        translations.en.week = 'Week';
+        translations.en.prevMonth = 'Prev Month';
+        translations.en.nextMonth = 'Next Month';
+        translations.en.dailyLabel = 'Daily Data';
+        translations.en.weeklyLabel = 'Weekly Data';
 
-        let currentYear = getBeijingTime().getFullYear();
-        let collectionData = {};
+        // State
+        let currentMonthDate = getBeijingTime(); // Use first day of month logic later
+        currentMonthDate.setDate(1); // Default to 1st of current month
+        let calendarChart = null;
 
-        const grid = document.getElementById('weeksGrid');
-        const yearDisplay = document.getElementById('currentYearDisplay');
+        const dateDisplay = document.getElementById('currentDateDisplay');
+        const loadingEl = document.getElementById('loadingIndicator');
 
+        // Initial Header Update
         function updateHeader() {
-            yearDisplay.textContent = `${currentYear}年`;
-            if (currentLang === 'en') {
-                yearDisplay.textContent = `${currentYear}`;
+            const year = currentMonthDate.getFullYear();
+            const month = currentMonthDate.getMonth() + 1;
+
+            if (currentLang === 'zh') {
+                dateDisplay.textContent = `${year}年 ${month.toString().padStart(2, '0')}月`;
+            } else {
+                const monthName = currentMonthDate.toLocaleString('en-US', { month: 'long' });
+                dateDisplay.textContent = `${monthName} ${year}`;
             }
-
-            // Update button text to specific years
-            const prevBtn = document.getElementById('prevYear');
-            const nextBtn = document.getElementById('nextYear');
-
-            if (prevBtn) prevBtn.textContent = `◀ ${currentYear - 1}`;
-            if (nextBtn) nextBtn.textContent = `${currentYear + 1} ▶`;
         }
 
-        function generateCalendar(year) {
-            grid.innerHTML = '';
-            const today = getBeijingTime();
-            const currentWeek = getWeekNumber(today);
-            const isCurrentYear = year === today.getFullYear();
+        // Generate Array of Days in Month
+        function getDaysInMonth(date) {
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            const days = new Date(year, month + 1, 0).getDate();
+            return Array.from({ length: days }, (_, i) => i + 1);
+        }
+
+        // Render Chart
+        function renderChart(dailyMap, weeklyMap) {
+            const ctx = document.getElementById('calendarChart').getContext('2d');
+            const days = getDaysInMonth(currentMonthDate);
+
+            // Prepare Data Arrays (Lengths match days in month)
+            // dailyMap: { 1: true, 5: true ... } -> [1, 0, 0, 0, 1 ...]
+            const dailyData = days.map(d => dailyMap[d] ? 1 : 0);
+            const weeklyData = days.map(d => weeklyMap[d] ? 1 : 0);
 
             const lang = translations[currentLang];
-            const weekLabel = lang.week || '周';
 
-            for (let i = 1; i <= 53; i++) {
-                const weekItem = document.createElement('div');
-                weekItem.className = 'week-item';
-
-                // Check if this week has data
-                let hasData = false;
-                // In guest mode, no data
-                if (collectionData && Object.keys(collectionData).length > 0) {
-                    Object.keys(collectionData).forEach(dateStr => {
-                        const date = new Date(dateStr);
-                        if (date.getFullYear() === year && getWeekNumber(date) === i) {
-                            hasData = true;
-                        }
-                    });
-                }
-
-                if (hasData) {
-                    weekItem.classList.add('has-data');
-                }
-
-                if (isCurrentYear && i === currentWeek) {
-                    weekItem.classList.add('current-week');
-                }
-
-                weekItem.innerHTML = `
-					<span class="week-label">${weekLabel}</span>
-					<span class="week-number">${i}</span>
-					<div class="status-indicator"></div>
-				`;
-
-                grid.appendChild(weekItem);
+            if (calendarChart) {
+                calendarChart.destroy();
             }
+
+            calendarChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: days,
+                    datasets: [
+                        {
+                            label: lang.dailyLabel || 'Daily',
+                            data: dailyData,
+                            backgroundColor: '#8B5CF6', // Purple
+                            borderColor: '#7C3AED',
+                            borderWidth: 1,
+                            borderRadius: 4,
+                            barPercentage: 0.6,
+                        },
+                        {
+                            label: lang.weeklyLabel || 'Weekly',
+                            data: weeklyData,
+                            backgroundColor: '#10B981', // Green
+                            borderColor: '#059669',
+                            borderWidth: 1,
+                            borderRadius: 4,
+                            barPercentage: 0.6,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            stacked: true,
+                            grid: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: currentLang === 'zh' ? '日期 (几号)' : 'Date'
+                            }
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            max: 2.2, // Fix height slightly above 2 since max possible stack is 2
+                            ticks: {
+                                display: false, // Hide numeric values as it's boolean logic
+                                stepSize: 1
+                            },
+                            grid: {
+                                display: true,
+                                color: 'rgba(0, 0, 0, 0.05)',
+                                drawBorder: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'rectRounded'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return context.dataset.label + ': ' + (context.raw > 0 ? '✅' : '-');
+                                }
+                            }
+                        }
+                    }
+                }
+            });
         }
 
-        document.getElementById('prevYear').addEventListener('click', () => {
-            currentYear--;
-            updateHeader();
-            loadCollectionHistory();
-        });
+        // Load Data
+        async function loadMonthData() {
+            loadingEl.style.display = 'block';
+            if (calendarChart) {
+                calendarChart.clear();
+            }
 
-        document.getElementById('nextYear').addEventListener('click', () => {
-            currentYear++;
-            updateHeader();
-            loadCollectionHistory();
-        });
-
-        // Load collection history
-        async function loadCollectionHistory() {
-            grid.innerHTML = `<div class="loading-placeholder" data-lang="loading">${currentLang === 'zh' ? '加载中...' : 'Loading...'}</div>`;
-
-            // If guest mode / not logged in, just show empty calendar
             if (!currentUser || currentUser.is_guest) {
-                collectionData = {};
-                generateCalendar(currentYear);
+                loadingEl.style.display = 'none';
+                renderChart({}, {});
                 return;
             }
 
             try {
-                const startDate = `${currentYear}-01-01`;
-                const endDate = `${currentYear}-12-31`;
+                // Calculate Start and End Date of the specific month
+                const year = currentMonthDate.getFullYear();
+                const month = currentMonthDate.getMonth(); // 0-indexed
 
-                const { data, error } = await supabase
-                    .from('phenotype_records')
+                // Format for DB query: YYYY-MM-DD
+                // Start: first day of month
+                const startDate = new Date(year, month, 1);
+                const startDateStr = startDate.toISOString().split('T')[0]; // simple ISO is UTC but for dates usually OK if we are careful. 
+                // Better local format:
+                const localStartDateStr = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+
+                // End: last day of month
+                const endDate = new Date(year, month + 1, 0);
+                const localEndDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${endDate.getDate()}`;
+
+                console.log(`Loading data for range: ${localStartDateStr} to ${localEndDateStr}`);
+
+                // 1. Fetch Daily Data (by date)
+                const dailyRes = await supabase
+                    .from('daily_phenotypes')
                     .select('date')
                     .eq('user_id', currentUser.id)
-                    .gte('date', startDate)
-                    .lte('date', endDate);
+                    .gte('date', localStartDateStr)
+                    .lte('date', localEndDateStr);
 
-                if (error) throw error;
+                // 2. Fetch Weekly Data (by created_at)
+                // Note: Weekly data doesn't have a 'date' column, so we use 'created_at'.
+                const weeklyRes = await supabase
+                    .from('weekly_phenotypes')
+                    .select('created_at')
+                    .eq('user_id', currentUser.id)
+                    .gte('created_at', wrapperDateToISO(startDate)) // Use approximate ISO range
+                    .lte('created_at', wrapperDateToISO(new Date(year, month + 1, 1))); // Up to next month start
 
-                collectionData = {};
-                if (data) {
-                    data.forEach(row => {
-                        collectionData[row.date] = 1;
+                if (dailyRes.error) throw dailyRes.error;
+                if (weeklyRes.error) throw weeklyRes.error;
+
+                // Process Daily Data -> Map of DayNumber: true
+                const dailyMap = {};
+                if (dailyRes.data) {
+                    dailyRes.data.forEach(row => {
+                        const d = new Date(row.date);
+                        dailyMap[d.getDate()] = true;
                     });
                 }
 
-                generateCalendar(currentYear);
-            } catch (error) {
-                console.error('Error loading history:', error);
-                grid.innerHTML = `<div class="loading-placeholder">Error: ${error.message}</div>`;
+                // Process Weekly Data -> Map of DayNumber: true
+                const weeklyMap = {};
+                if (weeklyRes.data) {
+                    weeklyRes.data.forEach(row => {
+                        const d = new Date(row.created_at);
+                        weeklyMap[d.getDate()] = true;
+                    });
+                }
+
+                renderChart(dailyMap, weeklyMap);
+
+            } catch (err) {
+                console.error("Error loading calendar data:", err);
+                loadingEl.textContent = `Error: ${err.message}`;
+            } finally {
+                loadingEl.style.display = 'none';
             }
         }
 
+        // Helper: Safe ISO string for constraints without timezone issues 
+        // actually Supabase expects ISO strings for timestamps.
+        function wrapperDateToISO(date) {
+            return date.toISOString();
+        }
+
+        // Listeners
+        document.getElementById('prevMonth').addEventListener('click', () => {
+            currentMonthDate.setMonth(currentMonthDate.getMonth() - 1);
+            updateHeader();
+            loadMonthData();
+        });
+
+        document.getElementById('nextMonth').addEventListener('click', () => {
+            currentMonthDate.setMonth(currentMonthDate.getMonth() + 1);
+            updateHeader();
+            loadMonthData();
+        });
+
+        // Initialize
         async function init() {
             updateHeader();
             const session = await initAuth();
-            await loadCollectionHistory();
+            if (session) {
+                currentUser = session.user;
+            }
+            loadMonthData();
         }
 
         init();

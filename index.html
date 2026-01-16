@@ -4,292 +4,347 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>🌱 得希表型采集系统</title>
-    <link rel="stylesheet" href="common.css">
+    <title>🌿 项目选择 - 得希表型采集系统</title>
+    <link rel="stylesheet" href="common.css?v=fix40">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        .welcome-section {
-            text-align: center;
-            padding: 60px 20px;
-        }
-
-        .feature-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            margin-top: 20px;
-            max-width: 1100px;
-            margin-left: auto;
-            margin-right: auto;
-            padding: 20px;
-        }
-
-        .feature-card {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 24px;
-            padding: 40px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            text-decoration: none;
-            color: inherit;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            text-align: left;
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-        }
-
-        /* Hover Effects */
-        .feature-card:hover {
-            transform: translateY(-12px);
-            box-shadow: 0 20px 40px rgba(5, 150, 105, 0.2);
-            border-color: rgba(16, 185, 129, 0.3);
-            background: rgba(255, 255, 255, 0.98);
-        }
-
-        .feature-card:hover .feature-icon-wrapper {
-            transform: scale(1.1) rotate(5deg);
-            box-shadow: 0 10px 20px rgba(5, 150, 105, 0.3);
-        }
-
-        .feature-card:hover .cta-arrow {
-            transform: translateX(5px);
-            opacity: 1;
-            color: #059669;
-        }
-
-        /* Icon Styling */
-        .feature-icon-wrapper {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #d1fae5, #ecfdf5);
-            border-radius: 20px;
+        body {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 25px;
-            transition: all 0.4s ease;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding: 20px;
         }
 
-        .feature-icon {
-            font-size: 42px;
-            line-height: 1;
+        .project-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            text-align: center;
         }
 
-        /* Card Content */
-        .feature-title {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: #064e3b;
-            margin-bottom: 12px;
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #065f46;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+
+        p {
+            color: #6b7280;
+            margin-bottom: 30px;
+        }
+
+        .project-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .project-btn {
+            background: white;
+            border: 2px solid #e5e7eb;
+            padding: 15px 20px;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            color: #374151;
+            cursor: pointer;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            width: 100%;
         }
 
-        .feature-description {
-            color: #4b5563;
+        .project-btn:hover {
+            border-color: #10b981;
+            background: #f0fdf4;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .project-btn.active {
+            border-color: #10b981;
+            background: #ecfdf5;
+            color: #065f46;
+            font-weight: 600;
+        }
+
+        .new-project-form {
+            margin-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 20px;
+            display: none;
+            /* Hidden by default */
+        }
+
+        .new-project-form.visible {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
             font-size: 1rem;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            font-weight: 500;
+            margin-bottom: 15px;
+            box-sizing: border-box;
         }
 
-        /* Feature List inside Card */
-        .card-features {
-            list-style: none;
-            padding: 0;
-            margin: 0;
+        .input-field:focus {
+            outline: none;
+            border-color: #10b981;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
             width: 100%;
+            transition: transform 0.1s;
         }
 
-        .card-features li {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background: transparent;
             color: #6b7280;
+            border: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-top: 10px;
         }
 
-        .card-features li::before {
-            content: "•";
+        .btn-secondary:hover {
             color: #10b981;
-            font-weight: bold;
-            font-size: 1.2rem;
-            margin-right: 8px;
-            line-height: 1;
+            text-decoration: underline;
         }
 
-        /* CTA Arrow */
-        .cta-arrow {
-            position: absolute;
-            top: 40px;
-            right: 40px;
-            font-size: 1.5rem;
-            color: #d1fae5;
-            transition: all 0.3s ease;
-            opacity: 0.8;
-        }
-
-        @media (max-width: 768px) {
-            .feature-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
             }
 
-            .feature-card {
-                padding: 30px;
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid #10b981;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
             }
         }
     </style>
 </head>
 
 <body>
-    <!-- Navigation Bar -->
-    <nav class="nav-bar">
-        <div class="nav-links">
-            <a href="index.html" class="nav-link active" data-page="home" data-lang="nav.home">🏠 首页</a>
-            <a href="calendar.html" class="nav-link" data-page="calendar" data-lang="nav.calendar">📅 采集日历</a>
-            <a href="collection.html" class="nav-link" data-page="collection" data-lang="nav.collection">📊 数据采集</a>
-            <a href="statistics.html" class="nav-link" data-page="statistics" data-lang="nav.statistics">📈 统计数量</a>
-            <a href="trends.html" class="nav-link" data-page="trends" data-lang="nav.trends">📉 趋势分析</a>
+    <!-- Top Right User Controls -->
+    <div id="userControls"
+        style="position: fixed; top: 20px; right: 20px; z-index: 1000; display: none; background: rgba(255,255,255,0.9); padding: 8px 12px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+        <span id="userEmailDisplay"
+            style="margin-right: 12px; color: #065f46; font-size: 0.9rem; font-weight: 500;"></span>
+        <button onclick="handleLogout()"
+            style="padding: 6px 12px; border-radius: 8px; border: 1px solid #fab1a0; background: #fff0f0; color: #e17055; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">
+            🚪 退出
+        </button>
+    </div>
+
+    <div class="project-card">
+        <div class="logo">🌱</div>
+        <h1>选择工作项目<br><span style="font-size: 1rem; font-weight: normal; color: #6b7280;">Select Active Project</span>
+        </h1>
+
+        <div id="loadingExample" style="display: none; color: #6b7280;">
+            <div class="loader"></div> 加载中...
         </div>
-        <div style="display: flex; gap: 10px; align-items: center;">
-            <button class="nav-link" id="authBtn" style="border: 1px solid white; cursor: pointer; display: none;">🔗
-                登录</button>
-            <button class="lang-switch" id="langSwitch" style="position: static;">EN</button>
+
+        <div id="authSection" style="display: none;">
+            <button class="btn-primary" onclick="window.supabase.auth.signInWithOAuth({ provider: 'google' })">登录
+                (Login)</button>
         </div>
-    </nav>
 
-    <!-- Feature Cards -->
-    <div class="main-container" style="display: flex; align-items: center; min-height: 80vh;">
-        <div class="feature-grid" style="width: 100%;">
-            <!-- Calendar Card -->
-            <a href="calendar.html" class="feature-card">
-                <div class="cta-arrow">→</div>
-                <div class="feature-icon-wrapper">
-                    <div class="feature-icon">📅</div>
-                </div>
-                <h2 class="feature-title" data-lang="nav.calendar">采集日历</h2>
-                <p class="feature-description">
-                    <span data-lang="calendarDesc">查看和管理数据采集历史，追踪采集进度。</span>
-                </p>
-                <ul class="card-features">
-                    <li data-lang="feat.cal1">月视图数据概览</li>
-                    <li data-lang="feat.cal2">每日采集状态标记</li>
-                    <li data-lang="feat.cal3">快速跳转补录数据</li>
-                </ul>
-            </a>
+        <div id="projectSection" style="display: none;">
+            <div class="project-list" id="projectList">
+                <!-- Projects will be injected here -->
+            </div>
 
-            <!-- Collection Card -->
-            <a href="collection.html" class="feature-card">
-                <div class="cta-arrow">→</div>
-                <div class="feature-icon-wrapper">
-                    <div class="feature-icon">📊</div>
-                </div>
-                <h2 class="feature-title" data-lang="nav.collection">数据采集</h2>
-                <p class="feature-description">
-                    <span data-lang="collectionDesc">记录植物生长、开花、结果等多项表型指标。</span>
-                </p>
-                <ul class="card-features">
-                    <li data-lang="feat.col1">滑块直观输入</li>
-                    <li data-lang="feat.col2">支持20+种表型指标</li>
-                    <li data-lang="feat.col3">CSV 一键导出</li>
-                </ul>
-            </a>
-
-            <!-- Statistics Card -->
-            <a href="statistics.html" class="feature-card">
-                <div class="cta-arrow">→</div>
-                <div class="feature-icon-wrapper">
-                    <div class="feature-icon">📈</div>
-                </div>
-                <h2 class="feature-title" data-lang="nav.statistics">统计数量</h2>
-                <p class="feature-description">
-                    <span data-lang="statisticsDesc">查看累积统计指标及关键数据汇总。</span>
-                </p>
-                <ul class="card-features">
-                    <li data-lang="feat.stat1">实时累计值计算</li>
-                    <li data-lang="feat.stat2">支持单/多头统计</li>
-                    <li data-lang="feat.stat3">采集总量监控</li>
-                </ul>
-            </a>
-
-            <!-- Trends Card -->
-            <a href="trends.html" class="feature-card">
-                <div class="cta-arrow">→</div>
-                <div class="feature-icon-wrapper">
-                    <div class="feature-icon">📉</div>
-                </div>
-                <h2 class="feature-title" data-lang="nav.trends">趋势分析</h2>
-                <p class="feature-description">
-                    <span data-lang="trendsDesc">可视化展示各项指标的时间趋势。</span>
-                </p>
-                <ul class="card-features">
-                    <li data-lang="feat.trend1">动态折线图展示</li>
-                    <li data-lang="feat.trend2">按月查看趋势</li>
-                    <li data-lang="feat.trend3">多指标自由切换</li>
-                </ul>
-            </a>
+            <button class="btn-secondary"
+                onclick="showModal({ title: '功能待添加', message: '创建新项目功能即将上线，敬请期待！', icon: '🚧', buttonText: '知道了' })">+
+                创建新项目 (Create New Project)</button>
         </div>
     </div>
 
-    <script src="common.js?v=fix19"></script>
+    <script src="common.js?v=fix40"></script>
     <script>
-        // Set active navigation
-        setActiveNav('home');
+        // Init
+        document.addEventListener('DOMContentLoaded', async () => {
+            const { data: { session } } = await supabase.auth.getSession();
 
-        // Add translations for descriptions and features
-        translations.zh.calendarDesc = '查看和管理数据采集历史，追踪采集进度。';
-        translations.zh.collectionDesc = '记录植物生长、开花、结果等多项表型指标。';
-        translations.zh.statisticsDesc = '查看累积统计指标及关键数据汇总。';
-        translations.zh.trendsDesc = '可视化展示各项指标的时间趋势。';
+            if (!session) {
+                document.getElementById('authSection').style.display = 'block';
+                return;
+            }
 
-        translations.zh['feat.cal1'] = '月视图数据概览';
-        translations.zh['feat.cal2'] = '每日采集状态标记';
-        translations.zh['feat.cal3'] = '快速跳转补录数据';
+            // Display User Controls
+            const userControls = document.getElementById('userControls');
+            const userEmailDisplay = document.getElementById('userEmailDisplay');
+            if (userControls && session.user) {
+                userControls.style.display = 'flex';
+                userEmailDisplay.textContent = session.user.email;
+            }
 
-        translations.zh['feat.col1'] = '滑块直观输入';
-        translations.zh['feat.col2'] = '支持20+种表型指标';
-        translations.zh['feat.col3'] = 'CSV 一键导出';
+            currentUser = session.user;
+            document.getElementById('projectSection').style.display = 'block';
+            loadProjects();
+        });
 
-        translations.zh['feat.stat1'] = '实时累计值计算';
-        translations.zh['feat.stat2'] = '支持单/多头统计';
-        translations.zh['feat.stat3'] = '采集总量监控';
+        async function handleLogout() {
+            try {
+                await supabase.auth.signOut();
+            } catch (e) {
+                console.error('Logout error:', e);
+            }
+            localStorage.clear(); // Clear all app state
+            window.location.href = 'welcome.html';
+        }
 
-        translations.zh['feat.trend1'] = '动态折线图展示';
-        translations.zh['feat.trend2'] = '按月查看趋势';
-        translations.zh['feat.trend3'] = '多指标自由切换';
 
-        translations.en.calendarDesc = 'Manage data history and track progress.';
-        translations.en.collectionDesc = 'Record plant growth, flowering and fruiting.';
-        translations.en.statisticsDesc = 'View cumulative statistics and key metrics.';
-        translations.en.trendsDesc = 'Visualize time trends of various indicators.';
+        async function loadProjects() {
+            const listFn = document.getElementById('projectList');
+            listFn.innerHTML = '<div style="color:#999;">正在获取项目列表...</div>';
 
-        translations.en['feat.cal1'] = 'Monthly Data Overview';
-        translations.en['feat.cal2'] = 'Daily Status Markers';
-        translations.en['feat.cal3'] = 'Quick Data Entry';
+            const DEFAULT_PROJECT = '翠湖温室';
 
-        translations.en['feat.col1'] = 'Intuitive Slider Input';
-        translations.en['feat.col2'] = '20+ Phenotypes';
-        translations.en['feat.col3'] = 'One-click CSV Export';
+            try {
+                // Fetch distinct project names from facility_settings
+                const { data, error } = await supabase
+                    .from('facility_settings')
+                    .select('project_name')
+                    .eq('user_id', currentUser.id);
 
-        translations.en['feat.stat1'] = 'Real-time Calculation';
-        translations.en['feat.stat2'] = 'Single/Multi Head Stats';
-        translations.en['feat.stat3'] = 'Total Volume Monitor';
+                if (error) throw error;
 
-        translations.en['feat.trend1'] = 'Dynamic Line Charts';
-        translations.en['feat.trend2'] = 'Monthly Trend View';
-        translations.en['feat.trend3'] = 'Switch Indicators';
+                let projects = data.map(p => p.project_name);
 
-        // Update language display
-        updateLanguageDisplay();
+                // Ensure '翠湖温室' is always the first option
+                if (!projects.includes(DEFAULT_PROJECT)) {
+                    projects.unshift(DEFAULT_PROJECT);
+                } else {
+                    // Move to front if exists
+                    projects = projects.filter(p => p !== DEFAULT_PROJECT);
+                    projects.unshift(DEFAULT_PROJECT);
+                }
+
+                // Render
+                renderProjects(projects);
+
+            } catch (err) {
+                console.error(err);
+                // On error, still show the default project option
+                renderProjects([DEFAULT_PROJECT]);
+            }
+        }
+
+        function renderProjects(projects) {
+            const listFn = document.getElementById('projectList');
+            listFn.innerHTML = '';
+            projects.forEach((name, index) => {
+                const btn = document.createElement('div');
+                btn.className = 'project-btn';
+                // Mark default with a star
+                const isDefault = index === 0 && name === '翠湖温室';
+                btn.innerHTML = `<span>🏡 ${name}${isDefault ? ' ⭐' : ''}</span> <span>➜</span>`;
+                btn.onclick = () => selectProject(name);
+                listFn.appendChild(btn);
+            });
+        }
+
+        function showNewProjectForm() {
+            document.getElementById('newProjectForm').classList.add('visible');
+            document.getElementById('newProjectName').focus();
+        }
+
+        function hideNewProjectForm() {
+            document.getElementById('newProjectForm').classList.remove('visible');
+            document.getElementById('newProjectName').value = '';
+        }
+
+        async function createNewProject() {
+            const name = document.getElementById('newProjectName').value.trim();
+            if (!name) return;
+
+            // Save to DB (create initial settings entry)
+            // We use default values for constants 0, 0
+            try {
+                const { error } = await supabase
+                    .from('facility_settings')
+                    .insert([{
+                        user_id: currentUser.id,
+                        project_name: name,
+                        "滴箭个数": 0,
+                        "温室面积": 0
+                    }]);
+
+                if (error) {
+                    if (error.code === '23505') { // Unique violation
+                        // Project already exists, just select it
+                        selectProject(name);
+                        return;
+                    }
+                    throw error;
+                }
+
+                selectProject(name);
+
+            } catch (err) {
+                alert('创建失败: ' + err.message);
+            }
+        }
+
+        function selectProject(name) {
+            localStorage.setItem('currentProject', name);
+            // Also update 'lastProjectName' for backward compatibility if needed
+            localStorage.setItem('lastProjectName', name);
+
+            // Redirect to collection
+            window.location.href = 'collection.html';
+        }
     </script>
 </body>
 

@@ -30,8 +30,7 @@ var translations = {
 			home: '🏠 首页',
 			calendar: '📅 采集日历',
 			collection: '📊 数据采集',
-			statistics: '📈 统计数量',
-			trends: '📉 趋势分析'
+			statistics: '📈 统计分析'
 		},
 		exportBtn: '📥 导出 CSV',
 		syncBtn: '☁️ 同步到云端',
@@ -43,7 +42,7 @@ var translations = {
 		dataCollection: '📊 指标采集',
 		statisticIndicators: '📊 累积统计指标',
 		trendAnalysis: '📈 趋势分析',
-		statisticCount: '统计数量',
+		statisticCount: '统计分析',
 		prevMonth: '◀ 上月',
 		nextMonth: '下月 ▶',
 		selectIndicator: '选择指标...',
@@ -105,8 +104,7 @@ var translations = {
 			home: '🏠 Home',
 			calendar: '📅 Calendar',
 			collection: '📊 Collection',
-			statistics: '📈 Statistics',
-			trends: '📉 Trends'
+			statistics: '📈 Statistics'
 		},
 		exportBtn: '📥 Export CSV',
 		syncBtn: '☁️ Sync to Cloud',
@@ -201,9 +199,7 @@ var indicatorsConfig = [
 	// 累计数据/被移除数据 (隐藏)
 	{ field: 'potential_flower_count', unit: '串', unitEn: 'clusters', min: 0, max: 18, step: 1, defaultValue: 8, isStatistic: true, frequency: 'weekly' },
 	{ field: 'accum_ear_count', unit: '个', unitEn: 'pcs', min: 0, max: 60, step: 1, defaultValue: 0, isStatistic: true, frequency: 'weekly' },
-	{ field: 'grain_count_stat', unit: '个', unitEn: 'pcs', min: 0, max: 720, step: 1, defaultValue: 0, isStatistic: true, frequency: 'weekly' },
-	{ field: 'total_harvest_count', unit: '个', unitEn: 'pcs', min: 0, max: 60, step: 1, defaultValue: 0, isStatistic: true, frequency: 'weekly' },
-	{ field: 'total_yield_stat', unit: 'g', unitEn: 'g', min: 0, max: 10000, step: 1, defaultValue: 0, isStatistic: true, frequency: 'weekly' },
+
 
 	// --- Daily Indicators (每天需填报) ---
 	// 0. 灌溉量 [0-3000] (用户要求加回第一位)
@@ -211,9 +207,9 @@ var indicatorsConfig = [
 	// 1. 回液量 (天) [0-8000]
 	{ field: 'reflux_ml', unit: 'ml', unitEn: 'ml', min: 0, max: 8000, step: 10, defaultValue: 0, frequency: 'daily' },
 	// 2. 滴箭个数 [无限制]
-	{ field: 'dripper_count', unit: '个', unitEn: 'pcs', min: 0, max: 1000, step: 1, defaultValue: 0, frequency: 'daily' },
-	// 3. 回液比例 [0-70]
-	{ field: 'reflux_ratio', unit: '%', unitEn: '%', min: 0, max: 70, step: 0.1, defaultValue: 0, frequency: 'daily' },
+	{ field: 'dripper_count', unit: '个', unitEn: 'pcs', min: 0, max: 1000, step: 1, defaultValue: 0, frequency: 'constant' },
+	// 3. 回液比例 [0-70] (自动计算)
+	{ field: 'reflux_ratio', unit: '%', unitEn: '%', min: 0, max: 70, step: 0.1, defaultValue: 0, isStatistic: true, frequency: 'daily' },
 	// 4. 回液EC值 [3-9]
 	{ field: 'reflux_ec', unit: 'mS/cm', unitEn: 'mS/cm', min: 3, max: 9, step: 0.1, defaultValue: 3, frequency: 'daily' },
 	// 5. 回液pH值 [4-9]
@@ -224,14 +220,14 @@ var indicatorsConfig = [
 	{ field: 'irrigation_ph', unit: '-', unitEn: '-', min: 4, max: 9, step: 0.1, defaultValue: 6, frequency: 'daily' },
 	// 8. 每天产量 (天)
 	{ field: 'daily_yield_kg', unit: 'kg', unitEn: 'kg', min: 0, max: 10000, step: 0.1, defaultValue: 0, frequency: 'daily' },
-	// 9. 单周产量 (天) - 原 weekly statistic, 现 daily input
-	{ field: 'weekly_yield_kg', unit: 'kg', unitEn: 'kg', min: 0, max: 10000, step: 0.1, defaultValue: 0, frequency: 'daily' },
-	// 10. 总产量 (天) - 原 statistic, 现 daily input
-	{ field: 'total_yield_kg', unit: 'kg', unitEn: 'kg', min: 0, max: 50000, step: 0.1, defaultValue: 0, frequency: 'daily' },
-	// 11. 温室面积 - 原 constant, 现 daily input
-	{ field: 'greenhouse_area_m2', unit: 'm²', unitEn: 'm²', min: 0, max: 10000, step: 0.1, defaultValue: 0, frequency: 'daily' },
-	// 12. 单位产量 (天) - 原 statistic, 现 daily input
-	{ field: 'unit_yield', unit: 'kg/m²', unitEn: 'kg/m²', min: 0, max: 1000, step: 0.01, defaultValue: 0, frequency: 'daily' },
+	// 9. 单周产量 (天) - (自动计算)
+	{ field: 'weekly_yield_kg', unit: 'kg', unitEn: 'kg', min: 0, max: 10000, step: 0.1, defaultValue: 0, isStatistic: true, frequency: 'daily' },
+	// 10. 总产量 (天) - (自动计算)
+	{ field: 'total_yield_kg', unit: 'kg', unitEn: 'kg', min: 0, max: 50000, step: 0.1, defaultValue: 0, isStatistic: true, frequency: 'daily' },
+	// 11. 温室面积 - 原 constant, 现 daily input -> 改回 constant
+	{ field: 'greenhouse_area_m2', unit: 'm²', unitEn: 'm²', min: 0, max: 10000, step: 0.1, defaultValue: 0, frequency: 'constant' },
+	// 12. 单位产量 (天) - (自动计算)
+	{ field: 'unit_yield', unit: 'kg/m²', unitEn: 'kg/m²', min: 0, max: 1000, step: 0.01, defaultValue: 0, isStatistic: true, frequency: 'daily' },
 	// 13. 报损量 (新)
 	{ field: 'damage_amount', unit: 'kg', unitEn: 'kg', min: 0, max: 1000, step: 0.1, defaultValue: 0, frequency: 'daily' },
 
@@ -509,11 +505,16 @@ function updateUserDisplay() {
 	if (currentUser) {
 		// Log
 		console.log('UpdateUserDisplay: User logged in, hiding authBtn');
+
 		// Hide default auth button, use profile dropdown instead
 		if (authBtn) {
 			authBtn.style.display = 'none';
 			authBtn.setAttribute('style', 'display: none !important'); // Force hide
 		}
+
+		// Hide external language switch if logged in (since it's in dropdown)
+		const extLangSwitch = document.getElementById('langSwitch');
+		if (extLangSwitch) extLangSwitch.style.display = 'none';
 
 		const container = document.createElement('div');
 		container.id = 'userProfileContainer';
@@ -595,6 +596,41 @@ function updateUserDisplay() {
 		emailDiv.textContent = currentUser.email || 'User';
 		dropdown.appendChild(emailDiv);
 
+		// Language Switch Option
+		const langOption = document.createElement('button');
+		langOption.innerHTML = currentLang === 'zh' ? '🌐 English' : '🌐 中文';
+		langOption.style.width = '100%';
+		langOption.style.padding = '10px';
+		langOption.style.cursor = 'pointer';
+		langOption.style.borderRadius = '8px';
+		langOption.style.fontSize = '0.9rem';
+		langOption.style.border = 'none';
+		langOption.style.marginBottom = '8px';
+		langOption.style.background = '#f3f4f6';
+		langOption.style.color = '#374151';
+		langOption.style.fontWeight = '600';
+		langOption.style.transition = 'all 0.2s';
+
+		langOption.onmouseover = () => langOption.style.background = '#e5e7eb';
+		langOption.onmouseout = () => langOption.style.background = '#f3f4f6';
+
+		langOption.onclick = (e) => {
+			e.stopPropagation();
+			// Switch language
+			if (currentLang === 'zh') {
+				currentLang = 'en';
+				localStorage.setItem('preferredLanguage', 'en');
+			} else {
+				currentLang = 'zh';
+				localStorage.setItem('preferredLanguage', 'zh');
+			}
+			updateLanguageDisplay();
+			// Update text immediately
+			langOption.innerHTML = currentLang === 'zh' ? '🌐 English' : '🌐 中文';
+		};
+
+		dropdown.appendChild(langOption);
+
 		// Logout Button
 		const logoutOption = document.createElement('button');
 		logoutOption.textContent = '🚪 退出登录 (Logout)';
@@ -655,11 +691,88 @@ function updateUserDisplay() {
 		userArea.appendChild(container);
 
 	} else {
-		// Not Logged In - Show login button
-		authBtn.style.display = 'inline-block';
-		authBtn.textContent = '🔗 登录';
-		authBtn.onclick = () => {
-			window.location.href = 'welcome.html';
-		};
+		// Not Logged In
+		// Show external language switch (which is hidden by default in CSS)
+		const extLangSwitch = document.getElementById('langSwitch');
+		if (extLangSwitch) extLangSwitch.style.display = 'block';
+
+		// Show login button
+		if (authBtn) {
+			authBtn.style.display = 'inline-block';
+			authBtn.textContent = '🔗 登录';
+			authBtn.onclick = () => {
+				window.location.href = 'welcome.html';
+			};
+		}
+	}
+}
+
+// Global Modal Dialog Function
+// Usage: showModal({ title: '标题', message: '内容', icon: '⚠️', buttonText: '确定' })
+function showModal(options = {}) {
+	const {
+		title = '提示',
+		message = '',
+		icon = 'ℹ️',
+		buttonText = '确定',
+		onClose = null
+	} = options;
+
+	// Remove existing modal if any
+	const existing = document.getElementById('globalModal');
+	if (existing) existing.remove();
+
+	const modal = document.createElement('div');
+	modal.id = 'globalModal';
+	modal.innerHTML = `
+		<div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
+			background: rgba(0,0,0,0.6); z-index: 99999; 
+			display: flex; align-items: center; justify-content: center;
+			animation: modalFadeIn 0.2s ease-out;">
+			<div style="background: linear-gradient(145deg, rgba(255,255,255,0.98), rgba(255,255,255,0.95)); 
+				padding: 35px 45px; border-radius: 24px; 
+				max-width: 420px; text-align: center; 
+				box-shadow: 0 25px 80px rgba(0,0,0,0.25), 0 0 0 1px rgba(16,185,129,0.1);
+				transform: scale(1); animation: modalScaleIn 0.25s ease-out;">
+				<div style="font-size: 3rem; margin-bottom: 15px;">${icon}</div>
+				<h2 style="margin: 0 0 12px 0; color: #064e3b; font-size: 1.4rem;">${title}</h2>
+				<p style="color: #555; line-height: 1.7; margin-bottom: 25px; font-size: 1rem;">${message}</p>
+				<button onclick="closeModal()" 
+					style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); 
+					color: white; border: none; padding: 14px 40px; border-radius: 30px; 
+					font-size: 1rem; font-weight: 600; cursor: pointer;
+					box-shadow: 0 4px 15px rgba(16,185,129,0.3);
+					transition: transform 0.2s, box-shadow 0.2s;">
+					${buttonText}
+				</button>
+			</div>
+		</div>
+		<style>
+			@keyframes modalFadeIn {
+				from { opacity: 0; }
+				to { opacity: 1; }
+			}
+			@keyframes modalScaleIn {
+				from { transform: scale(0.9); opacity: 0; }
+				to { transform: scale(1); opacity: 1; }
+			}
+			#globalModal button:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 6px 20px rgba(16,185,129,0.4);
+			}
+		</style>
+	`;
+
+	document.body.appendChild(modal);
+
+	// Store callback
+	modal._onClose = onClose;
+}
+
+function closeModal() {
+	const modal = document.getElementById('globalModal');
+	if (modal) {
+		if (modal._onClose) modal._onClose();
+		modal.remove();
 	}
 }
