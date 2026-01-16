@@ -429,6 +429,7 @@ function initCommon() {
 			btn.id = 'authBtn';
 			btn.className = 'nav-link';
 			btn.style.cursor = 'pointer';
+			btn.style.display = 'none'; // Default hidden to prevent flash
 			btn.textContent = '🔗 登录';
 			userArea.appendChild(btn);
 		}
