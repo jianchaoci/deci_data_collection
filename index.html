@@ -217,7 +217,8 @@
             const { data: { session } } = await supabase.auth.getSession();
 
             if (!session) {
-                document.getElementById('authSection').style.display = 'block';
+                // Not logged in? Redirect to welcome page immediately
+                window.location.href = 'welcome.html';
                 return;
             }
 
