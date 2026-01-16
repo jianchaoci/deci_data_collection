@@ -52,31 +52,57 @@
         }
 
         .project-btn {
-            background: white;
-            border: 2px solid #e5e7eb;
-            padding: 15px 20px;
-            border-radius: 16px;
-            font-size: 1.1rem;
-            color: #374151;
+            background: #ffffff;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 22px 24px;
+            border-radius: 18px;
+            font-size: 1.15rem;
+            color: #1f2937;
+            /* Gray-800 */
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            /* Bounce effect */
             display: flex;
             align-items: center;
             justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 0;
+            /* Handled by gap */
+        }
+
+        /* Gradient Accent Bar on Left */
+        .project-btn::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+            background: linear-gradient(180deg, #34d399 0%, #059669 100%);
         }
 
         .project-btn:hover {
-            border-color: #10b981;
-            background: #f0fdf4;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-color: #34d399;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px -5px rgba(16, 185, 129, 0.15);
         }
 
-        .project-btn.active {
-            border-color: #10b981;
-            background: #ecfdf5;
-            color: #065f46;
-            font-weight: 600;
+        .project-btn:active {
+            transform: scale(0.98);
+        }
+
+        .project-btn .arrow {
+            color: #d1d5db;
+            font-size: 1.2rem;
+            transition: all 0.2s;
+        }
+
+        .project-btn:hover .arrow {
+            color: #10b981;
+            transform: translateX(5px);
         }
 
         .new-project-form {
