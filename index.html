@@ -498,10 +498,29 @@
         function renderProjects(projects) {
             const listFn = document.getElementById('projectList');
             listFn.innerHTML = '';
-            projects.forEach(name => {
+            projects.forEach((name, index) => {
                 const btn = document.createElement('div');
                 btn.className = 'project-btn';
-                btn.textContent = name;
+
+                // Determine Icon
+                let icon = '📊';
+                if (name.includes('温室')) icon = '🏡';
+                if (name.includes('实验')) icon = '🔬';
+                if (name.includes('田间')) icon = '🌾';
+
+                // Default Badge
+                const isDefault = name === '翠湖温室';
+
+                btn.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <div style="font-size:1.5rem; background:#f0fdf4; width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:10px;">${icon}</div>
+                        <div style="display:flex; flex-direction:column; align-items:flex-start;">
+                            <span style="font-size:1.1rem; color:#111827;">${name}</span>
+                            ${isDefault ? '<span style="font-size:0.75rem; color:#059669;">默认工作区</span>' : ''}
+                        </div>
+                    </div>
+                    <span class="arrow">➜</span>
+                `;
                 btn.onclick = () => selectProject(name);
                 listFn.appendChild(btn);
             });
