@@ -170,11 +170,158 @@
                 transform: rotate(360deg);
             }
         }
+
+        /* Imported Styles from welcome.html */
+        .welcome-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: auto;
+            /* Adjusted */
+            padding: 20px;
+        }
+
+        .welcome-section {
+            text-align: center;
+            padding: 40px 20px 20px 20px;
+            margin-bottom: 0;
+        }
+
+        .welcome-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #059669, #047857, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.1rem;
+            color: #064e3b;
+            opacity: 0.8;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 50px 40px;
+            box-shadow: 0 8px 32px rgba(5, 150, 105, 0.12);
+            border: 1px solid rgba(5, 150, 105, 0.15);
+            max-width: 450px;
+            width: 100%;
+        }
+
+        .login-title {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #059669, #047857, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .login-subtitle {
+            font-size: 1rem;
+            color: #047857;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #064e3b;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #6ee7b7;
+            border-radius: 10px;
+            font-size: 1rem;
+            color: #064e3b;
+            background: white;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            margin-top: 10px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status-message {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+
+        .status-message.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+            display: block;
+        }
+
+        .status-message.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+            display: block;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 25px 0;
+            color: #6b7280;
+            font-size: 0.9rem;
     </style>
 </head>
 
 <body>
-    <!-- Top Right User Controls -->
+    <!-- Top Right User Controls (Visible when logged in) -->
     <div id="userControls"
         style="position: fixed; top: 20px; right: 20px; z-index: 1000; display: none; background: rgba(255,255,255,0.9); padding: 8px 12px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
         <span id="userEmailDisplay"
@@ -185,28 +332,69 @@
         </button>
     </div>
 
-    <div class="project-card">
-        <div class="logo">🌱</div>
-        <h1>选择工作项目<br><span style="font-size: 1rem; font-weight: normal; color: #6b7280;">Select Active Project</span>
-        </h1>
-
-        <div id="loadingExample" style="display: none; color: #6b7280;">
-            <div class="loader"></div> 加载中...
+    <!-- Login View (Visible when NOT logged in) -->
+    <div id="loginView"
+        style="display: none; width: 100%; max-width: 800px; margin: 0 auto; flex-direction: column; align-items: center; padding-top: 40px;">
+        <div class="welcome-section">
+            <h1 class="welcome-title">🌱 得希表型采集系统</h1>
+            <p class="welcome-subtitle">使用本系统记录和管理植物表型数据，助力精准农业研究与分析。</p>
+            <!-- GIF Display -->
+            <div
+                style="height: 250px; width: 100%; max-width: 600px; margin: 10px auto 0 auto; display: flex; align-items: center; justify-content: center;">
+                <img src="video.gif" alt="Logo Animation"
+                    style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 12px;"
+                    onerror="this.style.display='none'">
+            </div>
         </div>
-
-        <div id="authSection" style="display: none;">
-            <button class="btn-primary" onclick="window.supabase.auth.signInWithOAuth({ provider: 'google' })">登录
-                (Login)</button>
+        <div class="welcome-container" style="width: 100%;">
+            <div class="login-card">
+                <h2 class="login-title">欢迎登录</h2>
+                <p class="login-subtitle">请登录以访问系统功能</p>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label" for="email">邮箱地址</label>
+                        <input type="email" id="email" class="form-input" placeholder="your@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="password">密码</label>
+                        <input type="password" id="password" class="form-input" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="login-btn" id="loginBtn">登录</button>
+                </form>
+                <div class="divider">或</div>
+                <div style="display: flex; gap: 10px; flex-direction: column;">
+                    <button type="button" class="login-btn" id="guestBtn"
+                        style="background: white; color: #059669; border: 2px solid #059669;">👀 游客访问 (无需登录)</button>
+                    <button type="button" class="login-btn" id="registerBtn"
+                        style="background: linear-gradient(135deg, #059669, #047857);">注册新账号</button>
+                </div>
+                <div id="statusMessage" class="status-message"></div>
+            </div>
         </div>
+    </div>
 
-        <div id="projectSection" style="display: none;">
-            <div class="project-list" id="projectList">
-                <!-- Projects will be injected here -->
+    <!-- Project Selection View (Visible when Logged In) -->
+    <div id="projectView" style="display: none; width: 100%; flex-direction: column; align-items: center;">
+        <div class="project-card">
+            <div class="logo">🌱</div>
+            <h1>选择工作项目<br><span style="font-size: 1rem; font-weight: normal; color: #6b7280;">Select Active
+                    Project</span></h1>
+
+            <div id="loadingExample" style="display: none; color: #6b7280;">
+                <div class="loader"></div> 加载中...
             </div>
 
-            <button class="btn-secondary"
-                onclick="showModal({ title: '功能待添加', message: '创建新项目功能即将上线，敬请期待！', icon: '🚧', buttonText: '知道了' })">+
-                创建新项目 (Create New Project)</button>
+            <!-- Deprecated authSection removed -->
+
+            <div id="projectSection" style="display: none;">
+                <div class="project-list" id="projectList">
+                    <!-- Projects will be injected here -->
+                </div>
+
+                <button class="btn-secondary"
+                    onclick="showModal({ title: '功能待添加', message: '创建新项目功能即将上线，敬请期待！', icon: '🚧', buttonText: '知道了' })">+
+                    创建新项目 (Create New Project)</button>
+            </div>
         </div>
     </div>
 
@@ -216,23 +404,33 @@
         document.addEventListener('DOMContentLoaded', async () => {
             const { data: { session } } = await supabase.auth.getSession();
 
-            if (!session) {
-                // Not logged in? Redirect to welcome page immediately
-                window.location.href = 'welcome.html';
-                return;
-            }
-
-            // Display User Controls
+            const loginView = document.getElementById('loginView');
+            const projectView = document.getElementById('projectView');
             const userControls = document.getElementById('userControls');
             const userEmailDisplay = document.getElementById('userEmailDisplay');
-            if (userControls && session.user) {
-                userControls.style.display = 'flex';
-                userEmailDisplay.textContent = session.user.email;
-            }
 
-            currentUser = session.user;
-            document.getElementById('projectSection').style.display = 'block';
-            loadProjects();
+            if (!session) {
+                // Not logged in: Show Login View
+                if (loginView) loginView.style.display = 'flex';
+                if (projectView) projectView.style.display = 'none';
+                if (userControls) userControls.style.display = 'none';
+
+                setupLoginHandlers();
+            } else {
+                // Logged in: Show Project View
+                if (loginView) loginView.style.display = 'none';
+                if (projectView) projectView.style.display = 'flex';
+
+                if (userControls && session.user) {
+                    userControls.style.display = 'flex';
+                    userEmailDisplay.textContent = session.user.email;
+                }
+
+                currentUser = session.user;
+                // document.getElementById('projectSection').style.display = 'block'; // Handled by projectView container
+                document.getElementById('projectSection').style.display = 'block';
+                loadProjects();
+            }
         });
 
         async function handleLogout() {
@@ -241,43 +439,32 @@
             } catch (e) {
                 console.error('Logout error:', e);
             }
-            localStorage.clear(); // Clear all app state
-            window.location.href = 'welcome.html';
+            localStorage.clear();
+            window.location.reload(); // Reload to show login view
         }
-
 
         async function loadProjects() {
             const listFn = document.getElementById('projectList');
             listFn.innerHTML = '<div style="color:#999;">正在获取项目列表...</div>';
-
             const DEFAULT_PROJECT = '翠湖温室';
 
             try {
-                // Fetch distinct project names from facility_settings
                 const { data, error } = await supabase
                     .from('facility_settings')
                     .select('project_name')
                     .eq('user_id', currentUser.id);
 
                 if (error) throw error;
-
                 let projects = data.map(p => p.project_name);
-
-                // Ensure '翠湖温室' is always the first option
                 if (!projects.includes(DEFAULT_PROJECT)) {
                     projects.unshift(DEFAULT_PROJECT);
                 } else {
-                    // Move to front if exists
                     projects = projects.filter(p => p !== DEFAULT_PROJECT);
                     projects.unshift(DEFAULT_PROJECT);
                 }
-
-                // Render
                 renderProjects(projects);
-
             } catch (err) {
                 console.error(err);
-                // On error, still show the default project option
                 renderProjects([DEFAULT_PROJECT]);
             }
         }
@@ -285,66 +472,108 @@
         function renderProjects(projects) {
             const listFn = document.getElementById('projectList');
             listFn.innerHTML = '';
-            projects.forEach((name, index) => {
+            projects.forEach(name => {
                 const btn = document.createElement('div');
                 btn.className = 'project-btn';
-                // Mark default with a star
-                const isDefault = index === 0 && name === '翠湖温室';
-                btn.innerHTML = `<span>🏡 ${name}${isDefault ? ' ⭐' : ''}</span> <span>➜</span>`;
+                btn.textContent = name;
                 btn.onclick = () => selectProject(name);
                 listFn.appendChild(btn);
             });
         }
 
-        function showNewProjectForm() {
-            document.getElementById('newProjectForm').classList.add('visible');
-            document.getElementById('newProjectName').focus();
-        }
-
-        function hideNewProjectForm() {
-            document.getElementById('newProjectForm').classList.remove('visible');
-            document.getElementById('newProjectName').value = '';
-        }
-
-        async function createNewProject() {
-            const name = document.getElementById('newProjectName').value.trim();
-            if (!name) return;
-
-            // Save to DB (create initial settings entry)
-            // We use default values for constants 0, 0
-            try {
-                const { error } = await supabase
-                    .from('facility_settings')
-                    .insert([{
-                        user_id: currentUser.id,
-                        project_name: name,
-                        "滴箭个数": 0,
-                        "温室面积": 0
-                    }]);
-
-                if (error) {
-                    if (error.code === '23505') { // Unique violation
-                        // Project already exists, just select it
-                        selectProject(name);
-                        return;
-                    }
-                    throw error;
-                }
-
-                selectProject(name);
-
-            } catch (err) {
-                alert('创建失败: ' + err.message);
-            }
+        async function createProject() {
+            alert('即将上线');
         }
 
         function selectProject(name) {
             localStorage.setItem('currentProject', name);
-            // Also update 'lastProjectName' for backward compatibility if needed
             localStorage.setItem('lastProjectName', name);
-
-            // Redirect to collection
             window.location.href = 'collection.html';
+        }
+
+        // --- Login Handlers (Integrated) ---
+        function setupLoginHandlers() {
+            const loginForm = document.getElementById('loginForm');
+            const loginBtn = document.getElementById('loginBtn');
+            const registerBtn = document.getElementById('registerBtn');
+            const guestBtn = document.getElementById('guestBtn');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+
+            function showMessage(msg, isSuccess) {
+                const el = document.getElementById('statusMessage');
+                el.textContent = msg;
+                el.className = 'status-message ' + (isSuccess ? 'success' : 'error');
+                el.style.display = 'block';
+            }
+
+            // Guest
+            if (guestBtn) {
+                guestBtn.addEventListener('click', () => {
+                    localStorage.setItem('guest_mode', 'true');
+                    window.location.reload();
+                });
+            }
+
+            // Login
+            if (loginForm) {
+                loginForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const email = emailInput.value.trim();
+                    const password = passwordInput.value;
+                    if (!email || !password) return;
+
+                    loginBtn.disabled = true;
+                    loginBtn.textContent = '登录中...';
+
+                    try {
+                        const { data, error } = await supabase.auth.signInWithPassword({
+                            email, password
+                        });
+                        if (error) throw error;
+                        showMessage('登录成功！正在进入...', true);
+                        setTimeout(() => window.location.reload(), 800);
+                    } catch (error) {
+                        console.error('Login error:', error);
+                        showMessage('登录失败: ' + error.message, false);
+                        loginBtn.disabled = false;
+                        loginBtn.textContent = '登录';
+                    }
+                });
+            }
+
+            // Register
+            if (registerBtn) {
+                registerBtn.addEventListener('click', async () => {
+                    const email = emailInput.value.trim();
+                    const password = passwordInput.value;
+                    if (!email || !password) {
+                        showMessage('注册需输入邮箱和密码', false);
+                        return;
+                    }
+                    registerBtn.disabled = true;
+                    registerBtn.textContent = '注册中...';
+
+                    try {
+                        const { data, error } = await supabase.auth.signUp({
+                            email, password
+                        });
+                        if (error) throw error;
+                        if (data.session) {
+                            showMessage('注册成功！', true);
+                            setTimeout(() => window.location.reload(), 800);
+                        } else {
+                            showMessage('注册已提交，请查收邮件验证。', true);
+                            registerBtn.disabled = false;
+                            registerBtn.textContent = '注册新账号';
+                        }
+                    } catch (error) {
+                        showMessage('注册失败: ' + error.message, false);
+                        registerBtn.disabled = false;
+                        registerBtn.textContent = '注册新账号';
+                    }
+                });
+            }
         }
     </script>
 </body>
