@@ -158,7 +158,39 @@
             font-size: 0.9rem;
         }
     </style>
+    @media (max-width: 768px) {
+    .welcome-container {
+    min-height: auto;
+    padding: 15px;
+    }
 
+    .welcome-title {
+    font-size: 2.5rem;
+    }
+
+    .login-card {
+    padding: 30px 20px;
+    }
+    }
+
+    @media (max-width: 480px) {
+    .welcome-title {
+    font-size: 2rem;
+    }
+
+    .welcome-subtitle {
+    font-size: 0.95rem;
+    }
+
+    .login-card {
+    padding: 25px 15px;
+    background: rgba(255, 255, 255, 0.9); /* Slightly more opaque on mobile for readability */
+    }
+
+    .login-title {
+    font-size: 1.6rem;
+    }
+    }
 </head>
 
 <body>
