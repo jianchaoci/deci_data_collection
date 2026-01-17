@@ -323,10 +323,37 @@
     <!-- Navigation Bar -->
     <nav class="nav-bar">
         <div class="nav-links">
-            <a href="index.html" class="nav-link">🏠 首页</a>
-            <a href="calendar.html" class="nav-link" data-page="calendar">📅 采集日历</a>
-            <a href="collection.html" class="nav-link" data-page="collection">📊 数据采集</a>
-            <a href="trends.html" class="nav-link" data-page="trends">📈 统计分析</a>
+            <a href="index.html" class="nav-link" title="首页">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+            </a>
+            <a href="calendar.html" class="nav-link" data-page="calendar" title="采集日历">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+            </a>
+            <a href="collection.html" class="nav-link" data-page="collection" title="数据采集">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                </svg>
+            </a>
+            <a href="trends.html" class="nav-link" data-page="trends" title="统计分析">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+            </a>
         </div>
         <div class="user-area" id="navUserArea">
             <button class="lang-switch" id="langSwitch" style="display: none;">🌐 EN</button>
@@ -342,24 +369,23 @@
                 style="margin-bottom: 20px; padding: 0 10px; display: flex; align-items: center; justify-content: space-between;">
                 <label
                     style="font-weight: 600; color: #065f46; display: flex; align-items: center; gap: 10px; font-size: 1.2rem;">
-                    🌿 当前项目 (Current Project):
+                    🌿 当前项目:
                     <span id="currentProjectDisplay"
                         style="color: #059669; background: #ecfdf5; padding: 5px 12px; border-radius: 8px;"></span>
                 </label>
-                <a href="index.html" style="font-size: 0.9rem; color: #6b7280; text-decoration: none;">(切换 Switch)</a>
+
             </div>
 
             <!-- Facility Settings Section -->
             <div class="section-card collapsed">
-                <div class="section-header" onclick="toggleSection(this.parentElement)">⚙️ 温室参数设置
-                    (Facility Settings)</div>
+                <div class="section-header" onclick="toggleSection(this.parentElement)">⚙️ 温室参数设置</div>
                 <div class="section-content">
                     <div class="input-group" id="constantInputs"></div>
 
                     <!-- Sample Names Management -->
                     <div
                         style="margin-top: 20px; padding: 15px; background: #f0fdf4; border-radius: 12px; border: 1px solid #d1fae5;">
-                        <h4 style="margin: 0 0 15px 0; color: #065f46; font-size: 1rem;">🌿 预设样本名称 (Sample Names)</h4>
+                        <h4 style="margin: 0 0 15px 0; color: #065f46; font-size: 1rem;">🌿 预设样本名称</h4>
                         <div id="sampleNamesList"
                             style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px;">
                             <!-- Sample name tags will be rendered here -->
@@ -376,7 +402,7 @@
 
                     <button class="btn-primary" id="saveConstantsBtn" onclick="saveConstants()"
                         style="margin-top: 20px; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
-                        💾 保存参数 (Save Settings)
+                        💾 保存参数
                     </button>
                 </div>
             </div>
@@ -385,14 +411,14 @@
             <div class="section-card collapsed">
                 <div class="section-header" onclick="toggleSection(this.parentElement)"
                     style="display: flex; justify-content: space-between; align-items: center;">
-                    <span>📊 每周数据 (Weekly Data)</span>
+                    <span>📊 每周数据</span>
                     <span id="weeklyHeaderInfo" style="font-size: 1rem; font-weight: 600; color: #10b981;"></span>
                 </div>
                 <div class="section-content">
                     <!-- Weekly Sample Management -->
                     <div class="replicate-selector" style="margin-bottom: 20px; padding: 15px;">
                         <label style="font-weight: 600; color: #065f46;">
-                            选择样本 (Sample):
+                            选择样本:
                             <select id="weeklyReplicateSelect" style="min-width: 150px;"></select>
                         </label>
                     </div>
@@ -409,7 +435,7 @@
                         <div class="input-group" id="weeklyInputs"></div>
                         <button class="btn-primary" id="saveWeeklyBtn" onclick="saveToDatabase('weekly')"
                             style="margin-top: 20px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
-                            💾 保存周数据 (Save Weekly)
+                            💾 保存周数据
                         </button>
                     </div>
                 </div>
@@ -419,7 +445,7 @@
             <div class="section-card collapsed">
                 <div class="section-header" onclick="toggleSection(this.parentElement)"
                     style="display: flex; justify-content: space-between; align-items: center;">
-                    <span>📅 每日数据 (Daily Data)</span>
+                    <span>📅 每日数据</span>
                     <span id="dailyHeaderInfo" style="font-size: 1rem; font-weight: 600; color: #8B5CF6;"></span>
                 </div>
                 <div class="section-content">
@@ -429,7 +455,7 @@
                     <div class="input-group" id="dailyInputs"></div>
                     <button class="btn-primary" id="saveDailyBtn" onclick="saveToDatabase('daily')"
                         style="margin-top: 20px; background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);">
-                        💾 保存日数据 (Save Daily)
+                        💾 保存日数据
                     </button>
                 </div>
             </div>
