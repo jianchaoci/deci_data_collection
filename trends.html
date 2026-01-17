@@ -449,6 +449,37 @@
             ).join('');
         }
 
+        // Load available samples for current project
+        let availableSamples = [];
+        async function loadAvailableSamples(projectName) {
+            if (!currentUser || currentUser.is_guest) return;
+
+            try {
+                const { data, error } = await supabase
+                    .from('facility_settings')
+                    .select('sample_names')
+                    .eq('user_id', currentUser.id)
+                    .eq('project_name', projectName)
+                    .single();
+
+                if (error && error.code !== 'PGRST116') throw error;
+
+                availableSamples = (data && data.sample_names) ? data.sample_names : [];
+            } catch (err) {
+                console.error('加载样本列表失败:', err);
+                availableSamples = [];
+            }
+        }
+
+        // Generate sample dropdown options
+        function getSampleOptionsHTML() {
+            let html = '<option value="__ALL__">所有样本（聚合）</option>';
+            availableSamples.forEach(name => {
+                html += `<option value="${name}">${name}</option>`;
+            });
+            return html;
+        }
+
         // Add new chart card
         function addNewChartCard() {
             chartCardCounter++;
@@ -460,6 +491,32 @@
                 <div class="chart-card" id="${cardId}" style="background: white; border-radius: 20px; 
                     box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid rgba(16,185,129,0.1);
                     position: relative; padding: 40px 25px 25px 25px; margin-bottom: 25px;">
+                    
+                    <!-- Move Up button -->
+                    <button onclick="moveCardUp('${cardId}')" 
+                        style="position: absolute; top: 8px; right: 80px; z-index: 10;
+                        background: transparent; border: none; color: #9ca3af; 
+                        width: 28px; height: 28px; border-radius: 50%; cursor: pointer; 
+                        display: flex; align-items: center; justify-content: center; 
+                        transition: all 0.2s;"
+                        onmouseover="this.style.background='#dbeafe'; this.style.color='#2563eb'; this.style.transform='scale(1.1)';" 
+                        onmouseout="this.style.background='transparent'; this.style.color='#9ca3af'; this.style.transform='scale(1)';"
+                        title="上移">
+                        ▲
+                    </button>
+
+                    <!-- Move Down button -->
+                    <button onclick="moveCardDown('${cardId}')" 
+                        style="position: absolute; top: 8px; right: 44px; z-index: 10;
+                        background: transparent; border: none; color: #9ca3af; 
+                        width: 28px; height: 28px; border-radius: 50%; cursor: pointer; 
+                        display: flex; align-items: center; justify-content: center; 
+                        transition: all 0.2s;"
+                        onmouseover="this.style.background='#dbeafe'; this.style.color='#2563eb'; this.style.transform='scale(1.1)';" 
+                        onmouseout="this.style.background='transparent'; this.style.color='#9ca3af'; this.style.transform='scale(1)';"
+                        title="下移">
+                        ▼
+                    </button>
                     
                     <!-- Delete button -->
                     <button onclick="removeChartCard('${cardId}')" 
@@ -501,6 +558,16 @@
                                 border: none; padding: 6px 12px; border-radius: 12px; cursor: pointer; font-size: 0.85rem;">
                                 ${currentYear + 1} ▶
                             </button>
+                        </div>
+                        
+                        <!-- Sample Selector (NEW) -->
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="color: #065f46; font-weight: 500;">🧪</span>
+                            <select id="${cardId}-sample" onchange="updateChartCard('${cardId}')"
+                                style="padding: 8px 12px; border-radius: 12px; border: 1px solid #d1d5db; 
+                                background: white; min-width: 140px; font-size: 0.9rem;">
+                                <option value="__ALL__">所有样本（聚合）</option>
+                            </select>
                         </div>
                         
                         <!-- Indicator Selector -->
@@ -572,7 +639,8 @@
                     chart: emptyChart,
                     project: defaultProject,
                     year: currentYear,
-                    field: null
+                    field: null,
+                    sample: '__ALL__'
                 });
             } else {
                 // Fallback
@@ -580,9 +648,18 @@
                     chart: null,
                     project: defaultProject,
                     year: currentYear,
-                    field: null
+                    field: null,
+                    sample: '__ALL__'
                 });
             }
+
+            // Load samples for the default project and populate selector
+            loadAvailableSamples(defaultProject).then(() => {
+                const sampleSelector = document.getElementById(`${cardId}-sample`);
+                if (sampleSelector) {
+                    sampleSelector.innerHTML = getSampleOptionsHTML();
+                }
+            });
         }
 
         // Remove chart card
@@ -595,6 +672,28 @@
 
             const cardEl = document.getElementById(cardId);
             if (cardEl) cardEl.remove();
+        }
+
+        // Move card up
+        function moveCardUp(cardId) {
+            const cardEl = document.getElementById(cardId);
+            if (!cardEl) return;
+
+            const previousSibling = cardEl.previousElementSibling;
+            if (previousSibling) {
+                chartsContainer.insertBefore(cardEl, previousSibling);
+            }
+        }
+
+        // Move card down
+        function moveCardDown(cardId) {
+            const cardEl = document.getElementById(cardId);
+            if (!cardEl) return;
+
+            const nextSibling = cardEl.nextElementSibling;
+            if (nextSibling) {
+                chartsContainer.insertBefore(nextSibling, cardEl);
+            }
         }
 
         // Change card year
@@ -632,10 +731,22 @@
 
             // Get current selections
             const projectEl = document.getElementById(`${cardId}-project`);
+            const sampleEl = document.getElementById(`${cardId}-sample`);
             const indicatorEl = document.getElementById(`${cardId}-indicator`);
 
+            const previousProject = cardInfo.project;
             cardInfo.project = projectEl ? projectEl.value : '翠湖温室';
+            cardInfo.sample = sampleEl ? sampleEl.value : '__ALL__';
             cardInfo.field = indicatorEl ? indicatorEl.value : '';
+
+            // If project changed, reload samples and update selector
+            if (previousProject !== cardInfo.project) {
+                await loadAvailableSamples(cardInfo.project);
+                if (sampleEl) {
+                    sampleEl.innerHTML = getSampleOptionsHTML();
+                    cardInfo.sample = '__ALL__'; // Reset to all samples
+                }
+            }
 
             if (!cardInfo.field) {
                 // No indicator selected - clear data but keep grid
@@ -706,9 +817,9 @@
             }
         }
 
-        // Process data for a specific field
+        // Process data for a specific field (with optional sample filter)
         // 根据指标类型从不同的表读取数据
-        function processDataForField(field) {
+        function processDataForField(field, sampleName = '__ALL__') {
             // 查找指标配置
             const indicator = indicators.find(ind => ind.field === field);
             if (!indicator) return { labels: [], values: [] };
@@ -771,6 +882,11 @@
                 const weekData = new Array(54).fill(null).map(() => ({ values: [] }));
                 if (yearDataCache.weekly) {
                     yearDataCache.weekly.forEach(row => {
+                        // Sample filter: if specific sample selected, only include its data
+                        if (sampleName !== '__ALL__' && row.sample_name !== sampleName) {
+                            return; // Skip this row
+                        }
+
                         const week = row.week;
                         let val = row[field];
                         // 尝试从中文列名读取
@@ -815,6 +931,11 @@
                 const weekData = new Array(54).fill(null).map(() => ({ count: 0, sum: 0 }));
                 if (yearDataCache.daily) {
                     yearDataCache.daily.forEach(row => {
+                        // Sample filter: if specific sample selected, only include its data
+                        if (sampleName !== '__ALL__' && row.sample_name !== sampleName) {
+                            return; // Skip this row
+                        }
+
                         const week = row.week; // We added 'week' column to daily_phenotypes
                         let val = row[field];
                         if (val !== undefined && val !== null) {
@@ -1108,11 +1229,16 @@
         }
 
         // Process daily data - one point per day, x-axis is day-of-year
-        function processDailyDataFromRows(rows, field, year) {
+        function processDailyDataFromRows(rows, field, year, sampleName = '__ALL__') {
             // Create array for 366 days (to cover leap years)
             const dayData = {};
 
             rows.forEach(row => {
+                // Sample filter
+                if (sampleName !== '__ALL__' && row.sample_name !== sampleName) {
+                    return; // Skip this row
+                }
+
                 const dateStr = row.date;
                 if (!dateStr) return;
 
@@ -1167,10 +1293,15 @@
         }
 
         // Process fetched rows into chart data
-        function processDataFromRows(rows, field, indicator) {
+        function processDataFromRows(rows, field, indicator, sampleName = '__ALL__') {
             const weekData = new Array(54).fill(null).map(() => ({ values: [] }));
 
             rows.forEach(row => {
+                // Sample filter
+                if (sampleName !== '__ALL__' && row.sample_name !== sampleName) {
+                    return; // Skip this row
+                }
+
                 const week = row.week;
                 let val = row[field];
                 // Try Chinese column name
@@ -1258,15 +1389,15 @@
             const cardInfo = chartCards.get(cardId);
             if (!cardInfo || !cardInfo.field) return;
 
-            const { project, year, field } = cardInfo;
+            const { project, year, field, sample } = cardInfo;
             const indicator = indicators.find(ind => ind.field === field);
             if (!indicator) return;
 
             const frequency = indicator.frequency || 'weekly';
             const isDaily = frequency === 'daily';
 
-            // Fetch data for this specific card's project/year
-            const { labels, values, upper, lower } = await fetchDataForCard(project, year, field, isDaily);
+            // Fetch data for this specific card's project/year/sample
+            const { labels, values, upper, lower } = await fetchDataForCard(project, year, field, isDaily, sample || '__ALL__');
 
             // Get chart container
             const container = document.getElementById(`${cardId}-chartContainer`);
@@ -1285,8 +1416,10 @@
             // Build datasets
             const datasets = [];
 
-            // For weekly: add std bounds if available
-            if (!isDaily && upper && lower && upper.some(v => v !== null)) {
+            // For weekly: add std bounds if available AND in aggregate mode
+            // Single sample doesn't have std, so no bounds needed
+            const isAggregateMode = (sample === '__ALL__' || !sample);
+            if (!isDaily && isAggregateMode && upper && lower && upper.some(v => v !== null)) {
                 datasets.push({
                     label: '上界 (+σ)',
                     data: upper,
@@ -1316,7 +1449,7 @@
                 spanGaps: true
             });
 
-            if (!isDaily && upper && lower && lower.some(v => v !== null)) {
+            if (!isDaily && isAggregateMode && upper && lower && lower.some(v => v !== null)) {
                 datasets.push({
                     label: '下界 (-σ)',
                     data: lower,
@@ -1414,7 +1547,7 @@
         }
 
         // Fetch data for a specific card's project/year/field
-        async function fetchDataForCard(project, year, field, isDaily) {
+        async function fetchDataForCard(project, year, field, isDaily, sampleName = '__ALL__') {
             if (!currentUser || currentUser.is_guest) {
                 return { labels: [], values: [], upper: null, lower: null };
             }
@@ -1433,10 +1566,10 @@
                 if (error) throw error;
 
                 if (isDaily) {
-                    return processDailyDataFromRows(data || [], field, year);
+                    return processDailyDataFromRows(data || [], field, year, sampleName);
                 } else {
                     const indicator = indicators.find(ind => ind.field === field);
-                    return processDataFromRows(data || [], field, indicator);
+                    return processDataFromRows(data || [], field, indicator, sampleName);
                 }
             } catch (err) {
                 console.error(`Error fetching data:`, err);
