@@ -67,7 +67,7 @@
 	--transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
 
 	/* Spacing */
-	--nav-height: 70px;
+	--nav-height: 91px;
 }
 
 /* ===== Reset & Base ===== */
@@ -406,7 +406,7 @@ textarea:focus {
 /* ===== Responsive Design ===== */
 @media (max-width: 768px) {
 	:root {
-		--nav-height: 60px;
+		--nav-height: 78px;
 	}
 
 	html {
@@ -475,7 +475,7 @@ textarea:focus {
 
 @media (max-width: 480px) {
 	:root {
-		--nav-height: 56px;
+		--nav-height: 73px;
 	}
 
 	html {
