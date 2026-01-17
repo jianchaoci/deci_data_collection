@@ -101,7 +101,7 @@ body {
 	left: 0;
 	right: 0;
 	z-index: 1000;
-	background: rgba(255, 255, 255, 0.95);
+	background: var(--bg-gradient-nav);
 	padding: 0 30px;
 	height: var(--nav-height);
 	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
@@ -115,44 +115,46 @@ body {
 
 .nav-links {
 	display: flex;
-	gap: 8px;
+	gap: 16px;
 	flex-wrap: wrap;
 }
 
 .nav-link {
-	color: white;
+	color: var(--color-primary-700);
 	text-decoration: none;
 	padding: 12px;
 	border-radius: 12px;
 	transition: var(--transition-normal);
-	background: linear-gradient(135deg, var(--color-primary-600) 0%, var(--color-primary-700) 100%);
-	border: 1px solid rgba(255, 255, 255, 0.1);
+	background: rgba(255, 255, 255, 0.9);
+	border: 1px solid rgba(255, 255, 255, 0.4);
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	width: 48px;
 	height: 48px;
-	box-shadow: 0 2px 4px rgba(6, 95, 70, 0.2);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .nav-link svg {
 	width: 24px;
 	height: 24px;
 	transition: var(--transition-normal);
-	filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+	/* No drop shadow needed for dark icon on light btn */
 }
 
 .nav-link:hover {
-	background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-primary-600) 100%);
+	background: #ffffff;
+	color: var(--color-primary-600);
 	transform: translateY(-2px);
-	box-shadow: 0 6px 12px rgba(6, 95, 70, 0.3);
-	border-color: rgba(255, 255, 255, 0.2);
+	box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+	border-color: rgba(255, 255, 255, 0.8);
 }
 
 .nav-link.active {
-	background: linear-gradient(135deg, var(--color-primary-400) 0%, var(--color-primary-500) 100%);
-	box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-	border-color: rgba(255, 255, 255, 0.3);
+	background: #ffffff;
+	color: var(--color-primary-600);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 2px 0 var(--color-primary-400);
+	border-color: white;
 }
 
 .nav-link.active svg {
@@ -454,7 +456,7 @@ textarea:focus {
 		justify-content: flex-start;
 		overflow-x: auto;
 		padding-bottom: 0;
-		gap: 5px;
+		gap: 10px;
 		scrollbar-width: none;
 		-ms-overflow-style: none;
 	}
@@ -519,7 +521,7 @@ textarea:focus {
 	}
 
 	.nav-links {
-		gap: 4px;
+		gap: 8px;
 		/* Slightly smaller gap for smaller screens */
 	}
 
