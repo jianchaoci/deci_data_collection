@@ -137,361 +137,257 @@
 </head>
 
 <body>
-    < !-- Navigation Bar -->
-        <nav class="nav-bar">
-            <div class="nav-links"><a href="index.html" class="nav-link">🏠 首页</a><a href="calendar.html"
-                    class="nav-link" data-page="calendar">📅 采集日历</a><a href="collection.html" class="nav-link"
-                    data-page="collection">📊 数据采集</a><a href="trends.html" class="nav-link" data-page="trends">📈
-                    统计分析</a></div>
-            <div class="user-area" id="navUserArea" style="display: flex; gap: 10px; align-items: center;"><button
-                    class="lang-switch" id="langSwitch" style="display: none;">🌐 EN</button></div>
-        </nav>
-        < !-- Main Container -->
-            <div class="main-container">
-                <div class="calendar-card">
-                    <div class="calendar-header">
-                        <div class="month-nav"><button id="prevMonth">◀ <span
-                                    data-lang="prevMonth">上月</span></button><span class="current-date"
-                                id="currentDateDisplay">2026年 01月</span><button id="nextMonth"><span
-                                    data-lang="nextMonth">下月</span>▶</button></div>
-                    </div>
-                    <div class="chart-container" id="chartWrapper"><canvas id="calendarChart"></canvas>
-                        <div class="loading-placeholder" id="loadingIndicator" data-lang="loading">加载中...</div>
-                    </div>
-                </div>
+    <!-- Navigation Bar -->
+    <nav class="nav-bar">
+        <div class="nav-links"><a href="index.html" class="nav-link">🏠 首页</a><a href="calendar.html" class="nav-link"
+                data-page="calendar">📅 采集日历</a><a href="collection.html" class="nav-link" data-page="collection">📊
+                数据采集</a><a href="trends.html" class="nav-link" data-page="trends">📈
+                统计分析</a></div>
+        <div class="user-area" id="navUserArea" style="display: flex; gap: 10px; align-items: center;"><button
+                class="lang-switch" id="langSwitch" style="display: none;">🌐 EN</button></div>
+    </nav>
+    <!-- Main Container -->
+    <div class="main-container">
+        <div class="calendar-card">
+            <div class="calendar-header">
+                <div class="month-nav"><button id="prevMonth">◀ <span data-lang="prevMonth">上月</span></button><span
+                        class="current-date" id="currentDateDisplay">2026年 01月</span><button id="nextMonth"><span
+                            data-lang="nextMonth">下月</span>▶</button></div>
             </div>
-            <script src="common.js?v=fix1"></script>
-            <script> // Set active navigation
-                setActiveNav('calendar');
+            <div class="chart-container" id="chartWrapper"><canvas id="calendarChart"></canvas>
+                <div class="loading-placeholder" id="loadingIndicator" data-lang="loading">加载中...</div>
+            </div>
+        </div>
+    </div>
+    <script src="common.js?v=fix1"></script>
+    <script> // Set active navigation
+        setActiveNav('calendar');
 
-                // Add specific translations for this page
-                translations.zh.prevMonth = '上月';
-                translations.zh.nextMonth = '下月';
-                translations.zh.dailyLabel = '日采集 (Daily)';
-                translations.zh.weeklyLabel = '周采集 (Weekly)';
+        // Add specific translations for this page
+        translations.zh.prevMonth = '上月';
+        translations.zh.nextMonth = '下月';
+        translations.zh.dailyLabel = '日采集 (Daily)';
+        translations.zh.weeklyLabel = '周采集 (Weekly)';
 
-                translations.en.prevMonth = 'Prev Month';
-                translations.en.nextMonth = 'Next Month';
-                translations.en.dailyLabel = 'Daily Data';
-                translations.en.weeklyLabel = 'Weekly Data';
+        translations.en.prevMonth = 'Prev Month';
+        translations.en.nextMonth = 'Next Month';
+        translations.en.dailyLabel = 'Daily Data';
+        translations.en.weeklyLabel = 'Weekly Data';
 
-                // State
-                let currentMonthDate = getBeijingTime(); // Use first day of month logic later
-                currentMonthDate.setDate(1); // Default to 1st of current month
-                let calendarChart = null;
+        // State
+        let currentMonthDate = getBeijingTime(); // Use first day of month logic later
+        currentMonthDate.setDate(1); // Default to 1st of current month
+        let calendarChart = null;
 
-                const dateDisplay = document.getElementById('currentDateDisplay');
-                const loadingEl = document.getElementById('loadingIndicator');
+        const dateDisplay = document.getElementById('currentDateDisplay');
+        const loadingEl = document.getElementById('loadingIndicator');
 
-                // Initial Header Update
-                function updateHeader() {
-                    const year = currentMonthDate.getFullYear();
-                    const month = currentMonthDate.getMonth() + 1;
+        // Initial Header Update
+        function updateHeader() {
+            const year = currentMonthDate.getFullYear();
+            const month = currentMonthDate.getMonth() + 1;
 
-                    if (currentLang === 'zh') {
-                        dateDisplay.textContent = `$ {
-                    year
-                }
+            if (currentLang === 'zh') {
+                dateDisplay.textContent = `${year}年 ${month.toString().padStart(2, '0')}月`;
+            } else {
+                const monthName = currentMonthDate.toLocaleString('en-US', { month: 'long' });
+                dateDisplay.textContent = `${monthName} ${year}`;
+            }
+        }
 
-                年 $ {
-                    month.toString().padStart(2, '0')
-                }
+        // Generate Array of Days in Month
+        function getDaysInMonth(date) {
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            const days = new Date(year, month + 1, 0).getDate();
+            return Array.from({ length: days }, (_, i) => i + 1);
+        }
 
-                月`;
-                    }
+        // Render Chart
+        function renderChart(dailyMap, weeklyMap) {
+            const ctx = document.getElementById('calendarChart').getContext('2d');
+            const days = getDaysInMonth(currentMonthDate);
 
-                    else {
-                        const monthName = currentMonthDate.toLocaleString('en-US', {
-                            month: 'long'
-                        });
+            const dailyData = days.map(d => dailyMap[d] ? 1 : 0);
+            const weeklyData = days.map(d => weeklyMap[d] ? 1 : 0);
+            const lang = translations[currentLang];
 
-                        dateDisplay.textContent = `$ {
-                monthName
+            if (calendarChart) {
+                calendarChart.destroy();
             }
 
-            $ {
-                year
-            }
-
-            `;
-                    }
-                }
-
-                // Generate Array of Days in Month
-                function getDaysInMonth(date) {
-                    const year = date.getFullYear();
-                    const month = date.getMonth();
-                    const days = new Date(year, month + 1, 0).getDate();
-
-                    return Array.from({
-                        length: days
-                    }
-
-                        , (_, i) => i + 1);
-                }
-
-                // Render Chart
-                function renderChart(dailyMap, weeklyMap) {
-                    const ctx = document.getElementById('calendarChart').getContext('2d');
-                    const days = getDaysInMonth(currentMonthDate);
-
-                    // Prepare Data Arrays (Lengths match days in month)
-                    // dailyMap: { 1: true, 5: true ... } -> [1, 0, 0, 0, 1 ...]
-                    const dailyData = days.map(d => dailyMap[d] ? 1 : 0);
-                    const weeklyData = days.map(d => weeklyMap[d] ? 1 : 0);
-
-                    const lang = translations[currentLang];
-
-                    if (calendarChart) {
-                        calendarChart.destroy();
-                    }
-
-                    calendarChart = new Chart(ctx, {
-
-                        type: 'bar',
-                        data: {
-
-                            labels: days,
-                            datasets: [{
-                                label: lang.dailyLabel || 'Daily',
-                                data: dailyData,
-                                backgroundColor: '#8B5CF6', // Purple
-                                borderColor: '#7C3AED',
-                                borderWidth: 1,
-                                borderRadius: 4,
-                                barPercentage: 0.6,
+            calendarChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: days,
+                    datasets: [{
+                        label: lang.dailyLabel || 'Daily',
+                        data: dailyData,
+                        backgroundColor: '#8B5CF6',
+                        borderColor: '#7C3AED',
+                        borderWidth: 1,
+                        borderRadius: 4,
+                        barPercentage: 0.6,
+                    }, {
+                        label: lang.weeklyLabel || 'Weekly',
+                        data: weeklyData,
+                        backgroundColor: '#10B981',
+                        borderColor: '#059669',
+                        borderWidth: 1,
+                        borderRadius: 4,
+                        barPercentage: 0.6,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            stacked: true,
+                            grid: { display: false },
+                            title: {
+                                display: true,
+                                text: currentLang === 'zh' ? '日期 (几号)' : 'Date'
                             }
-
-                                ,
-                            {
-                                label: lang.weeklyLabel || 'Weekly',
-                                data: weeklyData,
-                                backgroundColor: '#10B981', // Green
-                                borderColor: '#059669',
-                                borderWidth: 1,
-                                borderRadius: 4,
-                                barPercentage: 0.6,
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            max: 2.2,
+                            ticks: { display: false, stepSize: 1 },
+                            grid: {
+                                display: true,
+                                color: 'rgba(0, 0, 0, 0.05)',
+                                drawBorder: false
                             }
-
-                            ]
                         }
-
-                        ,
-                        options: {
-
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            scales: {
-                                x: {
-
-                                    stacked: true,
-                                    grid: {
-                                        display: false
-                                    }
-
-                                    ,
-                                    title: {
-                                        display: true,
-                                        text: currentLang === 'zh' ? '日期 (几号)' : 'Date'
-                                    }
-                                }
-
-                                ,
-                                y: {
-                                    stacked: true,
-                                    beginAtZero: true,
-                                    max: 2.2, // Fix height slightly above 2 since max possible stack is 2
-
-                                    ticks: {
-                                        display: false, // Hide numeric values as it's boolean logic
-                                        stepSize: 1
-                                    }
-
-                                    ,
-                                    grid: {
-                                        display: true,
-                                        color: 'rgba(0, 0, 0, 0.05)',
-                                        drawBorder: false
-                                    }
-                                }
-                            }
-
-                            ,
-                            plugins: {
-                                legend: {
-
-                                    position: 'top',
-                                    labels: {
-                                        usePointStyle: true,
-                                        pointStyle: 'rectRounded'
-                                    }
-                                }
-
-                                ,
-                                tooltip: {
-                                    callbacks: {
-                                        label: function (context) {
-                                            return context.dataset.label + ': ' + (context.raw > 0 ? '✅' : '-');
-                                        }
-                                    }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { usePointStyle: true, pointStyle: 'rectRounded' }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return context.dataset.label + ': ' + (context.raw > 0 ? '✅' : '-');
                                 }
                             }
                         }
+                    }
+                }
+            });
+        }
+
+        async function loadMonthData() {
+            loadingEl.style.display = 'block';
+            if (calendarChart) {
+                calendarChart.clear();
+            }
+
+            if (!currentUser || currentUser.is_guest) {
+                loadingEl.style.display = 'none';
+                renderChart({}, {});
+                return;
+            }
+
+            try {
+                const year = currentMonthDate.getFullYear();
+                const month = currentMonthDate.getMonth();
+                const startDate = new Date(year, month, 1);
+                const localStartDateStr = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+                const endDate = new Date(year, month + 1, 0);
+                const localEndDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${endDate.getDate()}`;
+
+                console.log(`Loading data for range: ${localStartDateStr} to ${localEndDateStr}`);
+
+                // 1. Fetch Daily Data (by date)
+                const dailyRes = await supabase.from('daily_phenotypes').select('date').eq('user_id', currentUser.id).gte('date', localStartDateStr).lte('date', localEndDateStr);
+
+                // 2. Fetch Weekly Data (by created_at)
+                // Note: Weekly data doesn't have a 'date' column, so we use 'created_at'.
+                const weeklyRes = await supabase.from('weekly_phenotypes').select('created_at').eq('user_id', currentUser.id).gte('created_at', wrapperDateToISO(startDate)) // Use approximate ISO range
+                    .lte('created_at', wrapperDateToISO(new Date(year, month + 1, 1))); // Up to next month start
+
+                if (dailyRes.error) throw dailyRes.error;
+                if (weeklyRes.error) throw weeklyRes.error;
+
+                // Process Daily Data -> Map of DayNumber: true
+                const dailyMap = {}
+
+                    ;
+
+                if (dailyRes.data) {
+                    dailyRes.data.forEach(row => {
+                        const d = new Date(row.date);
+                        dailyMap[d.getDate()] = true;
                     });
                 }
 
-                // Load Data
-                async function loadMonthData() {
-                    loadingEl.style.display = 'block';
+                // Process Weekly Data -> Map of DayNumber: true
+                const weeklyMap = {}
 
-                    if (calendarChart) {
-                        calendarChart.clear();
-                    }
+                    ;
 
-                    if (!currentUser || currentUser.is_guest) {
-                        loadingEl.style.display = 'none';
-
-                        renderChart({}
-
-                            , {});
-                        return;
-                    }
-
-                    try {
-                        // Calculate Start and End Date of the specific month
-                        const year = currentMonthDate.getFullYear();
-                        const month = currentMonthDate.getMonth(); // 0-indexed
-
-                        // Format for DB query: YYYY-MM-DD
-                        // Start: first day of month
-                        const startDate = new Date(year, month, 1);
-                        const startDateStr = startDate.toISOString().split('T')[0]; // simple ISO is UTC but for dates usually OK if we are careful. 
-
-                        // Better local format:
-                        const localStartDateStr = `$ {
-                year
-            }
-
-            -$ {
-                String(month + 1).padStart(2, '0')
-            }
-
-            -01`;
-
-                        // End: last day of month
-                        const endDate = new Date(year, month + 1, 0);
-
-                        const localEndDateStr = `$ {
-                year
-            }
-
-            -$ {
-                String(month + 1).padStart(2, '0')
-            }
-
-            -$ {
-                endDate.getDate()
-            }
-
-            `;
-
-                        console.log(`Loading data for range: $ {
-                    localStartDateStr
+                if (weeklyRes.data) {
+                    weeklyRes.data.forEach(row => {
+                        const d = new Date(row.created_at);
+                        weeklyMap[d.getDate()] = true;
+                    });
                 }
 
-                to $ {
-                    localEndDateStr
-                }
+                renderChart(dailyMap, weeklyMap);
 
-                `);
+            }
 
-                        // 1. Fetch Daily Data (by date)
-                        const dailyRes = await supabase.from('daily_phenotypes').select('date').eq('user_id', currentUser.id).gte('date', localStartDateStr).lte('date', localEndDateStr);
+            catch (err) {
+                console.error("Error loading calendar data:", err);
 
-                        // 2. Fetch Weekly Data (by created_at)
-                        // Note: Weekly data doesn't have a 'date' column, so we use 'created_at'.
-                        const weeklyRes = await supabase.from('weekly_phenotypes').select('created_at').eq('user_id', currentUser.id).gte('created_at', wrapperDateToISO(startDate)) // Use approximate ISO range
-                            .lte('created_at', wrapperDateToISO(new Date(year, month + 1, 1))); // Up to next month start
-
-                        if (dailyRes.error) throw dailyRes.error;
-                        if (weeklyRes.error) throw weeklyRes.error;
-
-                        // Process Daily Data -> Map of DayNumber: true
-                        const dailyMap = {}
-
-                            ;
-
-                        if (dailyRes.data) {
-                            dailyRes.data.forEach(row => {
-                                const d = new Date(row.date);
-                                dailyMap[d.getDate()] = true;
-                            });
-                        }
-
-                        // Process Weekly Data -> Map of DayNumber: true
-                        const weeklyMap = {}
-
-                            ;
-
-                        if (weeklyRes.data) {
-                            weeklyRes.data.forEach(row => {
-                                const d = new Date(row.created_at);
-                                weeklyMap[d.getDate()] = true;
-                            });
-                        }
-
-                        renderChart(dailyMap, weeklyMap);
-
-                    }
-
-                    catch (err) {
-                        console.error("Error loading calendar data:", err);
-
-                        loadingEl.textContent = `Error: $ {
+                loadingEl.textContent = `Error: $ {
                 err.message
             }
 
             `;
-                    }
+            }
 
-                    finally {
-                        loadingEl.style.display = 'none';
-                    }
-                }
+            finally {
+                loadingEl.style.display = 'none';
+            }
+        }
 
-                // Helper: Safe ISO string for constraints without timezone issues 
-                // actually Supabase expects ISO strings for timestamps.
-                function wrapperDateToISO(date) {
-                    return date.toISOString();
-                }
+        // Helper: Safe ISO string for constraints without timezone issues 
+        // actually Supabase expects ISO strings for timestamps.
+        function wrapperDateToISO(date) {
+            return date.toISOString();
+        }
 
-                // Listeners
-                document.getElementById('prevMonth').addEventListener('click', () => {
-                    currentMonthDate.setMonth(currentMonthDate.getMonth() - 1);
-                    updateHeader();
-                    loadMonthData();
-                });
+        // Listeners
+        document.getElementById('prevMonth').addEventListener('click', () => {
+            currentMonthDate.setMonth(currentMonthDate.getMonth() - 1);
+            updateHeader();
+            loadMonthData();
+        });
 
-                document.getElementById('nextMonth').addEventListener('click', () => {
-                    currentMonthDate.setMonth(currentMonthDate.getMonth() + 1);
-                    updateHeader();
-                    loadMonthData();
-                });
+        document.getElementById('nextMonth').addEventListener('click', () => {
+            currentMonthDate.setMonth(currentMonthDate.getMonth() + 1);
+            updateHeader();
+            loadMonthData();
+        });
 
-                // Initialize
-                async function init() {
-                    updateHeader();
-                    const session = await initAuth();
+        // Initialize
+        async function init() {
+            updateHeader();
+            const session = await initAuth();
 
-                    if (session) {
-                        currentUser = session.user;
-                    }
+            if (session) {
+                currentUser = session.user;
+            }
 
-                    loadMonthData();
-                }
+            loadMonthData();
+        }
 
-                init();
-            </script>
+        init();
+    </script>
 </body>
 
 </html>
