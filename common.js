@@ -30,7 +30,65 @@ var translations = {
 			home: '🏠 首页',
 			calendar: '📅 采集日历',
 			collection: '📊 数据采集',
-			statistics: '📈 统计分析'
+			statistics: '📈 统计分析',
+			download: '📥 数据下载'
+		},
+		downloadPage: {
+			title: '📥 数据下载',
+			subTitle: '选择项目、日期和指标导出数据',
+			selectProject: '选择项目',
+			selectDateRange: '选择日期范围',
+			selectIndicators: '选择指标',
+			selectionMode: '快速选择',
+			custom: '自定义',
+			allWeekly: '所有周数据',
+			allDaily: '所有日数据',
+			startDate: '开始日期',
+			endDate: '结束日期',
+			allIndicators: '全选指标',
+			downloadBtn: '🚀 导出 CSV',
+			noData: '该范围内无数据',
+			projectPlaceholder: '-- 请选择项目 --',
+			weeklyCollected: '📅 每周采集',
+			weeklyCalculated: '📅 每周计算',
+			dailyCollected: '☀️ 每日采集',
+			dailyCalculated: '☀️ 每日计算'
+		},
+		collectionPage: {
+			title: '📊 数据采集',
+			currentProject: '🌿 当前项目:',
+			facilitySettings: '⚙️ 温室参数设置',
+			sampleNames: '🌿 预设样本名称',
+			addSamplePlaceholder: '输入样本名称 (e.g. A-1)',
+			addBtn: '+ 添加',
+			saveConstantsBtn: '💾 保存参数',
+			weeklyData: '📊 每周数据',
+			selectSample: '选择样本:',
+			noSampleTitle: '请先在「温室参数设置」中添加样本名称',
+			saveWeeklyBtn: '💾 保存周数据',
+			dailyData: '📅 每日数据',
+			saveDailyBtn: '💾 保存日数据'
+		},
+		trendsPage: {
+			title: '📈 统计分析',
+			addChartBtn: '➕ 添加图表',
+			selectIndicatorPlaceholder: '-- 请选择指标 --',
+			weeklyCollectedGroup: '📅 每周采集',
+			weeklyCalculatedGroup: '📅 每周计算',
+			dailyCollectedGroup: '☀️ 每日采集',
+			dailyCalculatedGroup: '☀️ 每日计算',
+			allSamples: '所有样本（聚合）',
+			selectIndicator: '⬆️ 请选择指标开始绘图',
+			yearSuffix: '年',
+			dateAxis: '日期',
+			weekAxis: '周次'
+		},
+		dateFormats: {
+			weekPrefix: '第',
+			weekSuffix: '周',
+			monthSuffix: '月',
+			daySuffix: '日',
+			weekdayWrapper: ['（周', '）']
 		},
 		exportBtn: '📥 导出 CSV',
 		syncBtn: '☁️ 同步到云端',
@@ -55,7 +113,7 @@ var translations = {
 			leaf_count: '叶片总数',
 			leaf_length_cm: '叶长',
 			leaf_width_cm: '叶宽',
-			potential_flower_count: '潜力开花数', // 隐藏项
+			potential_flower_count: '潜力开花数',
 
 			// 每周填报指标
 			current_flower_order: '当前开花序数',
@@ -104,7 +162,65 @@ var translations = {
 			home: '🏠 Home',
 			calendar: '📅 Calendar',
 			collection: '📊 Collection',
-			statistics: '📈 Statistics'
+			statistics: '📈 Statistics',
+			download: '📥 Download'
+		},
+		downloadPage: {
+			title: '📥 Data Download',
+			subTitle: 'Select Project, Date Range and Indicators to Export',
+			selectProject: 'Select Project',
+			selectDateRange: 'Select Date Range',
+			selectIndicators: 'Select Indicators',
+			selectionMode: 'Quick Select',
+			custom: 'Custom',
+			allWeekly: 'All Weekly Data',
+			allDaily: 'All Daily Data',
+			startDate: 'Start Date',
+			endDate: 'End Date',
+			allIndicators: 'Select All',
+			downloadBtn: '🚀 Export CSV',
+			noData: 'No Data Found',
+			projectPlaceholder: '-- Select Project --',
+			weeklyCollected: '📅 Weekly Collected',
+			weeklyCalculated: '📅 Weekly Calculated',
+			dailyCollected: '☀️ Daily Collected',
+			dailyCalculated: '☀️ Daily Calculated'
+		},
+		collectionPage: {
+			title: '📊 Data Collection',
+			currentProject: '🌿 Current Project:',
+			facilitySettings: '⚙️ Facility Settings',
+			sampleNames: '🌿 Preset Sample Names',
+			addSamplePlaceholder: 'Enter sample name (e.g. A-1)',
+			addBtn: '+ Add',
+			saveConstantsBtn: '💾 Save Settings',
+			weeklyData: '📊 Weekly Data',
+			selectSample: 'Select Sample:',
+			noSampleTitle: 'Please add sample names in "Facility Settings" first',
+			saveWeeklyBtn: '💾 Save Weekly Data',
+			dailyData: '📅 Daily Data',
+			saveDailyBtn: '💾 Save Daily Data'
+		},
+		trendsPage: {
+			title: '📈 Trends Analysis',
+			addChartBtn: '➕ Add Chart',
+			selectIndicatorPlaceholder: '-- Select Indicator --',
+			weeklyCollectedGroup: '📅 Weekly Collected',
+			weeklyCalculatedGroup: '📅 Weekly Calculated',
+			dailyCollectedGroup: '☀️ Daily Collected',
+			dailyCalculatedGroup: '☀️ Daily Calculated',
+			allSamples: 'All Samples (Aggregated)',
+			selectIndicator: '⬆️ Select an indicator to plot',
+			yearSuffix: '',
+			dateAxis: 'Date',
+			weekAxis: 'Week'
+		},
+		dateFormats: {
+			weekPrefix: 'Week ',
+			weekSuffix: '',
+			monthSuffix: '/',
+			daySuffix: '',
+			weekdayWrapper: ['(', ')']
 		},
 		exportBtn: '📥 Export CSV',
 		syncBtn: '☁️ Sync to Cloud',
@@ -155,6 +271,7 @@ var translations = {
 			irrigation_ec: 'Irrigation EC',
 			irrigation_ph: 'Irrigation pH',
 			daily_yield_kg: 'Daily Yield',
+			damage_amount: 'Damage Amount',
 			weekly_header: '📅 Weekly Data',
 			daily_header: '☀️ Daily Data'
 		}
@@ -172,6 +289,7 @@ var indicatorsConfig = [
 	{ field: 'leaf_count', unit: '个', unitEn: 'pcs', min: 5, max: 23, step: 1, defaultValue: 5, frequency: 'weekly' },
 	{ field: 'leaf_length_cm', unit: 'cm', unitEn: 'cm', min: 20, max: 60, step: 0.1, defaultValue: 20, frequency: 'weekly' },
 	{ field: 'leaf_width_cm', unit: 'cm', unitEn: 'cm', min: 5, max: 60, step: 0.1, defaultValue: 5, frequency: 'weekly' },
+	{ field: 'potential_flower_count', unit: '串', unitEn: 'clusters', min: 0, max: 18, step: 1, defaultValue: 8, frequency: 'weekly', isStatistic: false },
 
 	// 1. 当前开花序数 [0-60]
 	{ field: 'current_flower_order', unit: '串', unitEn: 'order', min: 0, max: 60, step: 1, defaultValue: 3, frequency: 'weekly' },
@@ -197,8 +315,7 @@ var indicatorsConfig = [
 	{ field: 'acidity', unit: '-', unitEn: '-', min: 0, max: 100, step: 0.1, defaultValue: 0, frequency: 'weekly' },
 
 	// 累计数据/被移除数据 (隐藏)
-	{ field: 'potential_flower_count', unit: '串', unitEn: 'clusters', min: 0, max: 18, step: 1, defaultValue: 8, isStatistic: true, frequency: 'weekly' },
-	{ field: 'accum_ear_count', unit: '个', unitEn: 'pcs', min: 0, max: 60, step: 1, defaultValue: 0, isStatistic: true, frequency: 'weekly' },
+
 
 
 	// --- Daily Indicators (每天需填报) ---
@@ -297,9 +414,37 @@ function updateLanguageDisplay() {
 			}
 		}
 		if (value) {
-			// Preserve emojis
-			const emojis = el.textContent.match(/[🌱📅📊📈📉📥☁️🔗◀▶🏠]/g) || [];
-			el.textContent = emojis.join('') + ' ' + value.replace(/[🌱📅📊📈📉📥☁️🔗◀▶🏠]/g, '').trim();
+			// Preserve emojis if they are not part of the translation
+			// Better strategy: rely on the translation to include emojis if needed, 
+			// OR checks if the original text had emoji prefix.
+			// Current code tried to preserve, let's keep it but make it optional if translation has emoji
+			const emojis = el.textContent.match(/[🌱📅📊📈📉📥☁️🔗◀▶🏠🌿⚙️💾]/g) || [];
+			// Check if new value already has emoji
+			const newValueHasEmoji = /[🌱📅📊📈📉📥☁️🔗◀▶🏠🌿⚙️💾]/.test(value);
+
+			if (newValueHasEmoji) {
+				el.textContent = value;
+			} else {
+				el.textContent = emojis.join('') + ' ' + value.replace(/[🌱📅📊📈📉📥☁️🔗◀▶🏠🌿⚙️💾]/g, '').trim();
+			}
+		}
+	});
+
+	// Update placeholders
+	document.querySelectorAll('[data-lang-placeholder]').forEach(el => {
+		const key = el.getAttribute('data-lang-placeholder');
+		const keys = key.split('.');
+		let value = lang;
+		for (const k of keys) {
+			if (value && value[k] !== undefined) {
+				value = value[k];
+			} else {
+				value = undefined;
+				break;
+			}
+		}
+		if (value) {
+			el.placeholder = value;
 		}
 	});
 
@@ -620,14 +765,12 @@ function updateUserDisplay() {
 			// Switch language
 			if (currentLang === 'zh') {
 				currentLang = 'en';
-				localStorage.setItem('preferredLanguage', 'en');
+				localStorage.setItem('language', 'en');
 			} else {
 				currentLang = 'zh';
-				localStorage.setItem('preferredLanguage', 'zh');
+				localStorage.setItem('language', 'zh');
 			}
-			updateLanguageDisplay();
-			// Update text immediately
-			langOption.innerHTML = currentLang === 'zh' ? '🌐 English' : '🌐 中文';
+			location.reload();
 		};
 
 		dropdown.appendChild(langOption);

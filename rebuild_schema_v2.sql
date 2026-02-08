@@ -20,6 +20,7 @@ CREATE TABLE public.weekly_phenotypes (
     "叶片总数" NUMERIC,
     "叶长" NUMERIC,
     "叶宽" NUMERIC,
+    "潜力开花数" NUMERIC,
     
     "当前开花序数" NUMERIC,
     "单头累计坐果穗数" NUMERIC,

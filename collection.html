@@ -354,6 +354,14 @@
                     <line x1="6" y1="20" x2="6" y2="14"></line>
                 </svg>
             </a>
+            <a href="download.html" class="nav-link" data-page="download" title="数据下载">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+            </a>
         </div>
         <div class="user-area" id="navUserArea">
             <button class="lang-switch" id="langSwitch" style="display: none;">🌐 EN</button>
@@ -366,42 +374,46 @@
             <!-- Project Settings -->
             <!-- Project Settings -->
             <div
-                style="margin-bottom: 20px; padding: 0 10px; display: flex; align-items: center; justify-content: space-between;">
+                style="margin-bottom: 20px; padding: 0 10px; display: flex; align-items: center; justify-content: center;">
                 <label
                     style="font-weight: 600; color: #065f46; display: flex; align-items: center; gap: 10px; font-size: 1.2rem;">
-                    🌿 当前项目:
+                    <span data-lang="collectionPage.currentProject">🌿 当前项目:</span>
                     <span id="currentProjectDisplay"
                         style="color: #059669; background: #ecfdf5; padding: 5px 12px; border-radius: 8px;"></span>
                 </label>
-
             </div>
 
             <!-- Facility Settings Section -->
             <div class="section-card collapsed">
-                <div class="section-header" onclick="toggleSection(this.parentElement)">⚙️ 温室参数设置</div>
+                <div class="section-header" onclick="toggleSection(this.parentElement)"
+                    data-lang="collectionPage.facilitySettings">⚙️ 温室参数设置</div>
                 <div class="section-content">
                     <div class="input-group" id="constantInputs"></div>
 
                     <!-- Sample Names Management -->
                     <div
                         style="margin-top: 20px; padding: 15px; background: #f0fdf4; border-radius: 12px; border: 1px solid #d1fae5;">
-                        <h4 style="margin: 0 0 15px 0; color: #065f46; font-size: 1rem;">🌿 预设样本名称</h4>
+                        <h4 style="margin: 0 0 15px 0; color: #065f46; font-size: 1rem;"
+                            data-lang="collectionPage.sampleNames">🌿 预设样本名称</h4>
                         <div id="sampleNamesList"
                             style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px;">
                             <!-- Sample name tags will be rendered here -->
                         </div>
                         <div style="display: flex; gap: 10px; align-items: center;">
                             <input type="text" id="newSampleNameInput" class="input-field"
-                                placeholder="输入样本名称 (e.g. A-1)" style="flex: 1; padding: 8px 12px; max-width: 200px;">
+                                placeholder="输入样本名称 (e.g. A-1)" style="flex: 1; padding: 8px 12px; max-width: 200px;"
+                                data-lang-placeholder="collectionPage.addSamplePlaceholder">
                             <button class="btn-primary" onclick="addSampleName()"
-                                style="padding: 8px 16px; width: auto; margin-top: 0; font-size: 0.9rem;">
+                                style="padding: 8px 16px; width: auto; margin-top: 0; font-size: 0.9rem;"
+                                data-lang="collectionPage.addBtn">
                                 + 添加
                             </button>
                         </div>
                     </div>
 
                     <button class="btn-primary" id="saveConstantsBtn" onclick="saveConstants()"
-                        style="margin-top: 20px; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
+                        style="margin-top: 20px; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);"
+                        data-lang="collectionPage.saveConstantsBtn">
                         💾 保存参数
                     </button>
                 </div>
@@ -411,14 +423,14 @@
             <div class="section-card collapsed">
                 <div class="section-header" onclick="toggleSection(this.parentElement)"
                     style="display: flex; justify-content: space-between; align-items: center;">
-                    <span>📊 每周数据</span>
+                    <span data-lang="collectionPage.weeklyData">📊 每周数据</span>
                     <span id="weeklyHeaderInfo" style="font-size: 1rem; font-weight: 600; color: #10b981;"></span>
                 </div>
                 <div class="section-content">
                     <!-- Weekly Sample Management -->
                     <div class="replicate-selector" style="margin-bottom: 20px; padding: 15px;">
                         <label style="font-weight: 600; color: #065f46;">
-                            选择样本:
+                            <span data-lang="collectionPage.selectSample">选择样本:</span>
                             <select id="weeklyReplicateSelect" style="min-width: 150px;"></select>
                         </label>
                     </div>
@@ -427,14 +439,14 @@
                     <div id="noSamplePlaceholder"
                         style="text-align: center; padding: 40px; color: #999; display: none;">
                         <div style="font-size: 2rem; margin-bottom: 10px;">🌱</div>
-                        <p>请先在「温室参数设置」中添加样本名称</p>
-                        <p style="font-size: 0.85rem;">Please add sample names in "Facility Settings" first</p>
+                        <p data-lang="collectionPage.noSampleTitle">请先在「温室参数设置」中添加样本名称</p>
                     </div>
 
                     <div id="weeklyDataArea" style="display: none;">
                         <div class="input-group" id="weeklyInputs"></div>
                         <button class="btn-primary" id="saveWeeklyBtn" onclick="saveToDatabase('weekly')"
-                            style="margin-top: 20px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                            style="margin-top: 20px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);"
+                            data-lang="collectionPage.saveWeeklyBtn">
                             💾 保存周数据
                         </button>
                     </div>
@@ -445,7 +457,7 @@
             <div class="section-card collapsed">
                 <div class="section-header" onclick="toggleSection(this.parentElement)"
                     style="display: flex; justify-content: space-between; align-items: center;">
-                    <span>📅 每日数据</span>
+                    <span data-lang="collectionPage.dailyData">📅 每日数据</span>
                     <span id="dailyHeaderInfo" style="font-size: 1rem; font-weight: 600; color: #8B5CF6;"></span>
                 </div>
                 <div class="section-content">
@@ -454,7 +466,8 @@
 
                     <div class="input-group" id="dailyInputs"></div>
                     <button class="btn-primary" id="saveDailyBtn" onclick="saveToDatabase('daily')"
-                        style="margin-top: 20px; background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);">
+                        style="margin-top: 20px; background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);"
+                        data-lang="collectionPage.saveDailyBtn">
                         💾 保存日数据
                     </button>
                 </div>
@@ -464,7 +477,7 @@
 
         </div>
     </div>
-    <script src="common.js?v=fix40"></script>
+    <script src="common.js?v=fix42"></script>
     <script>
         setActiveNav('collection');
 
@@ -507,47 +520,33 @@
             if (displayEl) displayEl.textContent = currentProjectName;
 
             // Display current week and date in headers
-            const now = getBeijingTime();
-            const year = now.getFullYear();
-            const week = getWeekNumber(now);
-            const month = now.getMonth() + 1;
-            const day = now.getDate();
-            const weekday = now.getDay(); // 0=Sunday, 1=Monday, ...
-            const weekdayNames = ['日', '一', '二', '三', '四', '五', '六'];
+            try {
+                const now = getBeijingTime();
+                const week = getWeekNumber(now);
+                const month = now.getMonth() + 1;
+                const day = now.getDate();
+                const weekday = now.getDay(); // 0=Sunday
 
-            const weeklyHeader = document.getElementById('weeklyHeaderInfo');
-            if (weeklyHeader) {
-                weeklyHeader.textContent = `第${week}周（周${weekdayNames[weekday]}）`;
-            }
+                const t = translations[currentLang];
+                if (t && t.dateFormats && t.weekdays) {
+                    const fmt = t.dateFormats;
+                    const weekdayName = t.weekdays[weekday];
 
-            const dailyHeader = document.getElementById('dailyHeaderInfo');
-            if (dailyHeader) {
-                dailyHeader.textContent = `${month}月${day}日（周${weekdayNames[weekday]}）`;
-            }
-        });
-        document.addEventListener('DOMContentLoaded', function () {
-            const addBtn = document.getElementById('addReplicateBtn');
-            if (addBtn) {
-                addBtn.onclick = function (e) {
-                    e.preventDefault();
-                    maxReplicateId++;
+                    const weeklyHeader = document.getElementById('weeklyHeaderInfo');
+                    if (weeklyHeader) {
+                        weeklyHeader.textContent = `${fmt.weekPrefix}${week}${fmt.weekSuffix} ${fmt.weekdayWrapper[0]}${weekdayName}${fmt.weekdayWrapper[1]}`;
+                    }
 
-                    collectionData[maxReplicateId] = {}; // 初始化数据结构
-
-                    // 添加选项到下拉菜单
-                    const select = document.getElementById('replicateSelect');
-                    const option = document.createElement('option');
-                    option.value = maxReplicateId;
-                    option.textContent = `样本 #${maxReplicateId}`;
-                    select.appendChild(option);
-
-                    // 自动切换到新样本
-                    select.value = maxReplicateId;
-                    currentReplicate = maxReplicateId;
-                    loadReplicateData(currentReplicate);
-                };
+                    const dailyHeader = document.getElementById('dailyHeaderInfo');
+                    if (dailyHeader) {
+                        dailyHeader.textContent = `${month}${fmt.monthSuffix}${day}${fmt.daySuffix} ${fmt.weekdayWrapper[0]}${weekdayName}${fmt.weekdayWrapper[1]}`;
+                    }
+                }
+            } catch (e) {
+                console.error('Date header update failed:', e);
             }
         });
+
 
         // 获取指标配置
         let indicators = [];
@@ -645,11 +644,7 @@
             };
         }
 
-        function setupAddButtons() {
-            // Weekly samples are now managed in Facility Settings
-            // Daily data doesn't need sample management
-            // This function is kept for potential future use
-        }
+
 
         // 生成输入框
         function generateInputFields() {
@@ -1357,7 +1352,7 @@
                 console.log('数据结构初始化完成');
 
                 generateReplicateSelectors();
-                setupAddButtons();
+
                 console.log('样本选择器生成完成');
 
                 generateInputFields();
