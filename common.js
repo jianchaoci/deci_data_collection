@@ -498,7 +498,7 @@ async function initAuth() {
 
 async function signIn() {
 	// Redirect to auth page instead of using prompt
-	window.location.href = 'auth.html';
+	window.location.href = 'index.html';
 }
 
 // Initialize common elements and layout
