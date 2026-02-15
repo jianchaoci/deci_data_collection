@@ -637,9 +637,8 @@
                     console.error('Signout error:', e);
                 }
 
-                // 不再进行任何路径跳转，直接刷新当前页面
-                // 既然您当前能看到这个页面，刷新它绝对不会 404
-                window.location.href = window.location.pathname;
+                // 文档建议：验证成功后，跳回最干净的生产环境根路径
+                window.location.href = 'https://jianchaoci.github.io/deci_data_collection/';
                 return;
             }
 
@@ -914,8 +913,8 @@
                         const { data, error } = await supabase.auth.signUp({
                             email, password,
                             options: {
-                                // 强制硬编码地址，不再依赖任何动态计算
-                                redirectTo: 'https://jianchaoci.github.io/deci_data_collection/index.html?type=signup'
+                                // 严格遵循文档：带 HTTPS 协议、完整域名、以及末尾带斜杠的子路径
+                                redirectTo: 'https://jianchaoci.github.io/deci_data_collection/'
                             }
                         });
                         if (error) throw error;
