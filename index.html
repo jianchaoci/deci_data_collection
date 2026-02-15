@@ -604,6 +604,11 @@
 
     <script src="common.js?v=fix42"></script>
     <script>
+        // Canonical app base URL for auth callbacks (prevents GitHub Pages root 404)
+        const APP_BASE_URL = window.location.hostname === 'jianchaoci.github.io'
+            ? 'https://jianchaoci.github.io/deci_data_collection'
+            : window.location.href.split('?')[0].split('#')[0].replace(/index\.html$/, '').replace(/\/$/, '');
+
         // Init
         document.addEventListener('DOMContentLoaded', async () => {
             // Check both search params and hash for auth events
@@ -909,8 +914,8 @@
                         const { data, error } = await supabase.auth.signUp({
                             email, password,
                             options: {
-                                // 无论在什么环境，都直接使用当前页面的完整地址作为重定向，最简单且必中
-                                redirectTo: window.location.href.split('#')[0].split('?')[0] + '?type=signup'
+                                // Use explicit callback URL to avoid GitHub Pages root fallback
+                                redirectTo: APP_BASE_URL + '/index.html?type=signup'
                             }
                         });
                         if (error) throw error;
@@ -977,8 +982,8 @@
                         localStorage.setItem('reset_email', email);
 
                         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                            // 同样直接基于当前页面路径推导 reset-password.html
-                            redirectTo: window.location.href.split('?')[0].split('#')[0].replace(/index\.html$/, '').replace(/\/$/, '') + '/reset-password.html'
+                            // Use explicit callback URL to avoid GitHub Pages root fallback
+                            redirectTo: APP_BASE_URL + '/reset-password.html'
                         });
                         if (error) throw error;
 
