@@ -623,7 +623,7 @@
             }
 
             if (type === 'signup') {
-                // 验证成功后的处理：强制清理并跳转
+                // 验证成功后的处理：
                 try {
                     await supabase.auth.signOut();
                     localStorage.clear();
@@ -632,9 +632,9 @@
                     console.error('Signout error:', e);
                 }
 
-                // 强制跳回首页，并去掉所有参数
-                const homeBase = window.location.hostname.includes('github.io') ? '/deci_data_collection/' : '/';
-                window.location.href = window.location.origin + homeBase;
+                // 不再进行任何路径跳转，直接刷新当前页面
+                // 既然您当前能看到这个页面，刷新它绝对不会 404
+                window.location.href = window.location.pathname;
                 return;
             }
 
@@ -906,19 +906,11 @@
                     hideMessage();
 
                     try {
-                        // 注册
-                        const getRedirectURL = (appType) => {
-                            // 确定当前环境的根路径
-                            const isGithub = window.location.hostname.includes('github.io');
-                            const root = isGithub ? '/deci_data_collection/' : '/';
-                            // 显式拼接 index.html 确保 100% 匹配白名单且不 404
-                            return window.location.origin + root + 'index.html?type=' + appType;
-                        };
-
                         const { data, error } = await supabase.auth.signUp({
                             email, password,
                             options: {
-                                redirectTo: getRedirectURL('signup')
+                                // 无论在什么环境，都直接使用当前页面的完整地址作为重定向，最简单且必中
+                                redirectTo: window.location.href.split('#')[0].split('?')[0] + '?type=signup'
                             }
                         });
                         if (error) throw error;
@@ -985,10 +977,8 @@
                         localStorage.setItem('reset_email', email);
 
                         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                            // 重置密码同样强制使用显式路径
-                            redirectTo: (window.location.hostname.includes('github.io')
-                                ? window.location.origin + '/deci_data_collection/'
-                                : window.location.origin + '/') + 'reset-password.html'
+                            // 同样直接基于当前页面路径推导 reset-password.html
+                            redirectTo: window.location.href.split('?')[0].split('#')[0].replace(/index\.html$/, '').replace(/\/$/, '') + '/reset-password.html'
                         });
                         if (error) throw error;
 
