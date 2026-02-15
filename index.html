@@ -924,14 +924,19 @@
                         }
 
                         // Registration successful
-                        // Sign out immediately (don't auto-login)
+                        // 强制登出并彻底清除本地缓存，确保用户必须通过邮件验证后才能从登录页面进入
                         await supabase.auth.signOut();
+                        for (let key in localStorage) {
+                            if (key.includes('supabase.auth.token')) {
+                                localStorage.removeItem(key);
+                            }
+                        }
 
                         if (data.session) {
-                            // Email confirmation disabled, account created immediately
-                            showMessage('✅ 注册成功！请使用您的邮箱和密码登录。', true);
+                            // 即使返回了 session (有些配置会自动返回), 我们也提示需要验证并重定向
+                            showMessage('✅ 注册成功！请查收邮件验证后登录。', true);
                         } else {
-                            // Email confirmation required
+                            // 标准流程：Email confirmation required
                             showMessage('✅ 注册成功！请查收邮件验证后登录。', true);
                         }
 
