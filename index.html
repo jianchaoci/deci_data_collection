@@ -982,8 +982,8 @@
                         localStorage.setItem('reset_email', email);
 
                         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                            // Use explicit callback URL to avoid GitHub Pages root fallback
-                            redirectTo: APP_BASE_URL + '/reset-password.html'
+                            // 同样强制硬编码重置路径，彻底消灭 404
+                            redirectTo: 'https://jianchaoci.github.io/deci_data_collection/reset-password.html'
                         });
                         if (error) throw error;
 
