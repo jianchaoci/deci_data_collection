@@ -912,8 +912,11 @@
 
                     try {
                         const { data, error } = await supabase.auth.signUp({
-                            email, password
-                            // 不再显式传递 redirectTo，Supabase 将默认使用后台配置的正确 Site URL
+                            email, password,
+                            options: {
+                                // 强制硬编码地址，不再依赖任何动态计算
+                                redirectTo: 'https://jianchaoci.github.io/deci_data_collection/index.html?type=signup'
+                            }
                         });
                         if (error) throw error;
 
