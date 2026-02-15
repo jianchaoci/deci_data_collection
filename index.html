@@ -630,9 +630,8 @@
                     sessionStorage.clear();
                 } catch (e) { console.error('Signout error:', e); }
 
-                // 验证成功后，强制跳转回不带参数的页面
-                const finalHome = window.location.href.split('?')[0].split('#')[0];
-                window.location.href = finalHome;
+                // 验证成功后，直接跳回当前页面的纯净根路径（最稳妥）
+                window.location.href = window.location.origin + window.location.pathname;
                 return;
             }
 
@@ -906,22 +905,19 @@
 
                     try {
                         // 注册
-                        const getRedirectURL = (param) => {
-                            // 暴力对齐方案：强制拼凑出带 index.html 的完整地址
-                            const origin = window.location.origin;
-                            const path = window.location.pathname;
-                            // 确保路径包含仓库名并以 index.html 结尾
-                            let base = origin + path;
-                            if (!base.endsWith('index.html')) {
-                                base = base.endsWith('/') ? base + 'index.html' : base + '/index.html';
+                        const getRedirectURL = (appType) => {
+                            // 直接使用目录地址，不再强加 index.html，让 GitHub Pages 自动处理
+                            let base = window.location.origin + window.location.pathname;
+                            if (base.includes('.html')) {
+                                base = base.substring(0, base.lastIndexOf('/') + 1);
                             }
-                            return base + '?' + param;
+                            return base + '?type=' + appType;
                         };
 
                         const { data, error } = await supabase.auth.signUp({
                             email, password,
                             options: {
-                                redirectTo: getRedirectURL('type=signup')
+                                redirectTo: getRedirectURL('signup')
                             }
                         });
                         if (error) throw error;
