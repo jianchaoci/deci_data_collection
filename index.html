@@ -623,18 +623,20 @@
             }
 
             if (type === 'signup') {
-                // Email confirmation successful - force complete logout to prevent auto-login
+                // 验证成功后的处理：强制清理并跳转
                 try {
                     await supabase.auth.signOut();
                     localStorage.clear();
                     sessionStorage.clear();
-                } catch (e) { console.error('Signout error:', e); }
+                } catch (e) {
+                    console.error('Signout error:', e);
+                }
 
-                // 验证成功后，直接跳回当前页面的纯净根路径（最稳妥）
-                window.location.href = window.location.origin + window.location.pathname;
+                // 强制跳回首页，并去掉所有参数
+                const homeBase = window.location.hostname.includes('github.io') ? '/deci_data_collection/' : '/';
+                window.location.href = window.location.origin + homeBase;
                 return;
             }
-
 
 
             const { data: { session } } = await supabase.auth.getSession();
@@ -906,12 +908,11 @@
                     try {
                         // 注册
                         const getRedirectURL = (appType) => {
-                            // 直接使用目录地址，不再强加 index.html，让 GitHub Pages 自动处理
-                            let base = window.location.origin + window.location.pathname;
-                            if (base.includes('.html')) {
-                                base = base.substring(0, base.lastIndexOf('/') + 1);
-                            }
-                            return base + '?type=' + appType;
+                            // 确定当前环境的根路径
+                            const isGithub = window.location.hostname.includes('github.io');
+                            const root = isGithub ? '/deci_data_collection/' : '/';
+                            // 显式拼接 index.html 确保 100% 匹配白名单且不 404
+                            return window.location.origin + root + 'index.html?type=' + appType;
                         };
 
                         const { data, error } = await supabase.auth.signUp({
@@ -984,8 +985,10 @@
                         localStorage.setItem('reset_email', email);
 
                         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                            // 强制指向 reset-password.html
-                            redirectTo: window.location.href.split('?')[0].split('#')[0].replace(/index\.html$/, '').replace(/\/$/, '') + '/reset-password.html'
+                            // 重置密码同样强制使用显式路径
+                            redirectTo: (window.location.hostname.includes('github.io')
+                                ? window.location.origin + '/deci_data_collection/'
+                                : window.location.origin + '/') + 'reset-password.html'
                         });
                         if (error) throw error;
 
