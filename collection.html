@@ -384,7 +384,7 @@
             </div>
 
             <!-- Facility Settings Section -->
-            <div class="section-card collapsed">
+            <div class="section-card collapsed" id="facilitySettingsCard">
                 <div class="section-header" onclick="toggleSection(this.parentElement)"
                     data-lang="collectionPage.facilitySettings">⚙️ 温室参数设置</div>
                 <div class="section-content">
@@ -477,6 +477,74 @@
 
         </div>
     </div>
+
+    <!-- Custom Center Modal -->
+    <div id="customModalOverlay"
+        style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(8px); z-index: 10000; justify-content: center; align-items: center; padding: 20px;">
+
+        <div style="background: rgba(255, 255, 255, 0.95); width: 100%; max-width: 400px; border-radius: 24px; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.8);
+            overflow: hidden; animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; transform-origin: center;">
+
+            <div
+                style="padding: 24px 28px; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 16px;">
+                <div style="width: 48px; height: 48px; border-radius: 16px; background: #fffbeb; 
+                    display: flex; align-items: center; justify-content: center; flex-shrink: 0; 
+                    border: 1px solid #fcd34d;">
+                    <span style="font-size: 24px;">⚠️</span>
+                </div>
+                <div>
+                    <h3 id="modalTitle" style="margin: 0; font-size: 1.25rem; color: #1f2937; font-weight: 700;">提示</h3>
+                </div>
+            </div>
+
+            <div id="modalMessage" style="padding: 24px 28px; color: #4b5563; font-size: 1rem; line-height: 1.6;">
+                Message...
+            </div>
+
+            <div
+                style="padding: 20px 28px; background: #f9fafb; display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid rgba(0,0,0,0.05);">
+                <button id="modalCancelBtn" style="padding: 10px 20px; border-radius: 14px; border: 1px solid #e5e7eb; background: white; 
+                    color: #4b5563; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                    取消
+                </button>
+                <button id="modalConfirmBtn" style="padding: 10px 24px; border-radius: 14px; border: none; 
+                    background: linear-gradient(135deg, #10b981 0%, #059669 100%); 
+                    color: white; font-weight: 600; cursor: pointer; 
+                    box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3); transition: all 0.2s;">
+                    确认提交
+                </button>
+            </div>
+        </div>
+    </div>
+    <style>
+        @keyframes popIn {
+            0% {
+                transform: scale(0.9) translateY(20px);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        #modalCancelBtn:hover {
+            background: #f3f4f6;
+            transform: translateY(-1px);
+        }
+
+        #modalConfirmBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px -2px rgba(16, 185, 129, 0.4);
+        }
+
+        #modalConfirmBtn:active {
+            transform: translateY(0);
+        }
+    </style>
+
     <script src="common.js?v=fix42"></script>
     <script>
         setActiveNav('collection');
@@ -648,6 +716,8 @@
 
         // 生成输入框
         function generateInputFields() {
+            const t = translations[currentLang].collectionPage;
+
             const weeklyContainer = document.getElementById('weeklyInputs');
             const dailyContainer = document.getElementById('dailyInputs');
             const constantContainer = document.getElementById('constantInputs');
@@ -683,20 +753,24 @@
                 label.className = 'input-label';
                 label.textContent = `${ind.name} (${ind.unit})`;
 
-                const rangeSpan = document.createElement('span');
-                rangeSpan.className = 'input-range';
-                rangeSpan.textContent = `[${ind.min}-${ind.max}]`;
-
                 header.appendChild(checkbox);
                 header.appendChild(label);
-                header.appendChild(rangeSpan);
+
+                // Show range only for limited fields
+                const unlimitedFields = ['dripper_count', 'acidity', 'daily_yield_kg', 'weekly_yield_kg', 'greenhouse_area_m2', 'damage_amount', 'total_dripper_count'];
+                if (!unlimitedFields.includes(ind.field)) {
+                    const rangeSpan = document.createElement('span');
+                    rangeSpan.className = 'input-range';
+                    rangeSpan.textContent = `[${ind.min}-${ind.max}]`;
+                    header.appendChild(rangeSpan);
+                }
 
                 // Input field
                 const input = document.createElement('input');
                 input.type = 'number';
                 input.className = 'input-field';
                 input.id = `input-${ind.field}`;
-                input.placeholder = `点击左侧复选框解锁输入`;
+                input.placeholder = t.unlockInput;
                 input.min = ind.min;
                 input.max = ind.max;
                 input.step = ind.step;
@@ -713,18 +787,24 @@
                                 const otherInput = document.getElementById(otherInputId);
                                 if (otherInput) {
                                     otherInput.disabled = true;
-                                    otherInput.placeholder = `已锁定`;
+                                    otherInput.placeholder = t.locked;
                                     otherInput.classList.remove('active-input');
                                 }
                             }
                         });
 
                         input.disabled = false;
-                        input.placeholder = `请输入 ${ind.min} 到 ${ind.max}`;
+                        const unlimitedFields = ['dripper_count', 'acidity', 'daily_yield_kg', 'weekly_yield_kg', 'greenhouse_area_m2', 'damage_amount', 'total_dripper_count'];
+                        if (unlimitedFields.includes(ind.field)) {
+                            input.placeholder = t.enterValue;
+                        } else {
+                            input.placeholder = `${t.enterValue}${ind.min}${t.to}${ind.max}`;
+                        }
+
                         setTimeout(() => input.focus(), 10);
                     } else {
                         input.disabled = true;
-                        input.placeholder = `无数据 (点击解锁)`;
+                        input.placeholder = t.unlockInput;
                         input.classList.remove('error');
                         if (input.value === '') {
                             const repId = ind.frequency === 'weekly' ? currentWeeklyRep :
@@ -758,7 +838,11 @@
                     }
 
                     this.classList.add('has-value');
-                    if (val < ind.min || val > ind.max) {
+
+                    const unlimitedFields = ['dripper_count', 'acidity', 'daily_yield_kg', 'weekly_yield_kg', 'greenhouse_area_m2', 'damage_amount', 'total_dripper_count'];
+                    const isUnlimited = unlimitedFields.includes(ind.field);
+
+                    if (!isUnlimited && (val < ind.min || val > ind.max)) {
                         this.classList.add('error');
                     } else {
                         this.classList.remove('error');
@@ -783,6 +867,8 @@
 
         // 加载指定类型的数据
         function loadDataForType(type, repId) {
+            const t = translations[currentLang].collectionPage;
+
             indicators.forEach(ind => {
                 if (ind.frequency !== type) return;
 
@@ -815,11 +901,47 @@
                         checkbox.checked = false;
                         input.disabled = true;
                         input.value = '';
-                        input.placeholder = `点击左侧复选框解锁输入`;
+                        input.placeholder = t.unlockInput;
                         input.classList.remove('has-value');
                         input.classList.remove('error');
                     }
                 }
+            });
+        }
+
+        // Custom Modal Logic
+        function showCustomConfirm(title, messageHtml, onConfirm, onCancel) {
+            const overlay = document.getElementById('customModalOverlay');
+            const titleEl = document.getElementById('modalTitle');
+            const msgEl = document.getElementById('modalMessage');
+            const confirmBtn = document.getElementById('modalConfirmBtn');
+            const cancelBtn = document.getElementById('modalCancelBtn');
+
+            titleEl.textContent = title;
+            msgEl.innerHTML = messageHtml;
+
+            overlay.style.display = 'flex';
+
+            // Reset listeners
+            const newConfirm = confirmBtn.cloneNode(true);
+            const newCancel = cancelBtn.cloneNode(true);
+            confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
+            cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+
+            newConfirm.onclick = () => {
+                overlay.style.display = 'none';
+                if (onConfirm) onConfirm();
+            };
+
+            newCancel.onclick = () => {
+                overlay.style.display = 'none';
+                if (onCancel) onCancel();
+            };
+        }
+
+        function asyncConfirm(title, message) {
+            return new Promise((resolve) => {
+                showCustomConfirm(title, message, () => resolve(true), () => resolve(false));
             });
         }
 
@@ -838,6 +960,18 @@
             btn.disabled = true;
 
             try {
+                // --- 强制检查温室参数设置 ---
+                const area = collectionData.constants?.greenhouse_area_m2;
+                const dripper = collectionData.constants?.dripper_count;
+
+                if (!area || area <= 0 || !dripper || dripper <= 0) {
+                    alert('⚠️ 请先在「温室参数设置」中填入【滴箭个数】和【温室面积】并保存，否则无法进行后续计算。');
+                    toggleSection(document.getElementById('facilitySettingsCard')); // 自动展开设置区域
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                    return;
+                }
+
                 const now = getBeijingTime();
                 const year = now.getFullYear();
                 const week = getWeekNumber(now);
@@ -857,18 +991,21 @@
                     if (!sampleName) throw new Error('无法确定样本名称，请先配置样本');
                 } else {
                     currentRep = 1; // Daily data uses slot 1
-                    sampleName = 'Facility'; // Daily data is facility-wide
                 }
 
                 // Prepare Payload
                 const payload = {
                     user_id: currentUser.id,
                     project_name: currentProjectName, // 项目隔离
-                    sample_name: sampleName
                 };
+
+                if (type === 'weekly') {
+                    payload.sample_name = sampleName;
+                }
 
                 // Add Time/Date Info
                 if (type === 'weekly') {
+                    payload.date = date;
                     payload.year = year;
                     payload.week = week;
                 } else {
@@ -881,6 +1018,7 @@
                 if (!collectionData[currentRep]) collectionData[currentRep] = {};
                 const currentData = collectionData[currentRep];
                 let hasData = false;
+                let missingFields = [];
 
                 indicators.forEach(ind => {
                     // Only process indicators matching the current frequency (type)
@@ -889,25 +1027,44 @@
                     if (ind.isStatistic || ind.isConstant) return;
 
                     const value = currentData[ind.field];
-                    if (value !== null && value !== undefined) {
+                    // Check strict null/undefined/empty string
+                    if (value !== null && value !== undefined && value !== '') {
                         const cnName = translations['zh'].indicators[ind.field];
                         if (cnName) {
                             payload[cnName] = value;
                             hasData = true;
                         }
+                    } else {
+                        // Collect missing field name for warning
+                        missingFields.push(ind.name);
                     }
                 });
 
                 if (!hasData) throw new Error('没有可保存的数据');
 
+                // Check completeness
+                if (missingFields.length > 0) {
+                    const title = '数据不完整提醒';
+                    const message = `当前有 <strong style="color: #ef4444;">${missingFields.length}</strong> 项数据未填报：<br/><br/>` +
+                        `<div style="max-height: 100px; overflow-y: auto; background: #f3f4f6; padding: 10px; border-radius: 8px; font-size: 0.9rem; color: #374151;">${missingFields.join('、')}</div><br/>` +
+                        `是否确认提交？`;
+
+                    const confirmed = await asyncConfirm(title, message);
+                    if (!confirmed) {
+                        btn.textContent = originalText;
+                        btn.disabled = false;
+                        return;
+                    }
+                }
+
                 // Target Table and Conflict Key
                 const tableName = type === 'weekly' ? 'weekly_phenotypes' : 'daily_phenotypes';
                 // Schema V2 Unique Constraints:
                 // Weekly: (user_id, project_name, year, week, sample_name)
-                // Daily: (user_id, project_name, date, sample_name)
+                // Daily: (user_id, project_name, date)
                 const conflictKey = type === 'weekly'
                     ? 'user_id, project_name, year, week, sample_name'
-                    : 'user_id, project_name, date, sample_name';
+                    : 'user_id, project_name, date';
 
                 // Send Request
                 const { error } = await supabase
@@ -1056,8 +1213,10 @@
                     indicators.forEach(ind => {
                         if (ind.frequency === 'constant') {
                             const cnName = translations['zh'].indicators[ind.field];
-                            if (data[cnName] !== undefined) {
-                                collectionData.constants[ind.field] = data[cnName];
+                            const val = data[cnName];
+
+                            if (val !== undefined && val !== null && val !== "") {
+                                collectionData.constants[ind.field] = val;
 
                                 // Update UI
                                 const input = document.getElementById(`input-${ind.field}`);
@@ -1065,28 +1224,33 @@
                                 if (input && checkbox) {
                                     checkbox.checked = false;
                                     input.disabled = true;
-                                    input.value = data[cnName];
+                                    input.value = val;
                                     input.classList.add('has-value');
+                                }
+                            } else {
+                                // Clear UI if no value
+                                const input = document.getElementById(`input-${ind.field}`);
+                                if (input) {
+                                    input.value = '';
+                                    input.classList.remove('has-value');
                                 }
                             }
                         }
                     });
 
                     // Load sample names
-                    if (data.sample_names && Array.isArray(data.sample_names)) {
-                        collectionData.sampleNames = data.sample_names;
-                    } else {
-                        collectionData.sampleNames = [];
-                    }
+                    collectionData.sampleNames = (data.sample_names && Array.isArray(data.sample_names)) ? data.sample_names : [];
                     renderSampleNames();
                     updateWeeklySelectorWithPredefinedNames();
 
-                    // Check if greenhouse area is set
+                    // Check if critical settings are missing
                     const area = data["温室面积"];
-                    if (!area || area <= 0) {
+                    const dripperCount = data["滴箭个数"];
+                    if (!area || area <= 0 || !dripperCount || dripperCount <= 0) {
                         needsSetup = true;
                     }
-                } else {
+                }
+                else {
                     // No facility settings yet
                     collectionData.sampleNames = [];
                     renderSampleNames();
@@ -1251,7 +1415,7 @@
 
             try {
                 // 1. 检查温室面积是否变化
-                const newArea = collectionData.constants?.greenhouseArea;
+                const newArea = collectionData.constants?.greenhouse_area_m2;
                 let oldArea = null;
 
                 // 从数据库获取旧值

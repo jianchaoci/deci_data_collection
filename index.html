@@ -418,6 +418,46 @@
                 font-size: 0.95rem;
             }
         }
+
+        /* Tab Button Styles */
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #6b7280;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #059669;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .tab-content {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 
@@ -449,26 +489,73 @@
         </div>
         <div class="welcome-container" style="width: 100%;">
             <div class="login-card">
-                <h2 class="login-title">欢迎登录</h2>
-                <p class="login-subtitle">请登录以访问系统功能</p>
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label class="form-label" for="email">邮箱地址</label>
-                        <input type="email" id="email" class="form-input" placeholder="your@email.com" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="password">密码</label>
-                        <input type="password" id="password" class="form-input" placeholder="••••••••" required>
-                    </div>
-                    <button type="submit" class="login-btn" id="loginBtn">登录</button>
-                </form>
-                <div class="divider">或</div>
-                <div style="display: flex; gap: 10px; flex-direction: column;">
-                    <button type="button" class="login-btn" id="guestBtn"
-                        style="background: white; color: #059669; border: 2px solid #059669;">👀 游客访问 (无需登录)</button>
-                    <button type="button" class="login-btn" id="registerBtn"
-                        style="background: linear-gradient(135deg, #059669, #047857);">注册新账号</button>
+                <!-- Tab Buttons -->
+                <div
+                    style="display: flex; gap: 10px; margin-bottom: 20px; background: #f3f4f6; padding: 4px; border-radius: 12px;">
+                    <button type="button" class="tab-btn active" data-tab="login">登录</button>
+                    <button type="button" class="tab-btn" data-tab="register">注册</button>
+                    <button type="button" class="tab-btn" data-tab="reset">忘记密码</button>
                 </div>
+
+                <!-- Login Form -->
+                <div id="loginTab" class="tab-content">
+                    <h2 class="login-title">欢迎登录</h2>
+                    <p class="login-subtitle">请登录以访问系统功能</p>
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label class="form-label" for="loginEmail">📧 邮箱地址</label>
+                            <input type="email" id="loginEmail" class="form-input" placeholder="your@email.com"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="loginPassword">🔒 密码</label>
+                            <input type="password" id="loginPassword" class="form-input" placeholder="••••••••"
+                                required>
+                        </div>
+                        <button type="submit" class="login-btn" id="loginBtn">登录</button>
+                    </form>
+                </div>
+
+                <!-- Register Form -->
+                <div id="registerTab" class="tab-content" style="display: none;">
+                    <h2 class="login-title">注册新账号</h2>
+                    <p class="login-subtitle">创建您的账户</p>
+                    <form id="registerForm">
+                        <div class="form-group">
+                            <label class="form-label" for="registerEmail">📧 邮箱地址</label>
+                            <input type="email" id="registerEmail" class="form-input" placeholder="your@email.com"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="registerPassword">🔒 密码</label>
+                            <input type="password" id="registerPassword" class="form-input" placeholder="至少6位" required
+                                minlength="6">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="registerPasswordConfirm">🔒 确认密码</label>
+                            <input type="password" id="registerPasswordConfirm" class="form-input" placeholder="再次输入密码"
+                                required>
+                        </div>
+                        <button type="submit" class="login-btn" id="registerSubmitBtn"
+                            style="background: linear-gradient(135deg, #059669, #047857);">注册</button>
+                    </form>
+                </div>
+
+                <!-- Forgot Password Form -->
+                <div id="resetTab" class="tab-content" style="display: none;">
+                    <h2 class="login-title">重置密码</h2>
+                    <p class="login-subtitle">我们将发送重置链接到您的邮箱</p>
+                    <form id="resetPasswordForm">
+                        <div class="form-group">
+                            <label class="form-label" for="resetEmail">📧 邮箱地址</label>
+                            <input type="email" id="resetEmail" class="form-input" placeholder="your@email.com"
+                                required>
+                        </div>
+                        <button type="submit" class="login-btn" id="resetBtn"
+                            style="background: linear-gradient(135deg, #3b82f6, #2563eb);">发送重置链接</button>
+                    </form>
+                </div>
+
                 <div id="statusMessage" class="status-message"></div>
             </div>
         </div>
@@ -492,10 +579,26 @@
                     <!-- Projects will be injected here -->
                 </div>
 
-                <button class="btn-secondary"
-                    onclick="showModal({ title: '功能待添加', message: '创建新项目功能即将上线，敬请期待！', icon: '🚧', buttonText: '知道了' })">+
-                    创建新项目 (Create New Project)</button>
+
+                <div id="createProjectSection" style="margin-top: 20px;">
+                    <button id="showCreateBtn" class="btn-secondary" onclick="toggleCreateForm(true)">+ 创建新项目 (Create
+                        New Project)</button>
+
+                    <div id="createProjectForm"
+                        style="display: none; background: #f9fafb; padding: 20px; border-radius: 12px; border: 1px solid #e5e7eb; margin-top: 10px;">
+                        <input type="text" id="newProjectName" class="form-input" placeholder="输入项目名称 (如: 翠湖温室)"
+                            style="margin-bottom: 15px; border: 1px solid #d1d5db;">
+                        <div style="display: flex; gap: 12px;">
+                            <button class="login-btn" onclick="submitNewProject()"
+                                style="flex: 1; padding: 12px; font-size: 0.95rem; background: #059669; margin-top: 0;">确认创建</button>
+                            <button class="login-btn" onclick="toggleCreateForm(false)"
+                                style="flex: 1; padding: 12px; font-size: 0.95rem; margin-top: 0; background: #ef4444; color: white;">取消</button>
+                        </div>
+                    </div>
+
+                </div>
             </div>
+
         </div>
     </div>
 
@@ -503,6 +606,38 @@
     <script>
         // Init
         document.addEventListener('DOMContentLoaded', async () => {
+            // Check both search params and hash for auth events
+            const urlParams = new URLSearchParams(window.location.search);
+            const hashParams = new URLSearchParams(window.location.hash.substring(1)); // Remove '#'
+
+            const type = urlParams.get('type') || hashParams.get('type');
+            const error = urlParams.get('error') || hashParams.get('error');
+            const errorDescription = urlParams.get('error_description') || hashParams.get('error_description');
+
+            // Handle Error case (e.g., link expired)
+            if (error === 'access_denied' || error) {
+                alert('❌ 验证失败: ' + (errorDescription || '链接已失效或已过有效期'));
+                window.history.replaceState({}, document.title, window.location.pathname);
+                window.location.reload();
+                return;
+            }
+
+            if (type === 'signup') {
+                // Email confirmation successful - force complete logout to prevent auto-login
+                try {
+                    await supabase.auth.signOut();
+                    localStorage.clear();
+                    sessionStorage.clear();
+                } catch (e) { console.error('Signout error:', e); }
+
+                window.history.replaceState({}, document.title, window.location.pathname);
+                alert('✅ 邮箱验证成功！\n\n请使用您的账号和密码登录。');
+                window.location.href = window.location.pathname;
+                return;
+            }
+
+
+
             const { data: { session } } = await supabase.auth.getSession();
 
             const loginView = document.getElementById('loginView');
@@ -546,8 +681,7 @@
 
         async function loadProjects() {
             const listFn = document.getElementById('projectList');
-            listFn.innerHTML = '<div style="color:#999;">正在获取项目列表...</div>';
-            const DEFAULT_PROJECT = '翠湖温室';
+            listFn.innerHTML = '<div style="color:#999; padding: 20px;">正在获取项目列表...</div>';
 
             try {
                 const { data, error } = await supabase
@@ -556,23 +690,23 @@
                     .eq('user_id', currentUser.id);
 
                 if (error) throw error;
-                let projects = data.map(p => p.project_name);
-                if (!projects.includes(DEFAULT_PROJECT)) {
-                    projects.unshift(DEFAULT_PROJECT);
-                } else {
-                    projects = projects.filter(p => p !== DEFAULT_PROJECT);
-                    projects.unshift(DEFAULT_PROJECT);
-                }
+
+                const projects = data.map(p => p.project_name);
                 renderProjects(projects);
             } catch (err) {
                 console.error(err);
-                renderProjects([DEFAULT_PROJECT]);
+                renderProjects([]);
             }
         }
 
         function renderProjects(projects) {
             const listFn = document.getElementById('projectList');
             listFn.innerHTML = '';
+
+            if (projects.length === 0) {
+                return;
+            }
+
             projects.forEach((name, index) => {
                 const btn = document.createElement('div');
                 btn.className = 'project-btn';
@@ -583,15 +717,11 @@
                 if (name.includes('实验')) icon = '🔬';
                 if (name.includes('田间')) icon = '🌾';
 
-                // Default Badge
-                const isDefault = name === '翠湖温室';
-
                 btn.innerHTML = `
                     <div style="display:flex; align-items:center; gap:15px;">
                         <div style="font-size:1.5rem; background:#f0fdf4; width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:10px;">${icon}</div>
                         <div style="display:flex; flex-direction:column; align-items:flex-start;">
-                            <span style="font-size:1.1rem; color:#111827;">${name}</span>
-                            ${isDefault ? '<span style="font-size:0.75rem; color:#059669;">默认工作区</span>' : ''}
+                            <span style="font-size:1.1rem; color:#111827; font-weight: 500;">${name}</span>
                         </div>
                     </div>
                     <span class="arrow">➜</span>
@@ -601,8 +731,76 @@
             });
         }
 
-        async function createProject() {
-            alert('即将上线');
+        function toggleCreateForm(show) {
+            const form = document.getElementById('createProjectForm');
+            const btn = document.getElementById('showCreateBtn');
+            const input = document.getElementById('newProjectName');
+
+            if (show) {
+                form.style.display = 'block';
+                btn.style.display = 'none';
+                input.focus();
+            } else {
+                form.style.display = 'none';
+                btn.style.display = 'block';
+                input.value = '';
+            }
+        }
+
+        async function submitNewProject() {
+            const input = document.getElementById('newProjectName');
+            const projectName = input.value.trim();
+
+            if (!projectName) {
+                alert('请输入项目名称');
+                return;
+            }
+
+            const submitBtn = document.querySelector('#createProjectForm .login-btn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '创建中...';
+
+            try {
+                // Check if project exists
+                const { data: existing } = await supabase
+                    .from('facility_settings')
+                    .select('project_name')
+                    .eq('project_name', projectName)
+                    .eq('user_id', currentUser.id)
+                    .single();
+
+                if (existing) {
+                    alert('项目名称已存在，请换一个名称。');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '确认创建';
+                    return;
+                }
+
+                const { error } = await supabase
+                    .from('facility_settings')
+                    .insert({
+                        project_name: projectName,
+                        user_id: currentUser.id
+                    });
+
+                if (error) throw error;
+
+                alert('项目创建成功！');
+                toggleCreateForm(false);
+                loadProjects(); // Refresh list
+            } catch (err) {
+                console.error('Create project error:', err);
+                alert('创建失败: ' + err.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '确认创建';
+            }
+        }
+
+        function createProject() {
+            toggleCreateForm(true);
+            // Scroll to form if needed
+            document.getElementById('createProjectSection').scrollIntoView({ behavior: 'smooth' });
         }
 
         function selectProject(name) {
@@ -614,11 +812,8 @@
         // --- Login Handlers (Integrated) ---
         function setupLoginHandlers() {
             const loginForm = document.getElementById('loginForm');
-            const loginBtn = document.getElementById('loginBtn');
-            const registerBtn = document.getElementById('registerBtn');
-            const guestBtn = document.getElementById('guestBtn');
-            const emailInput = document.getElementById('email');
-            const passwordInput = document.getElementById('password');
+            const registerForm = document.getElementById('registerForm');
+            const resetPasswordForm = document.getElementById('resetPasswordForm');
 
             function showMessage(msg, isSuccess) {
                 const el = document.getElementById('statusMessage');
@@ -627,24 +822,41 @@
                 el.style.display = 'block';
             }
 
-            // Guest
-            if (guestBtn) {
-                guestBtn.addEventListener('click', () => {
-                    localStorage.setItem('guest_mode', 'true');
-                    window.location.reload();
-                });
+            function hideMessage() {
+                const el = document.getElementById('statusMessage');
+                el.style.display = 'none';
             }
+
+            // Tab Switching
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Update active button
+                    tabButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    // Show corresponding tab content
+                    const tab = btn.dataset.tab;
+                    document.getElementById('loginTab').style.display = tab === 'login' ? 'block' : 'none';
+                    document.getElementById('registerTab').style.display = tab === 'register' ? 'block' : 'none';
+                    document.getElementById('resetTab').style.display = tab === 'reset' ? 'block' : 'none';
+                    hideMessage();
+                });
+            });
 
             // Login
             if (loginForm) {
                 loginForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
-                    const email = emailInput.value.trim();
-                    const password = passwordInput.value;
+                    const email = document.getElementById('loginEmail').value.trim();
+                    const password = document.getElementById('loginPassword').value;
+                    const loginBtn = document.getElementById('loginBtn');
+
                     if (!email || !password) return;
 
                     loginBtn.disabled = true;
                     loginBtn.textContent = '登录中...';
+                    hideMessage();
 
                     try {
                         const { data, error } = await supabase.auth.signInWithPassword({
@@ -663,34 +875,102 @@
             }
 
             // Register
-            if (registerBtn) {
-                registerBtn.addEventListener('click', async () => {
-                    const email = emailInput.value.trim();
-                    const password = passwordInput.value;
-                    if (!email || !password) {
-                        showMessage('注册需输入邮箱和密码', false);
+            if (registerForm) {
+                registerForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('registerEmail').value.trim();
+                    const password = document.getElementById('registerPassword').value;
+                    const passwordConfirm = document.getElementById('registerPasswordConfirm').value;
+                    const registerBtn = document.getElementById('registerSubmitBtn');
+
+                    if (password !== passwordConfirm) {
+                        showMessage('两次密码输入不一致', false);
                         return;
                     }
+
                     registerBtn.disabled = true;
                     registerBtn.textContent = '注册中...';
+                    hideMessage();
 
                     try {
                         const { data, error } = await supabase.auth.signUp({
-                            email, password
+                            email, password,
+                            options: {
+                                // 动态获取完整路径（兼容 GitHub Pages 的子路径）
+                                redirectTo: window.location.origin + window.location.pathname + '?type=signup'
+                            }
                         });
                         if (error) throw error;
-                        if (data.session) {
-                            showMessage('注册成功！', true);
-                            setTimeout(() => window.location.reload(), 800);
-                        } else {
-                            showMessage('注册已提交，请查收邮件验证。', true);
+
+
+                        // Check if user already exists
+                        if (data.user && data.user.identities && data.user.identities.length === 0) {
+                            showMessage('该邮箱已注册，请直接登录', false);
                             registerBtn.disabled = false;
-                            registerBtn.textContent = '注册新账号';
+                            registerBtn.textContent = '注册';
+                            return;
                         }
+
+                        // Registration successful
+                        // Sign out immediately (don't auto-login)
+                        await supabase.auth.signOut();
+
+                        if (data.session) {
+                            // Email confirmation disabled, account created immediately
+                            showMessage('✅ 注册成功！请使用您的邮箱和密码登录。', true);
+                        } else {
+                            // Email confirmation required
+                            showMessage('✅ 注册成功！请查收邮件验证后登录。', true);
+                        }
+
+                        // Switch to login tab after 2 seconds
+                        setTimeout(() => {
+                            // Click login tab
+                            const loginTabBtn = document.querySelector('[data-tab="login"]');
+                            if (loginTabBtn) loginTabBtn.click();
+
+                            // Reset form
+                            registerBtn.disabled = false;
+                            registerBtn.textContent = '注册';
+                            document.getElementById('registerForm').reset();
+                        }, 2000);
+
                     } catch (error) {
                         showMessage('注册失败: ' + error.message, false);
                         registerBtn.disabled = false;
-                        registerBtn.textContent = '注册新账号';
+                        registerBtn.textContent = '注册';
+                    }
+                });
+            }
+
+            // Forgot Password
+            if (resetPasswordForm) {
+                resetPasswordForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('resetEmail').value.trim();
+                    const resetBtn = document.getElementById('resetBtn');
+
+                    resetBtn.disabled = true;
+                    resetBtn.textContent = '发送中...';
+                    hideMessage();
+
+                    try {
+                        // 关键：将当前邮箱保存到本地，防止重定向丢失参数
+                        localStorage.setItem('reset_email', email);
+
+                        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                            // 动态路径：支持 GitHub Pages 子路径
+                            redirectTo: window.location.origin + window.location.pathname.replace('index.html', '').replace(/\/$/, '') + '/reset-password.html'
+                        });
+                        if (error) throw error;
+
+                        showMessage('重置链接已发送到您的邮箱！', true);
+                        resetBtn.disabled = false;
+                        resetBtn.textContent = '发送重置链接';
+                    } catch (error) {
+                        showMessage('发送失败: ' + error.message, false);
+                        resetBtn.disabled = false;
+                        resetBtn.textContent = '发送重置链接';
                     }
                 });
             }

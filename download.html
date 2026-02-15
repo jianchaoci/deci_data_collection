@@ -7,6 +7,7 @@
     <title>📥 数据下载 - 得希表型采集系统</title>
     <link rel="stylesheet" href="common.css?v=fix1">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.min.js"></script>
     <style>
         .download-card {
             background: linear-gradient(145deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.92) 100%);
@@ -298,7 +299,7 @@
         </div>
     </div>
 
-    <script src="common.js?v=fix70"></script>
+    <script src="common.js?v=auth4"></script>
     <script>
         setActiveNav('download');
 
@@ -559,32 +560,84 @@
             btn.textContent = '⏳ Processing...';
 
             try {
-                // We need to fetch data from both daily and weekly tables depend on indicator frequency
-                // Group indicators by frequency
+                // Fetch Facility Settings for Header Info
+                let facilityInfo = {};
+                const { data: facilityData, error: facilityError } = await supabase
+                    .from('facility_settings')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .eq('project_name', project)
+                    .single();
+
+                if (facilityData) facilityInfo = facilityData;
+
                 const weeklyFields = [];
                 const dailyFields = [];
 
                 selectedIndicators.forEach(field => {
                     const ind = indicators.find(i => i.field === field);
                     if (ind) {
-                        if (ind.frequency === 'daily' || ind.frequency === 'constant') dailyFields.push(field);
-                        else weeklyFields.push(field);
+                        if (ind.frequency === 'daily') dailyFields.push(field);
+                        else if (ind.frequency === 'weekly') weeklyFields.push(field);
+                        // Constant fields are handled in header
                     }
                 });
 
                 // Helper to get DB column name (Chinese)
                 const getDbCol = (field) => {
-                    // Try to get from zh translation, fallback to field
                     const zhIndicators = translations.zh.indicators;
                     return zhIndicators[field] || field;
                 };
 
-                let csvContent = "";
+                // Prepare Excel Data
+                // Prepare Excel Data
+                const wb = XLSX.utils.book_new();
+                const wsData = [];
 
-                // Fetch Daily Data
+                // Track rows that need styling
+                const headerRowsIndices = []; // Table headers
+                const sectionTitleIndices = []; // Section titles (Project, Facility, Daily/Weekly Title)
+
+                // 1. Header Information
+                wsData.push([`Project: ${project}`]);
+                sectionTitleIndices.push(wsData.length - 1);
+                wsData.push([]);
+
+                // Facility Settings Table
+                wsData.push([`Facility Settings`]);
+                sectionTitleIndices.push(wsData.length - 1);
+
+                const facilityHeaders = ['Dripper Count (滴箭个数)', 'Greenhouse Area (温室面积)', 'Total Dripper Count (总滴箭个数)', 'Preset Sample Names'];
+                headerRowsIndices.push(wsData.length);
+                wsData.push(facilityHeaders);
+
+                const sampleNames = facilityInfo.sample_names || [];
+                const facilityValues = [
+                    facilityInfo['滴箭个数'] || 'N/A',
+                    facilityInfo['温室面积'] || 'N/A',
+                    facilityInfo['总滴箭个数'] || 'N/A',
+                    sampleNames.join(' | ')
+                ];
+                wsData.push(facilityValues);
+                wsData.push([]); // Spacer
+
+                // Style definition for headers and titles
+                const headerStyle = {
+                    font: { bold: true, color: { rgb: "FFFFFF" } },
+                    fill: { fgColor: { rgb: "4F81BD" } }, // Blue background
+                    alignment: { horizontal: "center", vertical: "center" },
+                    border: {
+                        top: { style: "thin", color: { rgb: "000000" } },
+                        bottom: { style: "thin", color: { rgb: "000000" } },
+                        left: { style: "thin", color: { rgb: "000000" } },
+                        right: { style: "thin", color: { rgb: "000000" } }
+                    }
+                };
+
+                // 2. Fetch Daily Data
                 if (dailyFields.length > 0) {
                     const dbFields = dailyFields.map(f => `"${getDbCol(f)}"`);
-                    const selectQuery = 'date, sample_name, ' + dbFields.join(',');
+                    const selectQuery = 'date, ' + dbFields.join(',');
 
                     const { data: dailyData, error } = await supabase
                         .from('daily_phenotypes')
@@ -598,40 +651,51 @@
                     if (error) throw error;
 
                     if (dailyData && dailyData.length > 0) {
-                        csvContent += `Daily Data (${startDate} to ${endDate})\n`;
-                        // Header
-                        const headers = ['Date', 'Sample Name', ...dailyFields.map(f => indicators.find(i => i.field === f).name)];
-                        csvContent += headers.join(',') + '\n';
-                        // Rows
+                        wsData.push([`Daily Data (${startDate} to ${endDate})`]);
+                        sectionTitleIndices.push(wsData.length - 1);
+
+                        // Header is next row
+                        headerRowsIndices.push(wsData.length);
+
+                        const headers = ['Date', 'Week', ...dailyFields.map(f => {
+                            const ind = indicators.find(i => i.field === f);
+                            return ind.unit ? `${ind.name} (${ind.unit})` : ind.name;
+                        })];
+                        wsData.push(headers);
+
+                        // Helper for week number
+                        const getWeekNumber = (dateStr) => {
+                            if (!dateStr) return '';
+                            const date = new Date(dateStr);
+                            const onejan = new Date(date.getFullYear(), 0, 1);
+                            const millisAway = date - onejan;
+                            const dayOfYear = Math.floor(millisAway / 86400000) + 1;
+                            return Math.ceil(dayOfYear / 7);
+                        };
+
                         dailyData.forEach(row => {
                             const rowData = [
                                 row.date,
-                                row.sample_name || '',
+                                getWeekNumber(row.date),
                                 ...dailyFields.map(f => {
                                     const colName = getDbCol(f);
                                     const val = row[colName];
                                     return (val !== null && val !== undefined) ? val : '';
                                 })
                             ];
-                            csvContent += rowData.join(',') + '\n';
+                            wsData.push(rowData);
                         });
-                        csvContent += '\n\n';
+                        wsData.push([]); // Spacer
                     }
                 }
 
-                // Fetch Weekly Data
+                // 3. Fetch Weekly Data
                 if (weeklyFields.length > 0) {
-                    // Start/End date to Week number?
-                    // Simplified: just fetch by year and week range?
-                    // Or fetch all for the year(s) coverd by date range and filter?
-                    // Let's filter by year first.
                     const startYear = new Date(startDate).getFullYear();
                     const endYear = new Date(endDate).getFullYear();
-                    // Just fetch matching years and then filter in memory? Or trust user wants relevant data.
-                    // Ideally we convert date to week number. But kept simple: fetch by year range.
 
                     const dbFields = weeklyFields.map(f => `"${getDbCol(f)}"`);
-                    const selectQuery = 'year, week, sample_name, ' + dbFields.join(',');
+                    const selectQuery = 'year, week, sample_name, date, ' + dbFields.join(',');
 
                     const { data: weeklyData, error } = await supabase
                         .from('weekly_phenotypes')
@@ -646,39 +710,91 @@
                     if (error) throw error;
 
                     if (weeklyData && weeklyData.length > 0) {
-                        csvContent += `Weekly Data (Years: ${startYear}-${endYear})\n`;
-                        const headers = ['Year', 'Week', 'Sample Name', ...weeklyFields.map(f => indicators.find(i => i.field === f).name)];
-                        csvContent += headers.join(',') + '\n';
+                        wsData.push([`Weekly Data (${startDate} to ${endDate})`]);
+                        sectionTitleIndices.push(wsData.length - 1);
+
+                        headerRowsIndices.push(wsData.length);
+
+                        const headers = ['Date', 'Week', 'Sample Name', ...weeklyFields.map(f => {
+                            const ind = indicators.find(i => i.field === f);
+                            return ind.unit ? `${ind.name} (${ind.unit})` : ind.name;
+                        })];
+                        wsData.push(headers);
+
                         weeklyData.forEach(row => {
                             const rowData = [
-                                row.year,
+                                row.date || '',
                                 row.week,
-                                row.sample_name || '',
+                                row.sample_name,
                                 ...weeklyFields.map(f => {
                                     const colName = getDbCol(f);
                                     const val = row[colName];
                                     return (val !== null && val !== undefined) ? val : '';
                                 })
                             ];
-                            csvContent += rowData.join(',') + '\n';
+                            wsData.push(rowData);
                         });
+                        wsData.push([]);
                     }
                 }
 
-                if (!csvContent) {
+                if (wsData.length <= 7) {
                     alert('未找到数据 (No data found)');
                     return;
                 }
 
-                // Trigger Download
-                const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
-                const link = document.createElement("a");
-                const url = URL.createObjectURL(blob);
-                link.setAttribute("href", url);
-                link.setAttribute("download", `${project}_data_${startDate}_${endDate}.csv`);
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                // Create Worksheet
+                const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+                // Apply Styles to Headers
+                headerRowsIndices.forEach(rowIndex => {
+                    const rowData = wsData[rowIndex];
+                    if (rowData) {
+                        rowData.forEach((_, colIndex) => {
+                            const cellRef = XLSX.utils.encode_cell({ c: colIndex, r: rowIndex });
+                            if (!ws[cellRef]) ws[cellRef] = { v: rowData[colIndex], t: 's' };
+                            if (ws[cellRef]) {
+                                ws[cellRef].s = headerStyle;
+                            }
+                        });
+                    }
+                });
+
+                // Apply Styles to Section Titles
+                sectionTitleIndices.forEach(rowIndex => {
+                    // Section titles usually span multiple columns or just the first one. 
+                    // We will style the first cell and maybe merge? Or just style the cells that have text.
+                    // Usually it is just the first cell wsData[rowIndex][0].
+                    // Let's style the first cell heavily.
+                    const cellRef = XLSX.utils.encode_cell({ c: 0, r: rowIndex });
+                    if (!ws[cellRef]) ws[cellRef] = { v: wsData[rowIndex][0], t: 's' };
+
+                    // Use same header style but maybe left aligned? User said "同時 highlight", so same style.
+                    // Let's center it or keep left if it looks weird. Header style is centered.
+                    // Let's use headerStyle but left alignment might be better for titles? 
+                    // User said "highlight", usually implies background color.
+                    // I'll stick to headerStyle (Centered) for now as requested "Same highlight".
+                    if (ws[cellRef]) {
+                        ws[cellRef].s = {
+                            ...headerStyle,
+                            alignment: { horizontal: "left", vertical: "center" } // Override alignment for titles
+                        };
+                    }
+                    // Should we extend background to the whole row? No, just the cell with text is standard for simple exports.
+                });
+
+                // Adjust column widths
+                const colWidths = [];
+                wsData.forEach(row => {
+                    row.forEach((cell, i) => {
+                        const len = (cell ? cell.toString().length : 0);
+                        colWidths[i] = Math.max(colWidths[i] || 0, len);
+                    });
+                });
+                ws['!cols'] = colWidths.map(w => ({ wch: w + 2 }));
+
+                XLSX.utils.book_append_sheet(wb, ws, "Data");
+                XLSX.writeFile(wb, `${project}_data_${startDate}_${endDate}.xlsx`);
 
             } catch (err) {
                 console.error(err);

@@ -811,6 +811,7 @@
                     .from('weekly_statistics')
                     .select('*')
                     .eq('user_id', currentUser.id)
+                    .eq('project_name', currentProjectName)
                     .eq('year', currentChartYear)
                     .order('week', { ascending: true });
 
@@ -1529,11 +1530,11 @@
                 max: 53,
                 ticks: {
                     stepSize: 2,
+                    autoSkip: true,
                     maxRotation: 0,
                     minRotation: 0,
                     callback: function (value) {
-                        if (value % 2 === 1) return value;
-                        return null;
+                        if (Number.isInteger(value)) return value;
                     }
                 }
             };

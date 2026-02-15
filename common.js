@@ -67,7 +67,12 @@ var translations = {
 			noSampleTitle: '请先在「温室参数设置」中添加样本名称',
 			saveWeeklyBtn: '💾 保存周数据',
 			dailyData: '📅 每日数据',
-			saveDailyBtn: '💾 保存日数据'
+			saveDailyBtn: '💾 保存日数据',
+			unlockInput: '点击左侧复选框解锁输入',
+			locked: '已锁定',
+			enterValue: '请输入 ',
+			noData: '无数据 (点击解锁)',
+			to: ' 到 '
 		},
 		trendsPage: {
 			title: '📈 统计分析',
@@ -141,6 +146,7 @@ var translations = {
 			weekly_yield_kg: '单周产量',
 			total_yield_kg: '总产量',
 			greenhouse_area_m2: '温室面积',
+			total_dripper_count: '总滴箭个数',
 			unit_yield: '单位产量',
 			damage_amount: '报损量',
 
@@ -199,7 +205,12 @@ var translations = {
 			noSampleTitle: 'Please add sample names in "Facility Settings" first',
 			saveWeeklyBtn: '💾 Save Weekly Data',
 			dailyData: '📅 Daily Data',
-			saveDailyBtn: '💾 Save Daily Data'
+			saveDailyBtn: '💾 Save Daily Data',
+			unlockInput: 'Click checkbox to unlock',
+			locked: 'Locked',
+			enterValue: 'Enter ',
+			noData: 'No Data (Click to unlock)',
+			to: ' to '
 		},
 		trendsPage: {
 			title: '📈 Trends Analysis',
@@ -312,7 +323,7 @@ var indicatorsConfig = [
 	// 10. 可溶性固形物（糖）[0-13]
 	{ field: 'brix', unit: '-', unitEn: '-', min: 0, max: 13, step: 0.1, defaultValue: 4, frequency: 'weekly' },
 	// 11. 酸度 [无限制]
-	{ field: 'acidity', unit: '-', unitEn: '-', min: 0, max: 100, step: 0.1, defaultValue: 0, frequency: 'weekly' },
+	{ field: 'acidity', unit: '-', unitEn: '-', min: 0, max: 10000000, step: 0.1, defaultValue: 0, frequency: 'weekly' },
 
 	// 累计数据/被移除数据 (隐藏)
 
@@ -324,7 +335,7 @@ var indicatorsConfig = [
 	// 1. 回液量 (天) [0-8000]
 	{ field: 'reflux_ml', unit: 'ml', unitEn: 'ml', min: 0, max: 8000, step: 10, defaultValue: 0, frequency: 'daily' },
 	// 2. 滴箭个数 [无限制]
-	{ field: 'dripper_count', unit: '个', unitEn: 'pcs', min: 0, max: 1000, step: 1, defaultValue: 0, frequency: 'constant' },
+	{ field: 'dripper_count', unit: '个', unitEn: 'pcs', min: 0, max: 10000000, step: 1, defaultValue: 0, frequency: 'constant' },
 	// 3. 回液比例 [0-70] (自动计算)
 	{ field: 'reflux_ratio', unit: '%', unitEn: '%', min: 0, max: 70, step: 0.1, defaultValue: 0, isStatistic: true, frequency: 'daily' },
 	// 4. 回液EC值 [3-9]
@@ -336,17 +347,19 @@ var indicatorsConfig = [
 	// 7. 灌溉pH (天) [4-9]
 	{ field: 'irrigation_ph', unit: '-', unitEn: '-', min: 4, max: 9, step: 0.1, defaultValue: 6, frequency: 'daily' },
 	// 8. 每天产量 (天)
-	{ field: 'daily_yield_kg', unit: 'kg', unitEn: 'kg', min: 0, max: 10000, step: 0.1, defaultValue: 0, frequency: 'daily' },
+	{ field: 'daily_yield_kg', unit: 'kg', unitEn: 'kg', min: 0, max: 10000000, step: 0.1, defaultValue: 0, frequency: 'daily' },
 	// 9. 单周产量 (天) - (自动计算)
-	{ field: 'weekly_yield_kg', unit: 'kg', unitEn: 'kg', min: 0, max: 10000, step: 0.1, defaultValue: 0, isStatistic: true, frequency: 'daily' },
+	{ field: 'weekly_yield_kg', unit: 'kg', unitEn: 'kg', min: 0, max: 10000000, step: 0.1, defaultValue: 0, isStatistic: true, frequency: 'daily' },
 	// 10. 总产量 (天) - (自动计算)
 	{ field: 'total_yield_kg', unit: 'kg', unitEn: 'kg', min: 0, max: 50000, step: 0.1, defaultValue: 0, isStatistic: true, frequency: 'daily' },
 	// 11. 温室面积 - 原 constant, 现 daily input -> 改回 constant
-	{ field: 'greenhouse_area_m2', unit: 'm²', unitEn: 'm²', min: 0, max: 10000, step: 0.1, defaultValue: 0, frequency: 'constant' },
+	{ field: 'greenhouse_area_m2', unit: 'm²', unitEn: 'm²', min: 0, max: 10000000, step: 0.1, defaultValue: 0, frequency: 'constant' },
+	// 总滴箭个数 (新) - Constant
+	{ field: 'total_dripper_count', unit: '个', unitEn: 'pcs', min: 0, max: 10000000, step: 1, defaultValue: 0, frequency: 'constant' },
 	// 12. 单位产量 (天) - (自动计算)
 	{ field: 'unit_yield', unit: 'kg/m²', unitEn: 'kg/m²', min: 0, max: 1000, step: 0.01, defaultValue: 0, isStatistic: true, frequency: 'daily' },
 	// 13. 报损量 (新)
-	{ field: 'damage_amount', unit: 'kg', unitEn: 'kg', min: 0, max: 1000, step: 0.1, defaultValue: 0, frequency: 'daily' },
+	{ field: 'damage_amount', unit: 'kg', unitEn: 'kg', min: 0, max: 10000000, step: 0.1, defaultValue: 0, frequency: 'daily' },
 
 ];
 
@@ -463,26 +476,6 @@ var currentUser = null;
 
 // Authentication functions
 async function initAuth() {
-	// Check for guest mode
-	if (localStorage.getItem('guest_mode') === 'true') {
-		currentUser = {
-			id: 'guest',
-			email: 'guest@example.com',
-			is_guest: true
-		};
-
-		const statusEl = document.getElementById('status');
-		const syncBtn = document.getElementById('syncBtn');
-		const authBtn = document.getElementById('authBtn');
-
-
-		if (statusEl) statusEl.textContent = '👀 游客访问';
-		if (syncBtn) syncBtn.style.display = 'none'; // Guests can't sync
-		// authBtn handled by updateUserDisplay
-
-		return { user: currentUser };
-	}
-
 	const { data: { session } } = await supabase.auth.getSession();
 
 	const statusEl = document.getElementById('status');
@@ -495,7 +488,6 @@ async function initAuth() {
 		if (syncBtn) syncBtn.style.display = 'inline-block';
 		// authBtn handling moved to updateUserDisplay
 	} else {
-		// Only check query params for login if not a guest
 		if (statusEl) statusEl.textContent = '请登录以同步数据';
 		if (syncBtn) syncBtn.style.display = 'none';
 		// authBtn handling moved to updateUserDisplay
@@ -505,40 +497,8 @@ async function initAuth() {
 }
 
 async function signIn() {
-	const email = prompt('请输入邮箱:');
-	const password = prompt('请输入密码:');
-
-	if (!email || !password) return;
-
-	const statusEl = document.getElementById('status');
-	if (statusEl) statusEl.textContent = '正在登录...';
-
-	const { data, error } = await supabase.auth.signInWithPassword({
-		email: email,
-		password: password
-	});
-
-	if (error) {
-		if (statusEl) statusEl.textContent = '正在注册...';
-
-		const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-			email: email,
-			password: password
-		});
-
-		if (signUpError) {
-			if (statusEl) statusEl.textContent = '❌ 注册失败: ' + signUpError.message;
-			return;
-		}
-
-		if (statusEl) statusEl.textContent = '✅ 注册成功，请登录';
-		currentUser = signUpData.user;
-	} else {
-		if (statusEl) statusEl.textContent = '✅ 登录成功';
-		currentUser = data.user;
-	}
-
-	location.reload();
+	// Redirect to auth page instead of using prompt
+	window.location.href = 'auth.html';
 }
 
 // Initialize common elements and layout
@@ -802,9 +762,8 @@ function updateUserDisplay() {
 			}
 			// 强制清除所有认证相关的 localStorage
 			localStorage.removeItem('sb-umizxrezhpbtwklkvxoi-auth-token');
-			localStorage.removeItem('guest_mode');
 			localStorage.clear(); // 清除所有本地存储
-			window.location.href = 'welcome.html';
+			window.location.href = 'index.html';
 		};
 		dropdown.appendChild(logoutOption);
 		container.appendChild(dropdown);
@@ -845,7 +804,7 @@ function updateUserDisplay() {
 			authBtn.style.display = 'inline-block';
 			authBtn.textContent = '🔗 登录';
 			authBtn.onclick = () => {
-				window.location.href = 'welcome.html';
+				window.location.href = 'index.html';
 			};
 		}
 	}
