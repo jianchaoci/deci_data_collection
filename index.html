@@ -905,22 +905,18 @@
                     hideMessage();
 
                     try {
-                        const getBaseURL = () => {
-                            let url = window.location.origin + window.location.pathname;
-                            if (!url.endsWith('/')) {
-                                if (url.includes('.html')) {
-                                    url = url.substring(0, url.lastIndexOf('/') + 1);
-                                } else {
-                                    url += '/';
-                                }
-                            }
-                            return url;
+                        // 注册
+                        const getRedirectURL = (param) => {
+                            // 强制获取当前页面的精确路径并带上 index.html，这是 GitHub Pages 最稳妥的识别方式
+                            const base = window.location.href.split('?')[0].split('#')[0];
+                            const finalBase = base.endsWith('.html') ? base : (base.endsWith('/') ? base + 'index.html' : base + '/index.html');
+                            return finalBase + '?' + param;
                         };
 
                         const { data, error } = await supabase.auth.signUp({
                             email, password,
                             options: {
-                                redirectTo: getBaseURL() + '?type=signup'
+                                redirectTo: getRedirectURL('type=signup')
                             }
                         });
                         if (error) throw error;
@@ -987,6 +983,7 @@
                         localStorage.setItem('reset_email', email);
 
                         const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                            // 强制指向 reset-password.html
                             redirectTo: window.location.href.split('?')[0].split('#')[0].replace(/index\.html$/, '').replace(/\/$/, '') + '/reset-password.html'
                         });
                         if (error) throw error;
