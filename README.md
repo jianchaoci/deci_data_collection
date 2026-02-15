@@ -19,7 +19,17 @@
 - **图表**: Chart.js
 - **部署**: Vercel
 
-## 📦 部署到 Vercel
+## 🚀 部署到 GitHub Pages
+
+项目已针对 GitHub Pages 进行优化，支持部署在子目录下。
+
+1. **推送代码**: 将代码推送到 GitHub 仓库的 `main` 分支。
+2. **开启 Pages**: 在仓库设置 `Settings -> Pages` 中，选择从 `main` 分支部署。
+3. **关键配置**: 由于 GitHub Pages 的子目录路径特性，Supabase 身份验证需要特殊配置。
+
+**⚠️ 重要：请务必阅读 [DEPLOY_GUIDE.md](./DEPLOY_GUIDE.md) 以正确配置 Supabase 重定向，否则会导致登录/注册时出现 404 错误。**
+
+## 🚀 部署到 Vercel
 
 ### 方式一：通过 Git（推荐）
 
