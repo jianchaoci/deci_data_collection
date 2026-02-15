@@ -619,6 +619,8 @@
             const error = urlParams.get('error') || hashParams.get('error');
             const errorDescription = urlParams.get('error_description') || hashParams.get('error_description');
 
+            // 增强判定：检测是否包含 Supabase 的验证/登录回跳标识（access_token）
+            const isAuthCallback = window.location.hash.includes('access_token') || type === 'signup';
             // Handle Error case (e.g., link expired)
             if (error === 'access_denied' || error) {
                 alert('❌ 验证失败: ' + (errorDescription || '链接已失效或已过有效期'));
@@ -627,7 +629,7 @@
                 return;
             }
 
-            if (type === 'signup') {
+            if (isAuthCallback) {
                 // 验证成功后的处理：
                 try {
                     await supabase.auth.signOut();
@@ -637,11 +639,10 @@
                     console.error('Signout error:', e);
                 }
 
-                // 强制跳回首页且带上文件名，确保不被 GitHub 404 捕获
+                // 清理所有参数，强制刷新显示登录界面
                 window.location.href = 'index.html';
                 return;
             }
-
 
             const { data: { session } } = await supabase.auth.getSession();
 
@@ -913,8 +914,10 @@
                         const { data, error } = await supabase.auth.signUp({
                             email, password,
                             options: {
-                                // 必须与您的 Supabase 后台 Redirect URLs 列表中的地址“字字对应”
-                                redirectTo: 'https://jianchaoci.github.io/deci_data_collection/index.html?type=signup'
+                                // 关键修复：移除 ?type=signup，因为这会导致与白名单精确匹配失败！
+                                // 匹配失败后，Supabase 会 fallback 到错误的路径。
+                                // 修改后地址与您的白名单“字字对应”。
+                                redirectTo: 'https://jianchaoci.github.io/deci_data_collection/index.html'
                             }
                         });
                         if (error) throw error;
