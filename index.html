@@ -602,7 +602,7 @@
         </div>
     </div>
 
-    <script src="common.js?v=fix42"></script>
+    <script src="common.js?v=SUPER_FINAL_FIX_999"></script>
     <script>
         // Canonical app base URL for auth callbacks (prevents GitHub Pages root 404)
         const APP_BASE_URL = window.location.hostname === 'jianchaoci.github.io'
@@ -637,8 +637,8 @@
                     console.error('Signout error:', e);
                 }
 
-                // 文档建议：验证成功后，跳回最干净的生产环境根路径
-                window.location.href = 'https://jianchaoci.github.io/deci_data_collection/';
+                // 强制跳回首页且带上文件名，确保不被 GitHub 404 捕获
+                window.location.href = 'index.html';
                 return;
             }
 
@@ -913,8 +913,8 @@
                         const { data, error } = await supabase.auth.signUp({
                             email, password,
                             options: {
-                                // 严格遵循文档：带 HTTPS 协议、完整域名、以及末尾带斜杠的子路径
-                                redirectTo: 'https://jianchaoci.github.io/deci_data_collection/'
+                                // 必须与您的 Supabase 后台 Redirect URLs 列表中的地址“字字对应”
+                                redirectTo: 'https://jianchaoci.github.io/deci_data_collection/index.html?type=signup'
                             }
                         });
                         if (error) throw error;
