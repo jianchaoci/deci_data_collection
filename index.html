@@ -908,8 +908,8 @@
                         const { data, error } = await supabase.auth.signUp({
                             email, password,
                             options: {
-                                // 动态获取完整路径（兼容 GitHub Pages 的子路径）
-                                redirectTo: window.location.origin + window.location.pathname + '?type=signup'
+                                // 稳妥写法：取当前完整 URL 并去掉参数和锚点，确保带上仓库名子目录
+                                redirectTo: window.location.href.split('?')[0].split('#')[0].replace(/index\.html$/, '') + '?type=signup'
                             }
                         });
                         if (error) throw error;
@@ -971,8 +971,8 @@
                         localStorage.setItem('reset_email', email);
 
                         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                            // 动态路径：支持 GitHub Pages 子路径
-                            redirectTo: window.location.origin + window.location.pathname.replace('index.html', '').replace(/\/$/, '') + '/reset-password.html'
+                            // 动态路径：自动适配 GitHub Pages 子路径并指向 reset-password.html
+                            redirectTo: window.location.href.split('?')[0].split('#')[0].replace(/index\.html$/, '').replace(/\/$/, '') + '/reset-password.html'
                         });
                         if (error) throw error;
 
