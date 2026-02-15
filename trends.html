@@ -377,7 +377,7 @@
         const chartsContainer = document.getElementById('chartsContainer');
 
         // Available projects (loaded from DB)
-        let availableProjects = ['翠湖温室'];
+        let availableProjects = [];
 
         // Chart card counter
         let chartCardCounter = 0;
@@ -397,8 +397,7 @@
 
                 if (error) throw error;
 
-                const projects = data ? data.map(d => d.project_name) : [];
-                availableProjects = [...new Set(['翠湖温室', ...projects])];
+                availableProjects = data ? data.map(d => d.project_name) : [];
             } catch (err) {
                 console.error('加载项目列表失败:', err);
             }
@@ -500,7 +499,10 @@
             const t = translations[currentLang].trendsPage;
             const cardId = `chart-card-${chartCardCounter}`;
             const currentYear = getBeijingTime().getFullYear();
-            const defaultProject = '翠湖温室';
+
+            // 默认选择当前工作项目或第一个可用项目
+            const lastProject = localStorage.getItem('currentProject');
+            const defaultProject = (availableProjects.includes(lastProject)) ? lastProject : (availableProjects[0] || '');
 
             const cardHTML = `
                 <div class="chart-card" id="${cardId}" style="background: white; border-radius: 20px; 
@@ -750,7 +752,7 @@
             const indicatorEl = document.getElementById(`${cardId}-indicator`);
 
             const previousProject = cardInfo.project;
-            cardInfo.project = projectEl ? projectEl.value : '翠湖温室';
+            cardInfo.project = projectEl ? projectEl.value : (availableProjects[0] || '');
             cardInfo.sample = sampleEl ? sampleEl.value : '__ALL__';
             cardInfo.field = indicatorEl ? indicatorEl.value : '';
 
