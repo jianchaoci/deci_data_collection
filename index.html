@@ -912,11 +912,8 @@
 
                     try {
                         const { data, error } = await supabase.auth.signUp({
-                            email, password,
-                            options: {
-                                // Use explicit callback URL to avoid GitHub Pages root fallback
-                                redirectTo: APP_BASE_URL + '/index.html?type=signup'
-                            }
+                            email, password
+                            // 不再显式传递 redirectTo，Supabase 将默认使用后台配置的正确 Site URL
                         });
                         if (error) throw error;
 
