@@ -603,6 +603,7 @@
     </div>
 
     <script src="common.js?v=SUPER_FINAL_FIX_999"></script>
+    <script src="project-management.js"></script>
     <script>
         // Canonical app base URL for auth callbacks (prevents GitHub Pages root 404)
         const APP_BASE_URL = window.location.hostname === 'jianchaoci.github.io'
@@ -741,6 +742,7 @@
             projects.forEach((name, index) => {
                 const btn = document.createElement('div');
                 btn.className = 'project-btn';
+                btn.dataset.projectName = name; // Store project name for menu actions
 
                 // Determine Icon
                 let icon = '📊';
@@ -757,7 +759,31 @@
                     </div>
                     <span class="arrow">➜</span>
                 `;
+
+                // Regular click to select project
                 btn.onclick = () => selectProject(name);
+
+                // Long press to show menu (mobile)
+                let pressTimer = null;
+                btn.addEventListener('touchstart', (e) => {
+                    pressTimer = setTimeout(() => {
+                        e.preventDefault();
+                        showProjectMenu(name, e.touches[0].clientX, e.touches[0].clientY);
+                    }, 500);
+                });
+                btn.addEventListener('touchend', () => {
+                    clearTimeout(pressTimer);
+                });
+                btn.addEventListener('touchmove', () => {
+                    clearTimeout(pressTimer);
+                });
+
+                // Right click to show menu (desktop)
+                btn.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    showProjectMenu(name, e.clientX, e.clientY);
+                });
+
                 listFn.appendChild(btn);
             });
         }
