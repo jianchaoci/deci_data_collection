@@ -620,8 +620,12 @@
             const errorDescription = urlParams.get('error_description') || hashParams.get('error_description');
 
             // Check if this is an auth callback from email confirmation
+            // Support both: 1) Standard hash format, 2) Custom query param format (for GitHub Pages subdirectory)
+            const token = urlParams.get('token');
+            const email = urlParams.get('email');
             const isAuthCallback = window.location.hash.includes('access_token') ||
-                window.location.hash.includes('recovery');
+                window.location.hash.includes('recovery') ||
+                (token && type === 'signup');
             // Handle Error case (e.g., link expired)
             if (error === 'access_denied' || error) {
                 alert('❌ 验证失败: ' + (errorDescription || '链接已失效或已过有效期'));
@@ -631,12 +635,21 @@
             }
 
             if (isAuthCallback) {
-                // Supabase SDK automatically handles the token verification from hash
-                // We just need to wait a moment for it to complete, then guide user to login
+                // Handle both standard and custom email link formats
 
                 try {
-                    // Give SDK time to process the hash token (usually instant)
-                    await new Promise(resolve => setTimeout(resolve, 500));
+                    // If using custom query params (our GitHub Pages workaround), verify explicitly
+                    if (token && type === 'signup' && email) {
+                        const { error } = await supabase.auth.verifyOtp({
+                            token: token,
+                            type: 'signup',
+                            email: email
+                        });
+                        if (error) throw error;
+                    } else {
+                        // Standard hash format - give SDK time to auto-process
+                        await new Promise(resolve => setTimeout(resolve, 500));
+                    }
 
                     // Now sign out to ensure clean state
                     await supabase.auth.signOut();
