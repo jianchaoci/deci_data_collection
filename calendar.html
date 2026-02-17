@@ -448,8 +448,10 @@
 
                 if (weeklyRes.data) {
                     weeklyRes.data.forEach(row => {
-                        const d = new Date(row.created_at);
-                        weeklyMap[d.getDate()] = true;
+                        // Convert UTC timestamp to Beijing time (UTC+8)
+                        const utcDate = new Date(row.created_at);
+                        const beijingDate = new Date(utcDate.getTime() + 8 * 60 * 60 * 1000);
+                        weeklyMap[beijingDate.getUTCDate()] = true;
                     });
                 }
 
