@@ -621,6 +621,7 @@
 
             // 增强判定：同时检测官方 hash 模式和我们手动硬编码在邮件模板里的 search 参数模式
             const token = urlParams.get('token') || hashParams.get('access_token');
+            const email = urlParams.get('email'); // Capture email from URL
             const isAuthCallback = window.location.hash.includes('access_token') ||
                 type === 'signup' ||
                 (token && type === 'signup');
@@ -636,10 +637,11 @@
                 // 验证成功后的处理：
                 try {
                     // CRITICAL FIX: We must actively verify the token if it came from our custom email link
-                    if (token && type === 'signup') {
+                    if (token && type === 'signup' && email) {
                         const { error } = await supabase.auth.verifyOtp({
                             token: token,
-                            type: 'signup'
+                            type: 'signup',
+                            email: email
                         });
                         if (error) throw error;
                     }
