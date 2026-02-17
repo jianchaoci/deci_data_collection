@@ -634,9 +634,21 @@
             if (isAuthCallback) {
                 // 验证成功后的处理：
                 try {
+                    // Force clear old session
                     await supabase.auth.signOut();
                     localStorage.clear();
                     sessionStorage.clear();
+
+                    // Show Explicit Success Message
+                    // This blocks execution until user clicks OK, ensuring they see it.
+                    alert('✅ 邮箱验证成功！\n请现在使用您的账号密码登录。');
+
+                    // Clean URL and reload
+                    setTimeout(() => {
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                        window.location.reload();
+                    }, 100);
+                    return; // Stop further execution
                 } catch (e) {
                     console.error('Signout error:', e);
                 }
