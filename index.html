@@ -620,9 +620,10 @@
             const errorDescription = urlParams.get('error_description') || hashParams.get('error_description');
 
             // 增强判定：同时检测官方 hash 模式和我们手动硬编码在邮件模板里的 search 参数模式
+            const token = urlParams.get('token') || hashParams.get('access_token');
             const isAuthCallback = window.location.hash.includes('access_token') ||
                 type === 'signup' ||
-                (urlParams.get('token') && type === 'signup');
+                (token && type === 'signup');
             // Handle Error case (e.g., link expired)
             if (error === 'access_denied' || error) {
                 alert('❌ 验证失败: ' + (errorDescription || '链接已失效或已过有效期'));
@@ -634,6 +635,15 @@
             if (isAuthCallback) {
                 // 验证成功后的处理：
                 try {
+                    // CRITICAL FIX: We must actively verify the token if it came from our custom email link
+                    if (token && type === 'signup') {
+                        const { error } = await supabase.auth.verifyOtp({
+                            token_hash: token,
+                            type: 'signup'
+                        });
+                        if (error) throw error;
+                    }
+
                     // Force clear old session
                     await supabase.auth.signOut();
                     localStorage.clear();
@@ -650,11 +660,12 @@
                     }, 100);
                     return; // Stop further execution
                 } catch (e) {
-                    console.error('Signout error:', e);
+                    console.error('Verification error:', e);
+                    alert('❌ 验证失败: ' + (e.message || '无效的验证链接'));
+                    // Clean URL anyway to avoid loop
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    window.location.reload();
                 }
-
-                // 清理所有参数，强制刷新显示登录界面
-                window.location.href = 'index.html';
                 return;
             }
 
