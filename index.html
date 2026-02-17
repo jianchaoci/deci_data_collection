@@ -619,12 +619,9 @@
             const error = urlParams.get('error') || hashParams.get('error');
             const errorDescription = urlParams.get('error_description') || hashParams.get('error_description');
 
-            // 增强判定：同时检测官方 hash 模式和我们手动硬编码在邮件模板里的 search 参数模式
-            const token = urlParams.get('token') || hashParams.get('access_token');
-            const email = urlParams.get('email'); // Capture email from URL
+            // Check if this is an auth callback from email confirmation
             const isAuthCallback = window.location.hash.includes('access_token') ||
-                type === 'signup' ||
-                (token && type === 'signup');
+                window.location.hash.includes('recovery');
             // Handle Error case (e.g., link expired)
             if (error === 'access_denied' || error) {
                 alert('❌ 验证失败: ' + (errorDescription || '链接已失效或已过有效期'));
@@ -634,37 +631,27 @@
             }
 
             if (isAuthCallback) {
-                // 验证成功后的处理：
-                try {
-                    // CRITICAL FIX: We must actively verify the token if it came from our custom email link
-                    if (token && type === 'signup' && email) {
-                        const { error } = await supabase.auth.verifyOtp({
-                            token: token,
-                            type: 'signup',
-                            email: email
-                        });
-                        if (error) throw error;
-                    }
+                // Supabase SDK automatically handles the token verification from hash
+                // We just need to wait a moment for it to complete, then guide user to login
 
-                    // Force clear old session
+                try {
+                    // Give SDK time to process the hash token (usually instant)
+                    await new Promise(resolve => setTimeout(resolve, 500));
+
+                    // Now sign out to ensure clean state
                     await supabase.auth.signOut();
                     localStorage.clear();
                     sessionStorage.clear();
 
-                    // Show Explicit Success Message
-                    // This blocks execution until user clicks OK, ensuring they see it.
+                    // Show success message
                     alert('✅ 邮箱验证成功！\n请现在使用您的账号密码登录。');
 
                     // Clean URL and reload
-                    setTimeout(() => {
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                        window.location.reload();
-                    }, 100);
-                    return; // Stop further execution
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    window.location.reload();
                 } catch (e) {
-                    console.error('Verification error:', e);
-                    alert('❌ 验证失败: ' + (e.message || '无效的验证链接'));
-                    // Clean URL anyway to avoid loop
+                    console.error('Auth callback error:', e);
+                    alert('❌ 验证过程出错: ' + (e.message || '请重试'));
                     window.history.replaceState({}, document.title, window.location.pathname);
                     window.location.reload();
                 }
