@@ -188,6 +188,29 @@
     <div class="main-container">
         <div class="calendar-card">
             <div class="calendar-header">
+                <div class="project-selector-wrapper" style="margin-right: auto;">
+                    <select id="projectSelect" style="
+                        padding: 8px 16px; 
+                        border-radius: 24px; 
+                        border: 1px solid rgba(16, 185, 129, 0.2); 
+                        background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05)); 
+                        color: #059669; 
+                        font-weight: 600;
+                        font-size: 0.95rem;
+                        cursor: pointer;
+                        outline: none;
+                        appearance: none;
+                        -webkit-appearance: none;
+                        background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23059669%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+                        background-repeat: no-repeat;
+                        background-position: right 12px top 50%;
+                        background-size: 10px auto;
+                        padding-right: 32px;
+                        transition: all 0.2s;
+                    ">
+                        <option value="" disabled selected>选择项目...</option>
+                    </select>
+                </div>
                 <div class="month-nav"><button id="prevMonth">◀ <span data-lang="prevMonth">上月</span></button><span
                         class="current-date" id="currentDateDisplay">2026年 01月</span><button id="nextMonth"><span
                             data-lang="nextMonth">下月</span>▶</button></div>
@@ -216,9 +239,51 @@
         let currentMonthDate = getBeijingTime(); // Use first day of month logic later
         currentMonthDate.setDate(1); // Default to 1st of current month
         let calendarChart = null;
+        let currentProject = localStorage.getItem('currentProject') || '';
 
         const dateDisplay = document.getElementById('currentDateDisplay');
         const loadingEl = document.getElementById('loadingIndicator');
+        const projectSelect = document.getElementById('projectSelect');
+
+        // Load Projects
+        async function loadProjects() {
+            if (!currentUser) return;
+
+            try {
+                const { data, error } = await supabase
+                    .from('facility_settings')
+                    .select('project_name')
+                    .eq('user_id', currentUser.id);
+
+                if (error) throw error;
+
+                projectSelect.innerHTML = '<option value="" disabled>选择项目...</option>';
+
+                if (data && data.length > 0) {
+                    // Check if currentProject is still valid
+                    const exists = data.find(p => p.project_name === currentProject);
+                    if (!exists) {
+                        currentProject = data[0].project_name;
+                        localStorage.setItem('currentProject', currentProject);
+                    }
+
+                    data.forEach(p => {
+                        const option = document.createElement('option');
+                        option.value = p.project_name;
+                        option.textContent = p.project_name;
+                        if (p.project_name === currentProject) {
+                            option.selected = true;
+                        }
+                        projectSelect.appendChild(option);
+                    });
+                } else {
+                    currentProject = '';
+                    projectSelect.innerHTML = '<option value="" disabled>无可用项目</option>';
+                }
+            } catch (err) {
+                console.error('Error loading projects:', err);
+            }
+        }
 
         // Initial Header Update
         function updateHeader() {
@@ -337,14 +402,28 @@
                 const endDate = new Date(year, month + 1, 0);
                 const localEndDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${endDate.getDate()}`;
 
-                console.log(`Loading data for range: ${localStartDateStr} to ${localEndDateStr}`);
+                console.log(`Loading data for range: ${localStartDateStr} to ${localEndDateStr}, Project: ${currentProject}`);
+
+                if (!currentProject) {
+                    renderChart({}, {});
+                    return;
+                }
 
                 // 1. Fetch Daily Data (by date)
-                const dailyRes = await supabase.from('daily_phenotypes').select('date').eq('user_id', currentUser.id).gte('date', localStartDateStr).lte('date', localEndDateStr);
+                const dailyRes = await supabase.from('daily_phenotypes')
+                    .select('date')
+                    .eq('user_id', currentUser.id)
+                    .eq('project_name', currentProject) // Filter by project
+                    .gte('date', localStartDateStr)
+                    .lte('date', localEndDateStr);
 
                 // 2. Fetch Weekly Data (by created_at)
                 // Note: Weekly data doesn't have a 'date' column, so we use 'created_at'.
-                const weeklyRes = await supabase.from('weekly_phenotypes').select('created_at').eq('user_id', currentUser.id).gte('created_at', wrapperDateToISO(startDate)) // Use approximate ISO range
+                const weeklyRes = await supabase.from('weekly_phenotypes')
+                    .select('created_at')
+                    .eq('user_id', currentUser.id)
+                    .eq('project_name', currentProject) // Filter by project
+                    .gte('created_at', wrapperDateToISO(startDate)) // Use approximate ISO range
                     .lte('created_at', wrapperDateToISO(new Date(year, month + 1, 1))); // Up to next month start
 
                 if (dailyRes.error) throw dailyRes.error;
@@ -412,6 +491,12 @@
             loadMonthData();
         });
 
+        projectSelect.addEventListener('change', (e) => {
+            currentProject = e.target.value;
+            localStorage.setItem('currentProject', currentProject);
+            loadMonthData();
+        });
+
         // Initialize
         async function init() {
             updateHeader();
@@ -419,6 +504,7 @@
 
             if (session) {
                 currentUser = session.user;
+                await loadProjects(); // Load projects first
             }
 
             loadMonthData();
