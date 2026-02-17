@@ -826,7 +826,8 @@
         function selectProject(name) {
             localStorage.setItem('currentProject', name);
             localStorage.setItem('lastProjectName', name);
-            window.location.href = 'collection.html';
+            // Use full path to avoid GitHub Pages subdirectory 404
+            window.location.href = APP_BASE_URL + '/collection.html';
         }
 
         // --- Login Handlers (Integrated) ---
