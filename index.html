@@ -638,7 +638,7 @@
                     // CRITICAL FIX: We must actively verify the token if it came from our custom email link
                     if (token && type === 'signup') {
                         const { error } = await supabase.auth.verifyOtp({
-                            token_hash: token,
+                            token: token,
                             type: 'signup'
                         });
                         if (error) throw error;
