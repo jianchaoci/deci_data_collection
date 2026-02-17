@@ -131,6 +131,15 @@ async function renameProject(oldName) {
 
 // Delete project
 async function deleteProject(projectName) {
+    // First, verify admin password
+    const password = prompt('⚠️ 删除操作需要管理员密码\n请输入管理员密码：');
+    if (!password) return; // User cancelled
+    
+    if (password !== 'deci_2026') {
+        alert('❌ 密码错误，无法删除项目');
+        return;
+    }
+    
     const confirmed = confirm(`确定要删除项目 "${projectName}" 吗？\n\n⚠️ 此操作将永久删除该项目及其所有数据，且无法恢复！`);
     if (!confirmed) return;
 
